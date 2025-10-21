@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { TemplateVariable, EditorState } from '../types';
+import { TemplateVariable, EditorState } from '@/types';
 import React from 'react';
+import { toast } from 'sonner';
 
 interface TemplatePreviewProps {
   templateState: EditorState | null;
@@ -11,9 +12,9 @@ interface VariableValues {
   [key: string]: string;
 }
 
-export default function TemplatePreview({ 
-  templateState, 
-  availableVariables 
+export default function TemplatePreview({
+  templateState,
+  availableVariables
 }: TemplatePreviewProps): JSX.Element {
   const [values, setValues] = useState<VariableValues>(() => {
     const initial: VariableValues = {};
@@ -25,33 +26,42 @@ export default function TemplatePreview({
 
   const renderTemplate = (): string => {
     if (!templateState) return '';
-    
-    let output = '';
-    
+
     const processNode = (node: any): string => {
       if (node.type === 'template-variable') {
         return values[node.variableName] || `{{${node.variableName}}}`;
       } else if (node.type === 'text') {
         return node.text;
-      } else if (node.children) {
-        return node.children.map(processNode).join('');
+      } else if (node.type === 'heading') {
+        // Handle heading nodes with double newline
+        const content = node.children?.map(processNode).join('') || '';
+        return content + '\n\n';
       } else if (node.type === 'paragraph') {
-        return (node.children?.map(processNode).join('') || '') + '\n';
+        // Process paragraph children and add newline
+        const content = node.children?.map(processNode).join('') || '';
+        return content + '\n';
+      } else if (node.children) {
+        // Generic node with children
+        return node.children.map(processNode).join('');
       }
       return '';
     };
 
     if (templateState.root?.children) {
-      output = templateState.root.children.map(processNode).join('');
+      const output = templateState.root.children.map(processNode).join('');
+      // Trim trailing newlines for cleaner output
+      return output.trimEnd();
     }
 
-    return output;
+    return '';
   };
 
   const handleCopy = (): void => {
     const text = renderTemplate();
     navigator.clipboard.writeText(text);
-    alert('Template copied to clipboard!');
+    toast.success("Copied to clipboard!", {
+      description: "Template text has been copied to your clipboard.",
+    });
   };
 
   const handleInputChange = (variableName: string, value: string): void => {

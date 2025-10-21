@@ -1,0 +1,155 @@
+/**
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+.dropdown {
+  z-index: 100;
+  display: block;
+  position: fixed;
+  background-color: #fff;
+  min-width: 200px;
+  min-height: 10px;
+  border-radius: 8px;
+  box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.dropdown .item {
+  margin: 0 8px;
+  padding: 8px;
+  color: #050505;
+  cursor: pointer;
+  line-height: 16px;
+  font-size: 15px;
+  display: flex;
+  align-content: center;
+  flex-direction: row;
+  flex-shrink: 0;
+  justify-content: space-between;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 0;
+  max-width: 250px;
+  min-width: 100px;
+}
+
+.dropdown .item.fontsize-item,
+.dropdown .item.fontsize-item .text {
+  min-width: unset;
+}
+
+.dropdown .item .active {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+}
+
+.dropdown .item:first-child {
+  margin-top: 8px;
+}
+
+.dropdown .item:last-child {
+  margin-bottom: 8px;
+}
+
+.dropdown .item:hover {
+  background-color: #eee;
+}
+
+.dropdown .item .text {
+  display: flex;
+  line-height: 20px;
+  flex-grow: 1;
+  min-width: 150px;
+}
+
+.dropdown .item .icon {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  user-select: none;
+  margin-right: 12px;
+  line-height: 16px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.dropdown .divider {
+  width: auto;
+  background-color: #eee;
+  margin: 4px 8px;
+  height: 1px;
+}
+
+@media screen and (max-width: 1100px) {
+  .dropdown-button-text {
+    display: none !important;
+  }
+}
+
+.dropdown-button-text {
+  display: flex;
+  line-height: 20px;
+  flex-grow: 1;
+  min-width: 100px;
+}
+
+.chevron-down {
+  background-color: transparent;
+  background-size: contain;
+  display: inline-block;
+  height: 8px;
+  width: 8px;
+}
+
+.chevron-down:after {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-bottom: 2px solid #999;
+  border-right: 2px solid #999;
+  transform: rotate(45deg);
+}
+
+/* Table Action Buttons specific styles */
+.table-cell-action-button-container {
+  position: absolute;
+}
+
+.table-cell-action-button-container.table-cell-action-button-container--active {
+  display: block;
+}
+
+.table-cell-action-button-container.table-cell-action-button-container--inactive {
+  display: none;
+}
+
+.table-cell-action-button {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 2px 6px;
+  position: absolute;
+  right: 5px;
+  top: 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #222;
+  font-size: 12px;
+}
+
+.table-cell-action-button:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdown hr {
+  margin: 4px 0;
+  height: 1px;
+  background-color: #eee;
+  border: none;
+}

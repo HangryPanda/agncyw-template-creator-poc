@@ -1,5 +1,5 @@
-import { DecoratorNode, LexicalNode, NodeKey, SerializedLexicalNode, Spread } from 'lexical';
-import { SerializedTemplateVariableNode } from '../types';
+import { DecoratorNode, LexicalNode, NodeKey } from 'lexical';
+import { SerializedTemplateVariableNode } from '@/types';
 
 export class TemplateVariableNode extends DecoratorNode<JSX.Element> {
   __variableName: string;
@@ -19,18 +19,7 @@ export class TemplateVariableNode extends DecoratorNode<JSX.Element> {
 
   createDOM(): HTMLElement {
     const span = document.createElement('span');
-    span.className = 'template-variable';
-    span.style.cssText = `
-      background-color: #e3f2fd;
-      color: #1976d2;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-weight: 500;
-      cursor: pointer;
-      display: inline-block;
-      margin: 0 2px;
-      border: 1px solid #90caf9;
-    `;
+    span.className = 'inline-flex items-center px-2 py-0.5 mx-0.5 text-sm font-medium bg-primary/10 text-primary border border-primary/20 rounded-md cursor-pointer hover:bg-primary/20 transition-colors';
     return span;
   }
 

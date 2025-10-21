@@ -1,89 +1,273 @@
+import { $getSelection, $isRangeSelection, UNDO_COMMAND, REDO_COMMAND } from 'lexical';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
-import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary';
-import { TemplateVariableNode } from '../nodes/TemplateVariableNode';
-import ToolbarPlugin from '../plugins/ToolbarPlugin';
-import { TemplateVariable, EditorState } from '../types';
+import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
+import { ListPlugin } from '@lexical/react/LexicalListPlugin';
+import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin';
+import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
+import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
+import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { TemplateVariableNode } from '@/nodes/TemplateVariableNode';
+import { TemplateVariable, EditorState } from '@/types';
 import { EditorState as LexicalEditorState } from 'lexical';
-import React from 'react';
+import { EditorCommandMenu } from './EditorCommandMenu';
+import { VariablePopover } from './VariablePopover';
+import PlaygroundNodes from '@/nodes/PlaygroundNodes';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import MarkdownShortcutPlugin from '@/plugins/MarkdownShortcutPlugin';
+import AutoLinkPlugin from '@/plugins/AutoLinkPlugin';
+import FloatingTextFormatToolbarPlugin from '@/plugins/FloatingTextFormatToolbarPlugin';
+import FloatingLinkEditorPlugin from '@/plugins/FloatingLinkEditorPlugin';
+import TableActionMenuPlugin from '@/plugins/TableActionMenuPlugin';
+import DraggableBlockPlugin from '@/plugins/DraggableBlockPlugin';
 
 interface TemplateEditorProps {
-  onChange?: (editorState: EditorState) => void;
-  initialState?: string;
+  templateId: string;
+  initialState?: EditorState;
   availableVariables: TemplateVariable[];
+  onStateChange?: (editorState: EditorState) => void;
+  onManageVariables?: () => void;
 }
 
-export default function TemplateEditor({ 
-  onChange, 
-  initialState, 
-  availableVariables 
+// Keyboard shortcut detection plugin
+function KeyboardShortcutPlugin({
+  availableVariables,
+  onManageVariables
+}: {
+  availableVariables: TemplateVariable[];
+  onManageVariables?: () => void;
+}): JSX.Element | null {
+  const [editor] = useLexicalComposerContext();
+  const [showVariablePopover, setShowVariablePopover] = useState(false);
+  const [showCommandMenu, setShowCommandMenu] = useState(false);
+  const [popoverPosition, setPopoverPosition] = useState({ x: 0, y: 0 });
+  const [isLinkEditMode, setIsLinkEditMode] = useState(false);
+
+  useEffect(() => {
+    return editor.registerTextContentListener(() => {
+      editor.getEditorState().read(() => {
+        const selection = $getSelection();
+        if (!$isRangeSelection(selection)) {
+          setShowVariablePopover(false);
+          setShowCommandMenu(false);
+          return;
+        }
+
+        const anchorNode = selection.anchor.getNode();
+        const anchorOffset = selection.anchor.offset;
+        const textContent = anchorNode.getTextContent();
+        const beforeCursor = textContent.slice(0, anchorOffset);
+
+        // Check for {{ trigger (for variables)
+        if (beforeCursor.endsWith('{{')) {
+          const nativeSelection = window.getSelection();
+          if (nativeSelection && nativeSelection.rangeCount > 0) {
+            const range = nativeSelection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            setPopoverPosition({ x: rect.left, y: rect.bottom + 5 });
+            setShowVariablePopover(true);
+            setShowCommandMenu(false);
+          }
+        }
+        // Check for / trigger (for commands/nodes)
+        else if (beforeCursor.endsWith('/') && (beforeCursor.length === 1 || beforeCursor[beforeCursor.length - 2] === ' ' || beforeCursor[beforeCursor.length - 2] === '\n')) {
+          const nativeSelection = window.getSelection();
+          if (nativeSelection && nativeSelection.rangeCount > 0) {
+            const range = nativeSelection.getRangeAt(0);
+            const rect = range.getBoundingClientRect();
+            setPopoverPosition({ x: rect.left, y: rect.bottom + 5 });
+            setShowCommandMenu(true);
+            setShowVariablePopover(false);
+          }
+        }
+        // Hide if neither trigger is active
+        else if (!beforeCursor.includes('{{') || (beforeCursor.includes('{{') && beforeCursor.includes('}}'))) {
+          if (!beforeCursor.endsWith('/')) {
+            setShowVariablePopover(false);
+            setShowCommandMenu(false);
+          }
+        }
+      });
+    });
+  }, [editor]);
+
+  return (
+    <>
+      <VariablePopover
+        open={showVariablePopover}
+        onOpenChange={setShowVariablePopover}
+        position={popoverPosition}
+        availableVariables={availableVariables}
+        onManageVariables={onManageVariables}
+      />
+      <EditorCommandMenu
+        open={showCommandMenu}
+        onOpenChange={setShowCommandMenu}
+        position={popoverPosition}
+      />
+    </>
+  );
+}
+
+export default function TemplateEditor({
+  templateId: _templateId, // Reserved for future use (e.g., template-specific features)
+  initialState,
+  availableVariables,
+  onStateChange,
+  onManageVariables
 }: TemplateEditorProps): JSX.Element {
+  const [isLinkEditMode, setIsLinkEditMode] = useState(false);
+
   const initialConfig = {
     namespace: 'TemplateEditor',
     theme: {
-      paragraph: 'editor-paragraph',
+      // Clean, minimal theme using shadcn CSS variables
+      paragraph: 'leading-relaxed mb-2',
+      heading: {
+        h1: 'text-2xl font-bold mb-4 mt-6',
+        h2: 'text-xl font-semibold mb-3 mt-5',
+        h3: 'text-lg font-medium mb-2 mt-4',
+      },
+      text: {
+        bold: 'font-semibold',
+        italic: 'italic',
+        underline: 'underline',
+        strikethrough: 'line-through',
+        code: 'font-mono bg-muted px-1 py-0.5 rounded text-sm',
+      },
+      list: {
+        ul: 'list-disc list-outside ml-6 mb-2',
+        ol: 'list-decimal list-outside ml-6 mb-2',
+        listitem: 'mb-1',
+      },
+      link: 'text-primary hover:underline cursor-pointer',
+      quote: 'border-l-4 border-muted-foreground/30 pl-4 italic my-4',
+      table: 'border-collapse my-2 text-sm',
+      tableRow: 'border-b border-border/50',
+      tableCell: 'border-r border-border/50 px-3 py-1.5 text-left min-w-[100px] last:border-r-0',
+      tableCellHeader: 'border-r border-border/50 px-3 py-1.5 text-left font-medium text-muted-foreground text-xs uppercase tracking-wider',
     },
     onError: (error: Error) => {
-      console.error(error);
+      console.error('Editor error:', error);
     },
-    nodes: [TemplateVariableNode],
-    editorState: initialState,
+    nodes: [
+      TemplateVariableNode,
+      ...PlaygroundNodes,
+    ],
+    editorState: initialState ? JSON.stringify(initialState) : undefined,
   };
 
   const handleChange = (editorState: LexicalEditorState): void => {
     editorState.read(() => {
       const json = editorState.toJSON() as EditorState;
-      onChange?.(json);
+      onStateChange?.(json);
     });
+  };
+
+  const validateUrl = (url: string): boolean => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <div style={editorContainerStyle}>
-        <ToolbarPlugin availableVariables={availableVariables} />
-        <div style={editorInnerStyle}>
+      <div className="rounded-lg border bg-card text-card-foreground">
+        {/* Clean, distraction-free editor */}
+        <div className="relative">
           <RichTextPlugin
-            contentEditable={<ContentEditable style={contentEditableStyle} />}
-            placeholder={<div style={placeholderStyle}>Start typing your template...</div>}
+            contentEditable={
+              <ContentEditable
+                className="min-h-[400px] px-8 py-6 outline-none focus:outline-none text-base
+                  selection:bg-primary/20 selection:text-primary-foreground
+                  [&_.template-variable]:inline-flex [&_.template-variable]:items-center
+                  [&_.template-variable]:px-2 [&_.template-variable]:py-0.5
+                  [&_.template-variable]:bg-primary/10 [&_.template-variable]:text-primary
+                  [&_.template-variable]:rounded-md [&_.template-variable]:text-sm
+                  [&_.template-variable]:font-mono [&_.template-variable]:border
+                  [&_.template-variable]:border-primary/20 [&_.template-variable]:mx-0.5
+                  [&_.template-variable]:cursor-default [&_.template-variable]:select-none
+                  hover:[&_.template-variable]:bg-primary/20 hover:[&_.template-variable]:border-primary/30
+                  transition-colors"
+              />
+            }
+            placeholder={
+              <div className="absolute top-6 left-8 text-muted-foreground pointer-events-none select-none text-base">
+                Start typing or use <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded border">{'{{'}</kbd> for variables, <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded border">/</kbd> for blocks
+              </div>
+            }
             ErrorBoundary={LexicalErrorBoundary}
           />
+
+          {/* Plugins */}
           <HistoryPlugin />
           <OnChangePlugin onChange={handleChange} />
+          <ListPlugin />
+          <CheckListPlugin />
+          <LinkPlugin validateUrl={validateUrl} />
+          <AutoLinkPlugin />
+          <TablePlugin />
+          <TabIndentationPlugin />
+          <MarkdownShortcutPlugin />
+          <FloatingTextFormatToolbarPlugin
+            setIsLinkEditMode={setIsLinkEditMode}
+          />
+          <FloatingLinkEditorPlugin
+            isLinkEditMode={isLinkEditMode}
+            setIsLinkEditMode={setIsLinkEditMode}
+          />
+          <TableActionMenuPlugin />
+          <DraggableBlockPlugin anchorElem={document.body} />
+          <KeyboardShortcutPlugin
+            availableVariables={availableVariables}
+            onManageVariables={onManageVariables}
+          />
+        </div>
+
+        {/* Minimal footer with shortcuts */}
+        <div className="px-8 py-3 bg-muted/50 border-t flex items-center justify-between">
+          <div className="flex items-center gap-6 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">{'{{'}</kbd>
+              <span>Variables</span>
+            </span>
+            <span className="flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">/</kbd>
+              <span>Commands</span>
+            </span>
+            <span className="flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">⌘B</kbd>
+              <span>Bold</span>
+            </span>
+            <span className="flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">⌘I</kbd>
+              <span>Italic</span>
+            </span>
+            <span className="flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">⌘K</kbd>
+              <span>Link</span>
+            </span>
+          </div>
+          {onManageVariables && (
+            <Button
+              onClick={onManageVariables}
+              variant="ghost"
+              size="sm"
+              className="text-xs"
+            >
+              Manage Variables →
+            </Button>
+          )}
         </div>
       </div>
     </LexicalComposer>
   );
 }
-
-const editorContainerStyle: React.CSSProperties = {
-  border: '1px solid #ddd',
-  borderRadius: '8px',
-  overflow: 'hidden',
-  backgroundColor: 'white',
-  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-};
-
-const editorInnerStyle: React.CSSProperties = {
-  position: 'relative',
-  minHeight: '200px',
-};
-
-const contentEditableStyle: React.CSSProperties = {
-  minHeight: '200px',
-  padding: '16px',
-  outline: 'none',
-  fontSize: '14px',
-  lineHeight: '1.6',
-};
-
-const placeholderStyle: React.CSSProperties = {
-  position: 'absolute',
-  top: '16px',
-  left: '16px',
-  color: '#999',
-  pointerEvents: 'none',
-  fontSize: '14px',
-};

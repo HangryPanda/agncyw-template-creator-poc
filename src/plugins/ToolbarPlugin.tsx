@@ -1,14 +1,15 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $getSelection, $isRangeSelection } from 'lexical';
-import { $createTemplateVariableNode } from '../nodes/TemplateVariableNode';
-import { TemplateVariable } from '../types';
+import { $createTemplateVariableNode } from '@/nodes/TemplateVariableNode';
+import { TemplateVariable } from '@/types';
 import React from 'react';
 
 interface ToolbarPluginProps {
   availableVariables: TemplateVariable[];
+  onManageVariables?: () => void;
 }
 
-export default function ToolbarPlugin({ availableVariables }: ToolbarPluginProps): JSX.Element {
+export default function ToolbarPlugin({ availableVariables, onManageVariables: _onManageVariables }: ToolbarPluginProps): JSX.Element {
   const [editor] = useLexicalComposerContext();
 
   const insertVariable = (variableName: string): void => {
