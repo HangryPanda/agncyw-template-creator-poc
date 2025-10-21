@@ -13,14 +13,24 @@ import { TemplateVariable, EditorState, Template, Tag } from './types';
 
 // Insurance-specific variables for Quote Not Written campaign
 const INSURANCE_VARIABLES: TemplateVariable[] = [
-  { name: 'first_name', label: 'First Name', description: 'Customer first name', example: 'John' },
-  { name: 'last_name', label: 'Last Name', description: 'Customer last name', example: 'Smith' },
-  { name: 'quote_amount', label: 'Quote Amount', description: 'Original quote amount', example: '$247/mo' },
-  { name: 'quote_date', label: 'Quote Date', description: 'When quote was provided', example: 'September 15th' },
-  { name: 'policy_type', label: 'Policy Type', description: 'Type of insurance', example: 'Auto Insurance' },
-  { name: 'agent_name', label: 'Agent Name', description: 'Your name', example: 'Sarah Johnson' },
-  { name: 'agency_name', label: 'Agency Name', description: 'Your agency', example: 'Premier Insurance Group' },
-  { name: 'phone_number', label: 'Phone Number', description: 'Your contact number', example: '(555) 123-4567' },
+  // Customer Info
+  { name: 'first_name', label: 'First Name', description: 'Customer first name', example: 'John', group: 'customer' },
+  { name: 'last_name', label: 'Last Name', description: 'Customer last name', example: 'Smith', group: 'customer' },
+
+  // Message Details
+  { name: 'quote_amount', label: 'Quote Amount', description: 'Original quote amount', example: '$247/mo', group: 'message' },
+  { name: 'policy_type', label: 'Policy Type', description: 'Type of insurance', example: 'Auto Insurance', group: 'message' },
+  { name: 'quote_date', label: 'Quote Date', description: 'When quote was provided', example: 'September 15th', group: 'message' },
+  { name: 'vehicle_info', label: 'Vehicle Info', description: 'Vehicle details', example: '2019 Honda Accord', group: 'message' },
+
+  // Agent Team Member
+  { name: 'agent_name', label: 'Agent Name', description: 'Your name', example: 'Sarah Johnson', group: 'agent' },
+  { name: 'agent_email', label: 'Agent Email', description: 'Your email address', example: 'sarah.johnson@insurance.com', group: 'agent' },
+  { name: 'agent_phone', label: 'Agent Phone', description: 'Your phone number', example: '(555) 987-6543', group: 'agent' },
+
+  // Agency Details
+  { name: 'agency_name', label: 'Agency Name', description: 'Your agency', example: 'Premier Insurance Group', group: 'agency' },
+  { name: 'phone_number', label: 'Agency Phone', description: 'Agency contact number', example: '(555) 123-4567', group: 'agency' },
 ];
 
 // Empty template
@@ -564,25 +574,11 @@ function App() {
                 </>
               ) : (
                 <>
-                  {/* Use Mode Header */}
-                  <div className="bg-green-50 border-b border-green-200 px-6 py-3">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h2 className="text-base font-medium text-gray-900">Use Template</h2>
-                        <p className="text-sm text-gray-600">Fill in variables and copy</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Preview */}
-                  <div className="flex-1 overflow-y-auto p-6">
-                    <div className="max-w-4xl mx-auto">
-                      <TemplatePreview
-                        templateState={selectedTemplate.content}
-                        availableVariables={allVariables}
-                      />
-                    </div>
-                  </div>
+                  {/* Compose Mode */}
+                  <TemplatePreview
+                    template={selectedTemplate}
+                    availableVariables={allVariables}
+                  />
                 </>
               )}
             </div>

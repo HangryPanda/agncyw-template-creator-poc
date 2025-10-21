@@ -1,31 +1,37 @@
-import { useState } from 'react';
-import { TemplateVariable, EditorState } from '@/types';
+import { useEffect, useMemo } from 'react';
+import { TemplateVariable, EditorState, Template } from '@/types';
 import React from 'react';
-import { toast } from 'sonner';
+import { useTemplateValues } from '@/hooks/use-template-values';
+import { ComposePreview } from './ComposePreview';
+import { AccordionItem } from './ui/accordian';
 
 interface TemplatePreviewProps {
-  templateState: EditorState | null;
+  template: Template;
   availableVariables: TemplateVariable[];
 }
 
-interface VariableValues {
-  [key: string]: string;
-}
+const GROUP_LABELS: Record<string, string> = {
+  customer: 'Customer Info',
+  message: 'Message Details',
+  agent: 'Agent Team Member',
+  agency: 'Agency Details',
+  custom: 'Custom Variables',
+};
 
 export default function TemplatePreview({
-  templateState,
-  availableVariables
+  template,
+  availableVariables,
 }: TemplatePreviewProps): JSX.Element {
-  const [values, setValues] = useState<VariableValues>(() => {
-    const initial: VariableValues = {};
-    availableVariables.forEach(v => {
-      initial[v.name] = v.example || '';
-    });
-    return initial;
-  });
+  const {
+    values,
+    updateValue,
+    clearValues,
+    getGroupFillCount,
+  } = useTemplateValues(template.id, availableVariables);
 
-  const renderTemplate = (): string => {
-    if (!templateState) return '';
+  // Render template with current values
+  const renderedText = useMemo((): string => {
+    if (!template.content) return '';
 
     const processNode = (node: any): string => {
       if (node.type === 'template-variable') {
@@ -33,140 +39,145 @@ export default function TemplatePreview({
       } else if (node.type === 'text') {
         return node.text;
       } else if (node.type === 'heading') {
-        // Handle heading nodes with double newline
         const content = node.children?.map(processNode).join('') || '';
         return content + '\n\n';
       } else if (node.type === 'paragraph') {
-        // Process paragraph children and add newline
         const content = node.children?.map(processNode).join('') || '';
         return content + '\n';
       } else if (node.children) {
-        // Generic node with children
         return node.children.map(processNode).join('');
       }
       return '';
     };
 
-    if (templateState.root?.children) {
-      const output = templateState.root.children.map(processNode).join('');
-      // Trim trailing newlines for cleaner output
+    if (template.content.root?.children) {
+      const output = template.content.root.children.map(processNode).join('');
       return output.trimEnd();
     }
 
     return '';
-  };
+  }, [template.content, values]);
 
+  // Copy to clipboard
   const handleCopy = (): void => {
-    const text = renderTemplate();
-    navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard!", {
-      description: "Template text has been copied to your clipboard.",
-    });
+    navigator.clipboard.writeText(renderedText);
   };
 
-  const handleInputChange = (variableName: string, value: string): void => {
-    setValues({ ...values, [variableName]: value });
-  };
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Cmd+Enter to copy
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        handleCopy();
+      }
+      // Cmd+K to clear
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        clearValues();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [renderedText, clearValues]);
+
+  // Group variables by their group property
+  const groupedVariables = useMemo(() => {
+    const groups: Record<string, TemplateVariable[]> = {
+      customer: [],
+      message: [],
+      agent: [],
+      agency: [],
+      custom: [],
+    };
+
+    availableVariables.forEach(variable => {
+      const group = variable.group || 'custom';
+      if (groups[group]) {
+        groups[group].push(variable);
+      } else {
+        groups.custom.push(variable);
+      }
+    });
+
+    // Filter out empty groups
+    return Object.entries(groups).filter(([_, vars]) => vars.length > 0);
+  }, [availableVariables]);
 
   return (
-    <div style={containerStyle}>
-      <h3 style={headingStyle}>Fill in Values</h3>
-      <div style={fieldsContainerStyle}>
-        {availableVariables.map((variable) => (
-          <div key={variable.name} style={fieldStyle}>
-            <label style={labelStyle}>
-              {variable.label}
-              {variable.description && (
-                <span style={descriptionStyle}> - {variable.description}</span>
-              )}
-            </label>
-            <input
-              type="text"
-              value={values[variable.name]}
-              onChange={(e) => handleInputChange(variable.name, e.target.value)}
-              style={inputStyle}
-              placeholder={variable.example}
-            />
+    <div className="flex flex-col h-full">
+      {/* Sticky Preview */}
+      <ComposePreview
+        renderedText={renderedText}
+        templateType={template.type}
+        onCopy={handleCopy}
+        onClear={clearValues}
+      />
+
+      {/* Form Fields with Accordions */}
+      <div className="flex-1 overflow-y-auto px-6 py-6">
+        <div className="max-w-3xl mx-auto space-y-3">
+          {groupedVariables.map(([groupKey, variables]) => {
+            const { filled, total } = getGroupFillCount(groupKey);
+            const allFilled = filled === total && total > 0;
+
+            return (
+              <AccordionItem
+                key={groupKey}
+                title={
+                  <div className="flex items-center justify-between w-full">
+                    <span>{GROUP_LABELS[groupKey] || groupKey}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${
+                      allFilled
+                        ? 'bg-green-100 text-green-700'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}>
+                      {filled}/{total}
+                    </span>
+                  </div>
+                }
+                defaultOpen={!allFilled}
+              >
+                <div className="space-y-4 pt-1">
+                  {variables.map((variable) => (
+                    <div key={variable.name} className="flex flex-col gap-1">
+                      <label
+                        htmlFor={variable.name}
+                        className="text-xs font-medium text-gray-700"
+                      >
+                        {variable.label}
+                        {variable.description && (
+                          <span className="text-gray-500 font-normal ml-1">
+                            · {variable.description}
+                          </span>
+                        )}
+                      </label>
+                      <input
+                        id={variable.name}
+                        type="text"
+                        value={values[variable.name] || ''}
+                        onChange={(e) => updateValue(variable.name, e.target.value)}
+                        placeholder={variable.example}
+                        className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </AccordionItem>
+            );
+          })}
+        </div>
+
+        {/* Keyboard Shortcuts Hint */}
+        <div className="mt-8 max-w-3xl mx-auto">
+          <div className="text-xs text-gray-400 text-center space-x-4">
+            <span><kbd className="px-1.5 py-0.5 bg-gray-100 rounded border border-gray-200">⌘</kbd> + <kbd className="px-1.5 py-0.5 bg-gray-100 rounded border border-gray-200">Enter</kbd> to copy</span>
+            <span>·</span>
+            <span><kbd className="px-1.5 py-0.5 bg-gray-100 rounded border border-gray-200">⌘</kbd> + <kbd className="px-1.5 py-0.5 bg-gray-100 rounded border border-gray-200">K</kbd> to clear</span>
           </div>
-        ))}
+        </div>
       </div>
-      
-      <h3 style={headingStyle}>Preview</h3>
-      <div style={previewStyle}>
-        {renderTemplate()}
-      </div>
-      
-      <button onClick={handleCopy} style={copyButtonStyle}>
-        Copy to Clipboard
-      </button>
     </div>
   );
 }
-
-const containerStyle: React.CSSProperties = {
-  padding: '20px',
-  backgroundColor: '#f5f5f5',
-  borderRadius: '8px',
-};
-
-const headingStyle: React.CSSProperties = {
-  marginTop: '0',
-  marginBottom: '16px',
-  fontSize: '18px',
-  color: '#333',
-};
-
-const fieldsContainerStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '12px',
-  marginBottom: '24px',
-};
-
-const fieldStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '4px',
-};
-
-const labelStyle: React.CSSProperties = {
-  fontSize: '14px',
-  fontWeight: '500',
-  color: '#333',
-};
-
-const descriptionStyle: React.CSSProperties = {
-  fontSize: '12px',
-  fontWeight: 'normal',
-  color: '#666',
-};
-
-const inputStyle: React.CSSProperties = {
-  padding: '8px 12px',
-  border: '1px solid #ddd',
-  borderRadius: '4px',
-  fontSize: '14px',
-};
-
-const previewStyle: React.CSSProperties = {
-  padding: '16px',
-  backgroundColor: 'white',
-  border: '1px solid #ddd',
-  borderRadius: '4px',
-  minHeight: '100px',
-  whiteSpace: 'pre-wrap',
-  fontSize: '14px',
-  lineHeight: '1.6',
-  marginBottom: '16px',
-};
-
-const copyButtonStyle: React.CSSProperties = {
-  padding: '10px 20px',
-  backgroundColor: '#2e7d32',
-  color: 'white',
-  border: 'none',
-  borderRadius: '4px',
-  cursor: 'pointer',
-  fontSize: '14px',
-  fontWeight: '500',
-};

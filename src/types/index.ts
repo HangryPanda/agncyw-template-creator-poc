@@ -3,6 +3,7 @@ export interface TemplateVariable {
   label: string;
   description: string;
   example: string;
+  group?: 'customer' | 'message' | 'agent' | 'agency' | 'custom';
 }
 
 export interface SerializedTemplateVariableNode {
