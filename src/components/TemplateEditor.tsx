@@ -11,7 +11,7 @@ import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
 import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { TemplateVariableNode } from '@/nodes/TemplateVariableNode';
+import { TemplateVariableNode, $createTemplateVariableNode } from '@/nodes/TemplateVariableNode';
 import { TemplateVariable, EditorState } from '@/types';
 import { EditorState as LexicalEditorState } from 'lexical';
 import { EditorCommandMenu } from './EditorCommandMenu';
@@ -25,6 +25,7 @@ import FloatingTextFormatToolbarPlugin from '@/plugins/FloatingTextFormatToolbar
 import FloatingLinkEditorPlugin from '@/plugins/FloatingLinkEditorPlugin';
 import TableActionMenuPlugin from '@/plugins/TableActionMenuPlugin';
 import DraggableBlockPlugin from '@/plugins/DraggableBlockPlugin';
+import { VariableValuesProvider } from '@/context/VariableValuesContext';
 
 interface TemplateEditorProps {
   templateId: string;
@@ -32,6 +33,38 @@ interface TemplateEditorProps {
   availableVariables: TemplateVariable[];
   onStateChange?: (editorState: EditorState) => void;
   onManageVariables?: () => void;
+  mode?: 'create' | 'use';
+  values?: Record<string, string>;
+  variableToInsert?: string | null;
+  onVariableInserted?: () => void;
+}
+
+// Plugin to handle external variable insertion
+function VariableInsertionPlugin({
+  variableToInsert,
+  onVariableInserted
+}: {
+  variableToInsert?: string | null;
+  onVariableInserted?: () => void;
+}): null {
+  const [editor] = useLexicalComposerContext();
+
+  useEffect(() => {
+    if (!variableToInsert) return;
+
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        const variableNode = $createTemplateVariableNode(variableToInsert);
+        selection.insertNodes([variableNode]);
+      }
+    });
+
+    // Notify parent that insertion is complete
+    onVariableInserted?.();
+  }, [variableToInsert, editor, onVariableInserted]);
+
+  return null;
 }
 
 // Keyboard shortcut detection plugin
@@ -119,7 +152,11 @@ export default function TemplateEditor({
   initialState,
   availableVariables,
   onStateChange,
-  onManageVariables
+  onManageVariables,
+  mode = 'create',
+  values = {},
+  variableToInsert,
+  onVariableInserted
 }: TemplateEditorProps): JSX.Element {
   const [isLinkEditMode, setIsLinkEditMode] = useState(false);
 
@@ -163,10 +200,14 @@ export default function TemplateEditor({
   };
 
   const handleChange = (editorState: LexicalEditorState): void => {
-    editorState.read(() => {
-      const json = editorState.toJSON() as EditorState;
-      onStateChange?.(json);
-    });
+    // Only auto-save in 'create' mode
+    // In 'use' mode, changes are not saved to the template automatically
+    if (mode === 'create') {
+      editorState.read(() => {
+        const json = editorState.toJSON() as EditorState;
+        onStateChange?.(json);
+      });
+    }
   };
 
   const validateUrl = (url: string): boolean => {
@@ -180,94 +221,100 @@ export default function TemplateEditor({
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <div className="rounded-lg border bg-card text-card-foreground">
-        {/* Clean, distraction-free editor */}
-        <div className="relative">
-          <RichTextPlugin
-            contentEditable={
-              <ContentEditable
-                className="min-h-[400px] px-8 py-6 outline-none focus:outline-none text-base
-                  selection:bg-primary/20 selection:text-primary-foreground
-                  [&_.template-variable]:inline-flex [&_.template-variable]:items-center
-                  [&_.template-variable]:px-2 [&_.template-variable]:py-0.5
-                  [&_.template-variable]:bg-primary/10 [&_.template-variable]:text-primary
-                  [&_.template-variable]:rounded-md [&_.template-variable]:text-sm
-                  [&_.template-variable]:font-mono [&_.template-variable]:border
-                  [&_.template-variable]:border-primary/20 [&_.template-variable]:mx-0.5
-                  [&_.template-variable]:cursor-default [&_.template-variable]:select-none
-                  hover:[&_.template-variable]:bg-primary/20 hover:[&_.template-variable]:border-primary/30
-                  transition-colors"
-              />
-            }
-            placeholder={
-              <div className="absolute top-6 left-8 text-muted-foreground pointer-events-none select-none text-base">
-                Start typing or use <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded border">{'{{'}</kbd> for variables, <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded border">/</kbd> for blocks
-              </div>
-            }
-            ErrorBoundary={LexicalErrorBoundary}
-          />
+      <VariableValuesProvider values={values} mode={mode}>
+        <div className="rounded-lg border bg-card text-card-foreground">
+          {/* Clean, distraction-free editor */}
+          <div className="relative">
+            <RichTextPlugin
+              contentEditable={
+                <ContentEditable
+                  className="min-h-[400px] px-8 py-6 outline-none focus:outline-none text-base
+                    selection:bg-primary/20 selection:text-primary-foreground
+                    [&_.template-variable]:inline-flex [&_.template-variable]:items-center
+                    [&_.template-variable]:px-2 [&_.template-variable]:py-0.5
+                    [&_.template-variable]:bg-primary/10 [&_.template-variable]:text-primary
+                    [&_.template-variable]:rounded-md [&_.template-variable]:text-sm
+                    [&_.template-variable]:font-mono [&_.template-variable]:border
+                    [&_.template-variable]:border-primary/20 [&_.template-variable]:mx-0.5
+                    [&_.template-variable]:cursor-default [&_.template-variable]:select-none
+                    hover:[&_.template-variable]:bg-primary/20 hover:[&_.template-variable]:border-primary/30
+                    transition-colors"
+                />
+              }
+              placeholder={
+                <div className="absolute top-6 left-8 text-muted-foreground pointer-events-none select-none text-base">
+                  Start typing or use <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded border">{'{{'}</kbd> for variables, <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded border">/</kbd> for blocks
+                </div>
+              }
+              ErrorBoundary={LexicalErrorBoundary}
+            />
 
-          {/* Plugins */}
-          <HistoryPlugin />
-          <OnChangePlugin onChange={handleChange} />
-          <ListPlugin />
-          <CheckListPlugin />
-          <LinkPlugin validateUrl={validateUrl} />
-          <AutoLinkPlugin />
-          <TablePlugin />
-          <TabIndentationPlugin />
-          <MarkdownShortcutPlugin />
-          <FloatingTextFormatToolbarPlugin
-            setIsLinkEditMode={setIsLinkEditMode}
-          />
-          <FloatingLinkEditorPlugin
-            isLinkEditMode={isLinkEditMode}
-            setIsLinkEditMode={setIsLinkEditMode}
-          />
-          <TableActionMenuPlugin />
-          <DraggableBlockPlugin anchorElem={document.body} />
-          <KeyboardShortcutPlugin
-            availableVariables={availableVariables}
-            onManageVariables={onManageVariables}
-          />
-        </div>
-
-        {/* Minimal footer with shortcuts */}
-        <div className="px-8 py-3 bg-muted/50 border-t flex items-center justify-between">
-          <div className="flex items-center gap-6 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">{'{{'}</kbd>
-              <span>Variables</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">/</kbd>
-              <span>Commands</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">⌘B</kbd>
-              <span>Bold</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">⌘I</kbd>
-              <span>Italic</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">⌘K</kbd>
-              <span>Link</span>
-            </span>
+            {/* Plugins */}
+            <HistoryPlugin />
+            <OnChangePlugin onChange={handleChange} />
+            <ListPlugin />
+            <CheckListPlugin />
+            <LinkPlugin validateUrl={validateUrl} />
+            <AutoLinkPlugin />
+            <TablePlugin />
+            <TabIndentationPlugin />
+            <MarkdownShortcutPlugin />
+            <FloatingTextFormatToolbarPlugin
+              setIsLinkEditMode={setIsLinkEditMode}
+            />
+            <FloatingLinkEditorPlugin
+              isLinkEditMode={isLinkEditMode}
+              setIsLinkEditMode={setIsLinkEditMode}
+            />
+            <TableActionMenuPlugin />
+            <DraggableBlockPlugin anchorElem={document.body} />
+            <KeyboardShortcutPlugin
+              availableVariables={availableVariables}
+              onManageVariables={onManageVariables}
+            />
+            <VariableInsertionPlugin
+              variableToInsert={variableToInsert}
+              onVariableInserted={onVariableInserted}
+            />
           </div>
-          {onManageVariables && (
-            <Button
-              onClick={onManageVariables}
-              variant="ghost"
-              size="sm"
-              className="text-xs"
-            >
-              Manage Variables →
-            </Button>
-          )}
+
+          {/* Minimal footer with shortcuts */}
+          <div className="px-8 py-3 bg-muted/50 border-t flex items-center justify-between">
+            <div className="flex items-center gap-6 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">{'{{'}</kbd>
+                <span>Variables</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">/</kbd>
+                <span>Commands</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">⌘B</kbd>
+                <span>Bold</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">⌘I</kbd>
+                <span>Italic</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">⌘K</kbd>
+                <span>Link</span>
+              </span>
+            </div>
+            {onManageVariables && (
+              <Button
+                onClick={onManageVariables}
+                variant="ghost"
+                size="sm"
+                className="text-xs"
+              >
+                Manage Variables →
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      </VariableValuesProvider>
     </LexicalComposer>
   );
 }

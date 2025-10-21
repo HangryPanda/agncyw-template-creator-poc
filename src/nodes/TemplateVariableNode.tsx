@@ -1,5 +1,6 @@
 import { DecoratorNode, LexicalNode, NodeKey } from 'lexical';
 import { SerializedTemplateVariableNode } from '@/types';
+import { useVariableValues } from '@/context/VariableValuesContext';
 
 export class TemplateVariableNode extends DecoratorNode<JSX.Element> {
   __variableName: string;
@@ -57,7 +58,14 @@ interface TemplateVariableComponentProps {
 }
 
 function TemplateVariableComponent({ variableName }: TemplateVariableComponentProps): JSX.Element {
-  return <span contentEditable={false}>{'{{' + variableName + '}}'}</span>;
+  const { values, mode } = useVariableValues();
+
+  // In Compose mode, show the filled value if it exists
+  const displayValue = mode === 'use' && values[variableName]
+    ? values[variableName]
+    : variableName;
+
+  return <span contentEditable={false}>{'{{' + displayValue + '}}'}</span>;
 }
 
 export function $createTemplateVariableNode(variableName: string): TemplateVariableNode {

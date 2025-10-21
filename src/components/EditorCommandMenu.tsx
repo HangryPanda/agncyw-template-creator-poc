@@ -114,7 +114,7 @@ export function EditorCommandMenu({ open, onOpenChange, position }: EditorComman
         editor.update(() => {
           const selection = $getSelection();
           if (!$isRangeSelection(selection)) return;
-          const stickyNode = $createStickyNode();
+          const stickyNode = $createStickyNode(0, 0);
           selection.insertNodes([stickyNode]);
         });
         break;
@@ -124,7 +124,10 @@ export function EditorCommandMenu({ open, onOpenChange, position }: EditorComman
           editor.update(() => {
             const selection = $getSelection();
             if (!$isRangeSelection(selection)) return;
-            const pollNode = $createPollNode(question);
+            const pollNode = $createPollNode(question, [
+              { text: 'Option 1', uid: '1', votes: [] },
+              { text: 'Option 2', uid: '2', votes: [] },
+            ]);
             selection.insertNodes([pollNode]);
           });
         }

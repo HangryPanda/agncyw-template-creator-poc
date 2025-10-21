@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import TemplateEditor from './components/TemplateEditor';
-import TemplatePreview from './components/TemplatePreview';
 import ModernTemplateSidebar from './components/ModernTemplateSidebar';
 import TemplateMetadataEditor from './components/TemplateMetadataEditor';
 import CharacterCounter from './components/CharacterCounter';
 import GlobalSearch from './components/GlobalSearch';
 import InlineTagEditor from './components/InlineTagEditor';
 import InlineVariableEditor from './components/InlineVariableEditor';
+import { FormWrapper } from './components/FormWrapper';
+import { ResponsiveDrawer } from './components/ResponsiveDrawer';
+import { useTemplateValues } from './hooks/use-template-values';
 import { Toaster } from './components/ui/sonner';
 import { TemplateVariable, EditorState, Template, Tag } from './types';
 // Removed App.css - using Tailwind and shadcn styles instead
@@ -239,6 +241,8 @@ function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [showTagEditor, setShowTagEditor] = useState(false);
   const [showVariableEditor, setShowVariableEditor] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [variableToInsert, setVariableToInsert] = useState<string | null>(null);
 
   // Load saved data
   const [customVariables, setCustomVariables] = useState<TemplateVariable[]>(() => {
@@ -302,6 +306,21 @@ function App() {
 
   // Combine built-in and custom variables
   const allVariables = [...INSURANCE_VARIABLES, ...customVariables];
+
+  // Template values hook for Compose mode
+  const templateValues = useTemplateValues(
+    selectedTemplateId || 'default',
+    allVariables
+  );
+
+  // Handle variable insertion from FormWrapper
+  const handleInsertVariable = (variableName: string): void => {
+    setVariableToInsert(variableName);
+  };
+
+  const handleVariableInserted = (): void => {
+    setVariableToInsert(null);
+  };
 
   // Variable handlers
   const handleAddVariable = (variable: TemplateVariable): void => {
@@ -519,70 +538,94 @@ function App() {
 
         {/* Content Area */}
         {selectedTemplate ? (
-          <div className="flex-1 flex overflow-hidden">
-            {/* Editor/Preview */}
-            <div className="flex-1 flex flex-col bg-white">
-              {mode === 'create' ? (
-                <>
-                  {/* Editor Header */}
-                  <div className="bg-gray-50 border-b border-gray-200 px-6 py-3">
-                    <div className="flex items-center justify-between">
-                      <TemplateMetadataEditor
-                        template={selectedTemplate}
-                        tags={tags}
-                        onUpdateName={handleUpdateTemplateName}
-                        onUpdateType={handleUpdateTemplateType}
-                        onUpdateTags={handleUpdateTemplateTags}
-                        onManageTags={() => setShowTagEditor(true)}
-                      />
+          <>
+            {/* Editor Header */}
+            <div className="bg-gray-50 border-b border-gray-200 px-6 py-3">
+              <div className="flex items-center justify-between">
+                <TemplateMetadataEditor
+                  template={selectedTemplate}
+                  tags={tags}
+                  onUpdateName={handleUpdateTemplateName}
+                  onUpdateType={handleUpdateTemplateType}
+                  onUpdateTags={handleUpdateTemplateTags}
+                  onManageTags={() => setShowTagEditor(true)}
+                />
 
-                      <button
-                        onClick={() => setShowVariableEditor(true)}
-                        className="flex items-center gap-2 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-                        </svg>
-                        Placeholders
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Editor */}
-                  <div className="flex-1 overflow-y-auto p-6">
-                    <div className="max-w-4xl mx-auto">
-                      <TemplateEditor
-                        key={selectedTemplate.id}
-                        templateId={selectedTemplate.id}
-                        initialState={selectedTemplate.content}
-                        availableVariables={allVariables}
-                        onStateChange={handleUpdateTemplateContent}
-                        onManageVariables={() => setShowVariableEditor(true)}
-                      />
-
-                      {/* Character Counter for SMS */}
-                      {selectedTemplate.type === 'sms' && (
-                        <div className="mt-4">
-                          <CharacterCounter
-                            editorState={selectedTemplate.content}
-                            type={selectedTemplate.type}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  {/* Compose Mode */}
-                  <TemplatePreview
-                    template={selectedTemplate}
-                    availableVariables={allVariables}
-                  />
-                </>
-              )}
+                {/* Mobile Placeholders Button */}
+                <button
+                  onClick={() => setIsDrawerOpen(true)}
+                  className="flex md:hidden items-center gap-2 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                  </svg>
+                  {mode === 'create' ? 'Variables' : 'Fill Details'}
+                </button>
+              </div>
             </div>
-          </div>
+
+            {/* Unified Split-Column Layout */}
+            <div className="flex-1 flex overflow-hidden">
+              {/* Desktop: Left Panel - FormWrapper (35%) */}
+              <div className="hidden md:block w-[35%] overflow-hidden border-r border-gray-200">
+                <FormWrapper
+                  mode={mode}
+                  template={selectedTemplate}
+                  availableVariables={allVariables}
+                  onInsertVariable={handleInsertVariable}
+                  onCopyMessage={() => {
+                    // TODO: Implement copy message functionality
+                  }}
+                />
+              </div>
+
+              {/* Right Panel - Shared Editor (65%) */}
+              <div className="flex-1 flex flex-col bg-white overflow-hidden">
+                <div className="flex-1 overflow-y-auto p-6">
+                  <div className="max-w-4xl mx-auto">
+                    <TemplateEditor
+                      key={selectedTemplate.id}
+                      templateId={selectedTemplate.id}
+                      initialState={selectedTemplate.content}
+                      availableVariables={allVariables}
+                      onStateChange={handleUpdateTemplateContent}
+                      onManageVariables={() => setShowVariableEditor(true)}
+                      mode={mode}
+                      values={templateValues.values}
+                      variableToInsert={variableToInsert}
+                      onVariableInserted={handleVariableInserted}
+                    />
+
+                    {/* Character Counter for SMS */}
+                    {selectedTemplate.type === 'sms' && (
+                      <div className="mt-4">
+                        <CharacterCounter
+                          editorState={selectedTemplate.content}
+                          type={selectedTemplate.type}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile: Bottom Drawer */}
+            <ResponsiveDrawer
+              isOpen={isDrawerOpen}
+              onClose={() => setIsDrawerOpen(false)}
+            >
+              <FormWrapper
+                mode={mode}
+                template={selectedTemplate}
+                availableVariables={allVariables}
+                onInsertVariable={handleInsertVariable}
+                onCopyMessage={() => {
+                  // TODO: Implement copy message functionality
+                }}
+              />
+            </ResponsiveDrawer>
+          </>
         ) : (
           /* Empty State */
           <div className="flex-1 flex items-center justify-center bg-gray-50">
