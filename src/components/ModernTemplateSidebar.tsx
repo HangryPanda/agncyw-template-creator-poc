@@ -193,7 +193,7 @@ export default function ModernTemplateSidebar({
   };
 
   return (
-    <div className="w-80 h-screen bg-gradient-to-b from-white to-gray-50 border-r border-gray-200 flex flex-col shadow-lg">
+    <div className="w-full h-full bg-gradient-to-b from-white to-gray-50 flex flex-col shadow-lg">
       {/* Header */}
       <div className="p-4 bg-gradient-to-r from-primary-600 to-blue-600 border-b border-primary-700 shadow">
         <div className="flex items-center justify-between mb-3">

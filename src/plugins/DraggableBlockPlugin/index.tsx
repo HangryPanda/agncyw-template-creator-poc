@@ -44,11 +44,13 @@ export default function DraggableBlockPlugin({
       }
 
       const pNode = $createParagraphNode();
+
       if (e.altKey || e.ctrlKey) {
         node.insertBefore(pNode);
       } else {
         node.insertAfter(pNode);
       }
+
       pNode.select();
     });
   }

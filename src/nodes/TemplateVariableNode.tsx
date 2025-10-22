@@ -51,6 +51,14 @@ export class TemplateVariableNode extends DecoratorNode<JSX.Element> {
   isInline(): true {
     return true;
   }
+
+  canBeEmpty(): false {
+    return false;
+  }
+
+  isIsolated(): false {
+    return false;
+  }
 }
 
 interface TemplateVariableComponentProps {

@@ -138,3 +138,127 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 }
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    font-size: 13px;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Collapsible animations using Radix CSS variables */
+@keyframes collapsible-down {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+}
+
+@keyframes collapsible-up {
+  from {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+.animate-collapsible-down {
+  animation: collapsible-down var(--collapsible-duration, 300ms) ease-out;
+}
+
+.animate-collapsible-up {
+  animation: collapsible-up var(--collapsible-duration, 300ms) ease-out;
+}
+
+/* Border Beam animation */
+@keyframes border-beam {
+  0% {
+    offset-distance: 0%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+.animate-border-beam {
+  animation: border-beam var(--duration, 15s) linear infinite;
+}
+
+/* Print Styles */
+@media print {
+  /* Hide window chrome, desktop, taskbar */
+  .window-title-bar,
+  .window-menu-bar,
+  .taskbar,
+  .desktop-icon,
+  .environment-watermark {
+    display: none !important;
+  }
+
+  /* Make window fill page */
+  .window {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Remove page margins */
+  @page {
+    margin: 0.5in;
+  }
+
+body {
+    background: white !important;
+  }
+}
+
+/* ============================================================================
+   Panel slide-in animations with opacity fade
+   ========================================================================== */
+
+.panel-container {
+  transition: opacity var(--window-transition-duration) var(--window-transition-timing),
+              transform var(--window-transition-duration) var(--window-transition-timing);
+  will-change: opacity, transform;
+}
+
+/* Hidden state - panel rendered but invisible, positioned off-screen */
+.panel-hidden-right {
+  opacity: 0;
+  transform: translate3d(100%, 0, 0);
+}
+
+.panel-hidden-left {
+  opacity: 0;
+  transform: translate3d(-100%, 0, 0);
+}
+
+/* Visible state - panel fully shown */
+.panel-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-container {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+

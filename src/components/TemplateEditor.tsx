@@ -14,10 +14,10 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { TemplateVariableNode, $createTemplateVariableNode } from '@/nodes/TemplateVariableNode';
 import { TemplateVariable, EditorState } from '@/types';
 import { EditorState as LexicalEditorState } from 'lexical';
-import { EditorCommandMenu } from './EditorCommandMenu';
 import { VariablePopover } from './VariablePopover';
+import { EditorCommandMenu } from './EditorCommandMenu';
 import PlaygroundNodes from '@/nodes/PlaygroundNodes';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import MarkdownShortcutPlugin from '@/plugins/MarkdownShortcutPlugin';
 import AutoLinkPlugin from '@/plugins/AutoLinkPlugin';
@@ -48,9 +48,20 @@ function VariableInsertionPlugin({
   onVariableInserted?: () => void;
 }): null {
   const [editor] = useLexicalComposerContext();
+  const lastInsertedRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!variableToInsert) return;
+    if (!variableToInsert) {
+      lastInsertedRef.current = null;
+      return;
+    }
+
+    // Prevent duplicate insertion of the same variable
+    if (lastInsertedRef.current === variableToInsert) {
+      return;
+    }
+
+    lastInsertedRef.current = variableToInsert;
 
     editor.update(() => {
       const selection = $getSelection();
@@ -67,19 +78,21 @@ function VariableInsertionPlugin({
   return null;
 }
 
-// Keyboard shortcut detection plugin
-function KeyboardShortcutPlugin({
+// Keyboard shortcut detection plugin for variables and commands
+function MenuControlPlugin({
   availableVariables,
-  onManageVariables
+  onManageVariables,
+  commandMenuState,
+  setCommandMenuState
 }: {
   availableVariables: TemplateVariable[];
   onManageVariables?: () => void;
+  commandMenuState: { open: boolean; position: { x: number; y: number } };
+  setCommandMenuState: React.Dispatch<React.SetStateAction<{ open: boolean; position: { x: number; y: number } }>>;
 }): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
   const [showVariablePopover, setShowVariablePopover] = useState(false);
-  const [showCommandMenu, setShowCommandMenu] = useState(false);
   const [popoverPosition, setPopoverPosition] = useState({ x: 0, y: 0 });
-  const [isLinkEditMode, setIsLinkEditMode] = useState(false);
 
   useEffect(() => {
     return editor.registerTextContentListener(() => {
@@ -87,7 +100,7 @@ function KeyboardShortcutPlugin({
         const selection = $getSelection();
         if (!$isRangeSelection(selection)) {
           setShowVariablePopover(false);
-          setShowCommandMenu(false);
+          setCommandMenuState({ open: false, position: { x: 0, y: 0 } });
           return;
         }
 
@@ -104,7 +117,7 @@ function KeyboardShortcutPlugin({
             const rect = range.getBoundingClientRect();
             setPopoverPosition({ x: rect.left, y: rect.bottom + 5 });
             setShowVariablePopover(true);
-            setShowCommandMenu(false);
+            setCommandMenuState({ open: false, position: { x: 0, y: 0 } });
           }
         }
         // Check for / trigger (for commands/nodes)
@@ -113,8 +126,7 @@ function KeyboardShortcutPlugin({
           if (nativeSelection && nativeSelection.rangeCount > 0) {
             const range = nativeSelection.getRangeAt(0);
             const rect = range.getBoundingClientRect();
-            setPopoverPosition({ x: rect.left, y: rect.bottom + 5 });
-            setShowCommandMenu(true);
+            setCommandMenuState({ open: true, position: { x: rect.left, y: rect.bottom + 5 } });
             setShowVariablePopover(false);
           }
         }
@@ -122,12 +134,12 @@ function KeyboardShortcutPlugin({
         else if (!beforeCursor.includes('{{') || (beforeCursor.includes('{{') && beforeCursor.includes('}}'))) {
           if (!beforeCursor.endsWith('/')) {
             setShowVariablePopover(false);
-            setShowCommandMenu(false);
+            setCommandMenuState({ open: false, position: { x: 0, y: 0 } });
           }
         }
       });
     });
-  }, [editor]);
+  }, [editor, setCommandMenuState]);
 
   return (
     <>
@@ -139,9 +151,9 @@ function KeyboardShortcutPlugin({
         onManageVariables={onManageVariables}
       />
       <EditorCommandMenu
-        open={showCommandMenu}
-        onOpenChange={setShowCommandMenu}
-        position={popoverPosition}
+        open={commandMenuState.open}
+        onOpenChange={(open) => setCommandMenuState({ ...commandMenuState, open })}
+        position={commandMenuState.position}
       />
     </>
   );
@@ -159,6 +171,14 @@ export default function TemplateEditor({
   onVariableInserted
 }: TemplateEditorProps): JSX.Element {
   const [isLinkEditMode, setIsLinkEditMode] = useState(false);
+  const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(undefined);
+  const [commandMenuState, setCommandMenuState] = useState({ open: false, position: { x: 0, y: 0 } });
+
+  const onRef = useCallback((ref: HTMLDivElement | null) => {
+    if (ref !== null) {
+      setFloatingAnchorElem(ref);
+    }
+  }, []);
 
   const initialConfig = {
     namespace: 'TemplateEditor',
@@ -222,7 +242,7 @@ export default function TemplateEditor({
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <VariableValuesProvider values={values} mode={mode}>
-        <div className="rounded-lg border bg-card text-card-foreground">
+        <div ref={onRef} className="rounded-lg border bg-card text-card-foreground relative">
           {/* Clean, distraction-free editor */}
           <div className="relative">
             <RichTextPlugin
@@ -260,17 +280,23 @@ export default function TemplateEditor({
             <TabIndentationPlugin />
             <MarkdownShortcutPlugin />
             <FloatingTextFormatToolbarPlugin
+              anchorElem={floatingAnchorElem ?? document.body}
               setIsLinkEditMode={setIsLinkEditMode}
             />
             <FloatingLinkEditorPlugin
               isLinkEditMode={isLinkEditMode}
               setIsLinkEditMode={setIsLinkEditMode}
+              anchorElem={floatingAnchorElem ?? document.body}
             />
-            <TableActionMenuPlugin />
-            <DraggableBlockPlugin anchorElem={document.body} />
-            <KeyboardShortcutPlugin
+            <TableActionMenuPlugin
+              anchorElem={floatingAnchorElem ?? document.body}
+            />
+            <DraggableBlockPlugin anchorElem={floatingAnchorElem ?? document.body} />
+            <MenuControlPlugin
               availableVariables={availableVariables}
               onManageVariables={onManageVariables}
+              commandMenuState={commandMenuState}
+              setCommandMenuState={setCommandMenuState}
             />
             <VariableInsertionPlugin
               variableToInsert={variableToInsert}

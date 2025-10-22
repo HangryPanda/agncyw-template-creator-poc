@@ -2,7 +2,171 @@
 
 # Design Philosophy - Best-in-Class UI/UX - A professional productivity tool that lets users create and manage templates efficiently, matching the promise of "streamline sales campaign workflows" with an interface that actually enables fast, focused work. The UI now resembles successful productivity apps like Notion, Linear, or Superhuman - where efficiency and speed are paramount, not visual spectacle.
 
-## Productivity App Desgn Principles
+## Productivity App Design Principles
+
+### 1. **Single Focused Workspace**
+- No tabs or mode switching that hides content
+- Split-column layout: Context (35%) + Editor (65%)
+- Editor always visible and editable in both modes
+- One clear task at a time, no cognitive overload
+
+### 2. **Contextual Sidebars**
+- Left panel adapts to mode:
+  - **Editor mode**: Variable insertion buttons (grouped by category)
+  - **Compose mode**: Form fields with live preview in editor
+- Same physical space, different content based on context
+- Desktop: persistent sidebar, Mobile: bottom drawer
+
+### 3. **Keyboard-First Interactions**
+- `{{` triggers variable picker inline
+- `/` triggers command menu for blocks
+- `Cmd+K` opens global search
+- `Cmd+N` creates new template
+- All critical actions accessible via keyboard
+
+### 4. **Progressive Disclosure**
+- Accordions auto-collapse when all fields filled
+- Form sections show fill status (3/5 completed)
+- Empty states are actionable, not blank
+- Complex features hidden until needed
+
+### 5. **Immediate Feedback**
+- Variable insertion: instant visual confirmation
+- Form fields: real-time updates in editor pills
+- Save indicators: automatic in Editor mode, manual in Compose mode
+- No loading spinners for local operations
+
+### 6. **Persistent State**
+- Form values saved per template in localStorage
+- Editor state serialized as JSON
+- No "Oops, I lost my work" moments
+- Resume exactly where you left off
+
+### 7. **Mobile-First Responsive**
+- Breakpoint at `md` (768px)
+- Desktop: side-by-side panels
+- Mobile: full-screen editor + bottom drawer
+- Touch targets minimum 44px
+- Drawer slides from bottom (natural thumb zone)
+
+### 8. **Minimal Chrome**
+- Compact header (3rem height)
+- No redundant toolbars or navigation
+- Status indicators inline with content
+- Character counter only for SMS templates
+
+### 9. **Smart Defaults**
+- New templates pre-populated with example values
+- Template variables grouped logically (Customer, Agent, Agency)
+- Most common actions surfaced first
+- Sensible field ordering (name before email)
+
+### 10. **Unified Data Flow**
+- Single Lexical editor instance (not separate preview/edit)
+- VariableValuesContext shares form state with editor nodes
+- Template variables render filled values in Compose mode
+- One source of truth, no synchronization bugs
+
+### Interaction Patterns
+
+**Variable Insertion (Editor Mode)**:
+```
+Click "First Name" button → Variable inserted at cursor → Editor auto-focuses
+```
+
+**Form Filling (Compose Mode)**:
+```
+Type in "First Name" field → Editor pill updates live → Accordion shows 1/5 filled
+```
+
+**Mobile Workflow**:
+```
+Tap "Fill Details" → Drawer slides up → Fill form → Tap outside → Drawer closes
+```
+
+### Layout Structure
+```
+┌─────────────────────────────────────────────────┐
+│ Header: Template metadata + Mode toggle         │
+├──────────────┬──────────────────────────────────┤
+│ Sidebar      │ Editor (Always visible)          │
+│ (35%)        │ (65%)                            │
+│              │                                  │
+│ [Mode=Editor]│ Shared Lexical Instance          │
+│ • Variables  │ • Rich text formatting           │
+│   grouped    │ • Template variable pills        │
+│              │ • Live value updates             │
+│ [Mode=Compose│                                  │
+│ • Form fields│ Character counter (SMS only)     │
+│ • Accordions │                                  │
+│ • Actions    │                                  │
+└──────────────┴──────────────────────────────────┘
+```
+
+### Mobile Layout
+```
+┌─────────────────────────────────────────────────┐
+│ Header + [Fill Details] button                  │
+├─────────────────────────────────────────────────┤
+│                                                  │
+│ Editor (Full width)                             │
+│                                                  │
+│                                                  │
+└─────────────────────────────────────────────────┘
+                     ↓ Tap button
+┌─────────────────────────────────────────────────┐
+│ [×] Drawer Handle                               │
+│ ┌───────────────────────────────────────────┐  │
+│ │ Form fields or Variables                  │  │
+│ │ (max-height: 85vh)                        │  │
+│ └───────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────┘
+```
+
+### Performance Guidelines
+- Editor state changes debounced (auto-save in Editor mode only)
+- Form values saved to localStorage on change (instant)
+- Variable insertion: no re-render of entire editor
+- Lazy load plugins (images, excalidraw, etc.)
+
+### Accessibility
+- All interactive elements keyboard accessible
+- Focus visible on all inputs and buttons
+- ARIA labels on icon-only buttons
+- Semantic HTML (header, main, aside)
+- Escape key closes drawer/popovers
+
+### Design Tokens
+```css
+/* Layout */
+--sidebar-width: 35%
+--editor-width: 65%
+--header-height: 3rem
+--drawer-max-height: 85vh
+
+/* Spacing */
+--spacing-compact: 0.75rem (12px)
+--spacing-normal: 1rem (16px)
+--spacing-comfortable: 1.5rem (24px)
+
+/* Typography */
+--font-size-xs: 0.75rem (12px) - Labels
+--font-size-sm: 0.875rem (14px) - Body
+--font-size-base: 1rem (16px) - Editor
+--font-size-lg: 1.125rem (18px) - Headings
+
+/* Breakpoints */
+--mobile: < 768px
+--desktop: >= 768px
+```
+
+### Anti-Patterns to Avoid
+- ❌ Separate preview and edit views (use single editor with live updates)
+- ❌ Modal dialogs for forms (use sidebar or drawer)
+- ❌ Auto-save in Compose mode (user might be experimenting)
+- ❌ Hiding the editor on mobile (keep it front and center)
+- ❌ Tabs for Editor/Compose (use seamless mode toggle)
+- ❌ Generic "Content" labels (be specific: "Variables", "Fill Details")
 
 
 
