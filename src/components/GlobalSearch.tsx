@@ -161,10 +161,10 @@ export default function GlobalSearch({ templates, onSelectTemplate, onClose, onO
     <Popover open={isOpen} onOpenChange={(open) => open ? onOpen() : onClose()}>
       <PopoverTrigger asChild>
         {trigger || (
-          <button className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors">
+          <button className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors">
             <Search className="w-4 h-4" />
             <span>Search</span>
-            <kbd className="px-1.5 py-0.5 text-xs bg-gray-100 rounded border border-gray-200">⌘K</kbd>
+            <kbd className="px-1.5 py-0.5 text-xs bg-muted rounded border border-border">⌘K</kbd>
           </button>
         )}
       </PopoverTrigger>

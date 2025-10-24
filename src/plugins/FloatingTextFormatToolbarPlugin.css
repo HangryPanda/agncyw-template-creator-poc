@@ -6,136 +6,524 @@
  *
  */
 
+/* ============================================================================
+   FLOATING TEXT FORMAT TOOLBAR - THEME-AWARE REDESIGN
+   ============================================================================
+
+   Design Philosophy:
+   - Clean, modern aesthetic with subtle brand color accents
+   - Theme-aware using CSS variables for seamless dark/light mode support
+   - Productivity-focused with clear visual feedback
+   - Accessible with proper contrast ratios
+   - Smooth micro-interactions for professional feel
+
+   ========================================================================== */
+
+/* Main Toolbar Container */
 .floating-text-format-popup {
+  /* Layout */
   display: flex;
-  background: #fff;
-  padding: 4px;
-  vertical-align: middle;
+  align-items: center;
+  gap: 2px;
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: 50;
+
+  /* Sizing */
+  height: 40px;
+  padding: 4px;
+
+  /* Theme-aware styling */
+  background: hsl(var(--popover));
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) + 2px);
+
+  /* Elevation with subtle brand color accent */
+  box-shadow:
+    0 4px 6px -1px color-mix(in oklch, var(--brand-blue) 8%, transparent),
+    0 2px 4px -2px color-mix(in oklch, var(--brand-blue) 6%, transparent),
+    0 0 0 1px color-mix(in oklch, var(--brand-blue) 4%, transparent);
+
+  /* Smooth transitions */
   opacity: 0;
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
-  border-radius: 8px;
-  transition: opacity 0.5s;
-  height: 35px;
+  transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
+
+  /* Backdrop blur for modern glass effect (subtle) */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
+
+/* Visible state */
+.floating-text-format-popup[style*="opacity: 1"] {
+  opacity: 1;
+}
+
+/* ============================================================================
+   BUTTON STYLES - Core Interactive Elements
+   ========================================================================== */
 
 .floating-text-format-popup button.popup-item {
+  /* Reset */
   border: 0;
-  display: flex;
   background: none;
-  border-radius: 10px;
+  margin: 0;
+
+  /* Layout */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 8px;
+
+  /* Sizing - optimized for touch and mouse */
+  min-width: 32px;
+  height: 32px;
+
+  /* Theme-aware colors */
+  color: hsl(var(--muted-foreground));
+  border-radius: var(--radius);
+
+  /* Smooth transitions for all interactive states */
+  transition:
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 100ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Interaction */
   cursor: pointer;
-  vertical-align: middle;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  /* Accessibility - ensure proper click target */
+  position: relative;
 }
 
+/* Hover State - Clear visual feedback */
+.floating-text-format-popup button.popup-item:hover:not(:disabled) {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+
+  /* Subtle lift effect */
+  transform: translateY(-1px);
+
+  /* Accent glow with brand color */
+  box-shadow:
+    0 0 0 2px color-mix(in oklch, var(--brand-blue) 12%, transparent),
+    0 2px 4px color-mix(in oklch, var(--brand-blue) 10%, transparent);
+}
+
+/* Active/Pressed State - Tactile feedback */
+.floating-text-format-popup button.popup-item:active:not(:disabled) {
+  transform: translateY(0);
+  transition-duration: 50ms;
+}
+
+/* Active State - Selected/Applied Format */
+.floating-text-format-popup button.popup-item.active {
+  background: color-mix(in oklch, var(--brand-blue) 15%, transparent);
+  color: var(--brand-blue);
+
+  /* Distinct border to show active state */
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklch, var(--brand-blue) 30%, transparent),
+    0 0 0 1px color-mix(in oklch, var(--brand-blue) 20%, transparent);
+}
+
+.floating-text-format-popup button.popup-item.active:hover:not(:disabled) {
+  background: color-mix(in oklch, var(--brand-blue) 20%, transparent);
+  color: var(--brand-blue);
+
+  /* Enhanced glow on hover */
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklch, var(--brand-blue) 40%, transparent),
+    0 0 0 2px color-mix(in oklch, var(--brand-blue) 25%, transparent),
+    0 2px 6px color-mix(in oklch, var(--brand-blue) 15%, transparent);
+}
+
+/* Disabled State - Clear visual indicator */
 .floating-text-format-popup button.popup-item:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
+  transform: none;
 }
 
+/* Spacing variant for grouped buttons */
 .floating-text-format-popup button.popup-item.spaced {
-  margin-right: 2px;
+  margin-right: 0;
 }
+
+/* ============================================================================
+   ICON STYLES - Format Indicators
+   ========================================================================== */
 
 .floating-text-format-popup button.popup-item i.format {
-  background-size: contain;
-  height: 18px;
-  width: 18px;
-  margin-top: 2px;
-  vertical-align: -0.25em;
   display: flex;
-  opacity: 0.6;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 1;
+  transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Icon in disabled button */
 .floating-text-format-popup button.popup-item:disabled i.format {
-  opacity: 0.2;
+  opacity: 0.4;
 }
 
-.floating-text-format-popup button.popup-item.active {
-  background-color: rgba(223, 232, 250, 0.3);
-}
-
+/* Active state icon - full opacity with brand color */
 .floating-text-format-popup button.popup-item.active i {
   opacity: 1;
 }
 
-.floating-text-format-popup .popup-item:hover:not([disabled]) {
-  background-color: #eee;
-}
+/* ============================================================================
+   SELECT DROPDOWN STYLES
+   ========================================================================== */
 
 .floating-text-format-popup select.popup-item {
+  /* Reset */
   border: 0;
+  margin: 0;
+
+  /* Layout */
   display: flex;
-  background: none;
-  border-radius: 10px;
-  padding: 8px;
-  vertical-align: middle;
+  align-items: center;
+  padding: 8px 32px 8px 12px;
+
+  /* Sizing */
+  min-width: 70px;
+  height: 32px;
+
+  /* Typography */
+  font-size: 13px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+
+  /* Theme-aware colors */
+  color: hsl(var(--foreground));
+  background: hsl(var(--muted));
+  border-radius: var(--radius);
+
+  /* Remove default appearance */
   -webkit-appearance: none;
   -moz-appearance: none;
-  width: 70px;
-  font-size: 14px;
-  color: #777;
-  text-overflow: ellipsis;
+  appearance: none;
+
+  /* Custom dropdown arrow using background image */
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+
+  /* Transitions */
+  transition:
+    background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  cursor: pointer;
 }
 
-.floating-text-format-popup select.code-language {
-  text-transform: capitalize;
-  width: 130px;
+.floating-text-format-popup select.popup-item:hover {
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+  box-shadow:
+    0 0 0 2px color-mix(in oklch, var(--brand-purple) 12%, transparent),
+    0 2px 4px color-mix(in oklch, var(--brand-purple) 8%, transparent);
 }
+
+.floating-text-format-popup select.popup-item:focus {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--brand-purple),
+    0 2px 6px color-mix(in oklch, var(--brand-purple) 20%, transparent);
+}
+
+/* Code language selector - wider variant */
+.floating-text-format-popup select.code-language {
+  min-width: 130px;
+  text-transform: capitalize;
+}
+
+/* ============================================================================
+   DROPDOWN CONTENT STYLES
+   ========================================================================== */
 
 .floating-text-format-popup .popup-item .text {
   display: flex;
-  line-height: 20px;
-  vertical-align: middle;
-  font-size: 14px;
-  color: #777;
-  text-overflow: ellipsis;
-  width: 70px;
-  overflow: hidden;
+  align-items: center;
   height: 20px;
+  width: 70px;
+
+  /* Typography */
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
   text-align: left;
+  text-overflow: ellipsis;
+
+  /* Theme-aware colors */
+  color: hsl(var(--foreground));
+
+  /* Overflow handling */
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .floating-text-format-popup .popup-item .icon {
   display: flex;
+  align-items: center;
+  justify-content: center;
   width: 20px;
   height: 20px;
-  user-select: none;
   margin-right: 8px;
-  line-height: 16px;
+
   background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  user-select: none;
+  line-height: 16px;
 }
+
+/* ============================================================================
+   CHEVRON ICON STYLES
+   ========================================================================== */
 
 .floating-text-format-popup i.chevron-down {
-  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 16px;
   height: 16px;
-  display: flex;
+  margin-top: 3px;
   user-select: none;
+
+  /* Theme-aware color */
+  color: hsl(var(--muted-foreground));
+
+  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Chevron inside dropdown - positioned variant */
 .floating-text-format-popup i.chevron-down.inside {
   width: 16px;
   height: 16px;
-  display: flex;
   margin-left: -25px;
   margin-top: 11px;
   margin-right: 10px;
   pointer-events: none;
 }
 
-.floating-text-format-popup .divider {
-  width: 1px;
-  background-color: #eee;
-  margin: 0 4px;
+/* Rotate chevron when dropdown is open */
+.floating-text-format-popup select:focus + i.chevron-down.inside,
+.floating-text-format-popup .popup-item:hover i.chevron-down {
+  transform: rotate(180deg);
 }
 
+/* ============================================================================
+   DIVIDER - Visual Grouping
+   ========================================================================== */
+
+.floating-text-format-popup .divider {
+  width: 1px;
+  height: 24px;
+  margin: 0 6px;
+
+  /* Theme-aware with subtle brand tint */
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in oklch, var(--border) 60%, var(--brand-blue) 10%),
+    transparent
+  );
+
+  /* Self-centering */
+  align-self: center;
+}
+
+/* ============================================================================
+   SPECIAL BUTTON VARIANTS - Comment & Insert Actions
+   ========================================================================== */
+
+/* Comment button - uses brand green accent */
+.floating-text-format-popup button.insert-comment {
+  color: hsl(var(--muted-foreground));
+}
+
+.floating-text-format-popup button.insert-comment:hover:not(:disabled) {
+  background: color-mix(in oklch, var(--brand-green) 15%, transparent);
+  color: var(--brand-green);
+  box-shadow:
+    0 0 0 2px color-mix(in oklch, var(--brand-green) 12%, transparent),
+    0 2px 4px color-mix(in oklch, var(--brand-green) 10%, transparent);
+}
+
+.floating-text-format-popup button.insert-comment.active {
+  background: color-mix(in oklch, var(--brand-green) 15%, transparent);
+  color: var(--brand-green);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklch, var(--brand-green) 30%, transparent),
+    0 0 0 1px color-mix(in oklch, var(--brand-green) 20%, transparent);
+}
+
+/* ============================================================================
+   RESPONSIVE ADJUSTMENTS
+   ========================================================================== */
+
 @media (max-width: 1024px) {
+  /* Hide comment button on smaller screens to save space */
   .floating-text-format-popup button.insert-comment {
     display: none;
+  }
+
+  /* Slightly smaller toolbar on mobile */
+  .floating-text-format-popup {
+    height: 36px;
+    padding: 3px;
+  }
+
+  .floating-text-format-popup button.popup-item {
+    min-width: 28px;
+    height: 28px;
+    padding: 6px;
+  }
+
+  /* Smaller icons on mobile */
+  .floating-text-format-popup button.popup-item i.format {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Compact mode for very small screens */
+  .floating-text-format-popup {
+    gap: 1px;
+    padding: 2px;
+    height: 34px;
+  }
+
+  .floating-text-format-popup button.popup-item {
+    min-width: 26px;
+    height: 26px;
+    padding: 5px;
+  }
+
+  /* Remove spacing between buttons on mobile */
+  .floating-text-format-popup button.popup-item.spaced {
+    margin-right: 0;
+  }
+}
+
+/* ============================================================================
+   ACCESSIBILITY ENHANCEMENTS
+   ========================================================================== */
+
+/* Focus visible for keyboard navigation */
+.floating-text-format-popup button.popup-item:focus-visible {
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 2px;
+  z-index: 1;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .floating-text-format-popup {
+    border-width: 2px;
+  }
+
+  .floating-text-format-popup button.popup-item.active {
+    border: 2px solid var(--brand-blue);
+  }
+
+  .floating-text-format-popup button.popup-item:hover:not(:disabled) {
+    border: 2px solid var(--brand-blue);
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .floating-text-format-popup,
+  .floating-text-format-popup button.popup-item,
+  .floating-text-format-popup select.popup-item,
+  .floating-text-format-popup i.chevron-down {
+    transition: none;
+    animation: none;
+  }
+
+  .floating-text-format-popup button.popup-item:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* ============================================================================
+   THEME-SPECIFIC ADJUSTMENTS
+   ========================================================================== */
+
+/* Light themes - softer shadows */
+:root:not(.dark):not(.t-dark):not(.t-calm):not(.t-zen):not(.t-focus):not(.t-warm):not(.t-nord):not(.t-vibrant-dark):not(.t-energetic-dark):not(.t-bold-dark) .floating-text-format-popup {
+  box-shadow:
+    0 4px 6px -1px color-mix(in oklch, var(--brand-blue) 6%, transparent),
+    0 2px 4px -2px color-mix(in oklch, var(--brand-blue) 4%, transparent),
+    0 0 0 1px color-mix(in oklch, var(--border) 50%, transparent);
+}
+
+/* Vibrant themes - enhanced glow effects */
+.t-vibrant .floating-text-format-popup,
+.t-energetic .floating-text-format-popup,
+.t-bold .floating-text-format-popup,
+.t-vibrant-dark .floating-text-format-popup,
+.t-energetic-dark .floating-text-format-popup,
+.t-bold-dark .floating-text-format-popup {
+  box-shadow:
+    0 4px 12px -1px color-mix(in oklch, var(--brand-blue) 12%, transparent),
+    0 2px 6px -2px color-mix(in oklch, var(--brand-blue) 10%, transparent),
+    0 0 0 1px color-mix(in oklch, var(--brand-blue) 8%, transparent);
+}
+
+/* Calm themes - subtle, peaceful styling */
+.t-calm .floating-text-format-popup,
+.t-zen .floating-text-format-popup,
+.t-serene .floating-text-format-popup,
+.t-calm-light .floating-text-format-popup,
+.t-zen-light .floating-text-format-popup {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow:
+    0 2px 4px -1px color-mix(in oklch, var(--brand-blue) 4%, transparent),
+    0 1px 2px -1px color-mix(in oklch, var(--brand-blue) 3%, transparent),
+    0 0 0 1px color-mix(in oklch, var(--border) 40%, transparent);
+}
+
+/* Focus theme - maximum contrast */
+.t-focus .floating-text-format-popup {
+  border: 1px solid color-mix(in oklch, var(--border) 150%, transparent);
+  background: color-mix(in oklch, var(--popover) 120%, transparent);
+}
+
+/* Warm theme - cozy amber tints */
+.t-warm .floating-text-format-popup button.popup-item.active,
+.t-energetic .floating-text-format-popup button.popup-item.active,
+.t-energetic-dark .floating-text-format-popup button.popup-item.active {
+  background: color-mix(in oklch, var(--brand-orange) 15%, transparent);
+  color: var(--brand-orange);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklch, var(--brand-orange) 30%, transparent),
+    0 0 0 1px color-mix(in oklch, var(--brand-orange) 20%, transparent);
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ========================================================================== */
+
+@media print {
+  .floating-text-format-popup {
+    display: none !important;
   }
 }

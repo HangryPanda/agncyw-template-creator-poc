@@ -24,8 +24,8 @@ select {
 }
 
 :root {
-  --select-border: #393939;
-  --select-focus: #101484;
+  --select-border: hsl(var(--border));
+  --select-focus: hsl(var(--primary));
   --select-arrow: var(--select-border);
 }
 
@@ -38,5 +38,5 @@ select {
   font-size: 1rem;
   cursor: pointer;
   line-height: 1.4;
-  background: linear-gradient(to bottom, #ffffff 0%, #e5e5e5 100%);
+  background: linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--muted) / 0.3) 100%);
 }

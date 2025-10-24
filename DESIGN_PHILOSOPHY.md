@@ -1,6 +1,6 @@
 
 
-# Design Philosophy - Best-in-Class UI/UX - A professional productivity tool that lets users create and manage templates efficiently, matching the promise of "streamline sales campaign workflows" with an interface that actually enables fast, focused work. The UI now resembles successful productivity apps like Notion, Linear, or Superhuman - where efficiency and speed are paramount, not visual spectacle.
+# Design Philosophy - Design "Best-in-Class User Interfaces and User Experiences that delight without being obtrusive. The goal is to beuild a professional productivity tool that lets users work efficiently, matching the promise of "streamlined workflows" with an interface that actually enables fast, focused work. The UI now resembles successful productivity apps like Monday, Airtable, Notion, Linear, or Superhuman - where efficiency and speed are paramount, not visual spectacle.
 
 ## Productivity App Design Principles
 

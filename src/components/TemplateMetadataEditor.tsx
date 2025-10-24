@@ -49,29 +49,29 @@ export default function TemplateMetadataEditor({
                 if (e.key === 'Enter') handleNameSave();
                 if (e.key === 'Escape') handleNameCancel();
               }}
-              className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-2 py-1 text-sm border border-border rounded focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               placeholder="Template name"
               autoFocus
             />
             <button
               onClick={handleNameSave}
-              className="px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
+              className="px-2 py-1 text-xs bg-primary text-white rounded hover:bg-primary/90"
             >
               Save
             </button>
             <button
               onClick={handleNameCancel}
-              className="px-2 py-1 text-xs bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+              className="px-2 py-1 text-xs bg-muted text-foreground/80 rounded hover:bg-muted/80"
             >
               Cancel
             </button>
           </div>
         ) : (
           <div className="flex items-center gap-2">
-            <h2 className="text-base font-semibold text-gray-900">{template.name}</h2>
+            <h2 className="text-base font-semibold text-foreground">{template.name}</h2>
             <button
               onClick={() => setIsEditingName(true)}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-muted-foreground/60 hover:text-muted-foreground transition-colors"
               title="Edit name"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,13 +83,13 @@ export default function TemplateMetadataEditor({
       </div>
 
       {/* Template Type */}
-      <div className="flex items-center gap-1 bg-gray-100 rounded-md p-0.5">
+      <div className="flex items-center gap-1 bg-muted rounded-md p-0.5">
         <button
           onClick={() => onUpdateType('email')}
           className={`px-2 py-1 text-xs font-medium rounded transition-all ${
             template.type === 'email'
-              ? 'bg-white text-gray-900 shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
+              ? 'bg-white text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
           }`}
         >
           Email
@@ -98,8 +98,8 @@ export default function TemplateMetadataEditor({
           onClick={() => onUpdateType('sms')}
           className={`px-2 py-1 text-xs font-medium rounded transition-all ${
             template.type === 'sms'
-              ? 'bg-white text-gray-900 shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
+              ? 'bg-white text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
           }`}
         >
           SMS
@@ -122,7 +122,7 @@ export default function TemplateMetadataEditor({
         ) : (
           <button
             onClick={onManageTags}
-            className="flex items-center gap-1 px-2 py-0.5 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+            className="flex items-center gap-1 px-2 py-0.5 text-xs text-muted-foreground hover:text-foreground/80 hover:bg-muted rounded-md transition-colors"
           >
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

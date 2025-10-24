@@ -9,9 +9,9 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--color-gray-50);
+  background-color: hsl(var(--background));
   font-family: var(--font-sans);
-  color: var(--color-text-primary);
+  color: hsl(var(--foreground));
   line-height: var(--leading-normal);
 }
 
@@ -25,21 +25,21 @@ body {
   font-size: 28px;
   font-weight: 700;
   margin: 12px 0;
-  color: #1a1a1a;
+  color: hsl(var(--foreground));
 }
 
 .editor-heading-h2 {
   font-size: 22px;
   font-weight: 600;
   margin: 10px 0;
-  color: #1a1a1a;
+  color: hsl(var(--foreground));
 }
 
 .editor-heading-h3 {
   font-size: 18px;
   font-weight: 600;
   margin: 8px 0;
-  color: #1a1a1a;
+  color: hsl(var(--foreground));
 }
 
 /* Text formatting */
@@ -60,8 +60,8 @@ body {
 }
 
 .editor-text-code {
-  background-color: rgba(135, 131, 120, 0.15);
-  color: #eb5757;
+  background-color: hsl(var(--muted));
+  color: hsl(var(--destructive));
   font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
   font-size: 0.9em;
   padding: 2px 4px;
@@ -82,10 +82,10 @@ body {
 .editor-quote {
   margin: 12px 0;
   padding: 12px 20px;
-  border-left: 4px solid #1976d2;
-  background-color: #f5f5f5;
+  border-left: 4px solid hsl(var(--primary));
+  background-color: hsl(var(--muted) / 0.3);
   font-style: italic;
-  color: #555;
+  color: hsl(var(--muted-foreground));
 }
 
 /* Lists */
@@ -117,35 +117,35 @@ body {
 }
 
 .editor-table-cell {
-  border: 1px solid #ddd;
+  border: 1px solid hsl(var(--border));
   padding: 8px 12px;
   min-width: 75px;
   vertical-align: top;
 }
 
 .editor-table-cell-header {
-  border: 1px solid #ddd;
+  border: 1px solid hsl(var(--border));
   padding: 8px 12px;
-  background-color: #f5f5f5;
+  background-color: hsl(var(--muted) / 0.3);
   font-weight: 600;
   text-align: left;
 }
 
 /* Links */
 .editor-link {
-  color: #1976d2;
+  color: hsl(var(--primary));
   text-decoration: underline;
   cursor: pointer;
 }
 
 .editor-link:hover {
-  color: #1565c0;
+  color: hsl(var(--primary) / 0.9);
 }
 
 /* Code Blocks */
 .editor-code {
-  background-color: #282c34;
-  color: #abb2bf;
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
   font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
   font-size: 13px;
   line-height: 1.5;
@@ -158,35 +158,35 @@ body {
 
 /* Code Syntax Highlighting */
 .editor-tokenComment {
-  color: #5c6370;
+  color: hsl(var(--muted-foreground) / 0.7);
 }
 
 .editor-tokenPunctuation {
-  color: #abb2bf;
+  color: hsl(var(--muted-foreground));
 }
 
 .editor-tokenProperty {
-  color: #d19a66;
+  color: hsl(var(--primary) / 0.8);
 }
 
 .editor-tokenSelector {
-  color: #98c379;
+  color: hsl(var(--accent-foreground));
 }
 
 .editor-tokenOperator {
-  color: #56b6c2;
+  color: hsl(var(--primary) / 0.7);
 }
 
 .editor-tokenAttr {
-  color: #c678dd;
+  color: hsl(var(--primary) / 0.85);
 }
 
 .editor-tokenVariable {
-  color: #e06c75;
+  color: hsl(var(--destructive) / 0.8);
 }
 
 .editor-tokenFunction {
-  color: #61afef;
+  color: hsl(var(--primary) / 0.75);
 }
 
 /* Images */
@@ -207,7 +207,7 @@ body {
 
 .editor-hr {
   border: none;
-  border-top: 2px solid #ddd;
+  border-top: 2px solid hsl(var(--border));
   margin: 0;
 }
 

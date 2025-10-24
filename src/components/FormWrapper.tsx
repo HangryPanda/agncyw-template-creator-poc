@@ -73,10 +73,10 @@ export function FormWrapper({
   if (mode === 'create') {
     // Editor mode: Show variable list
     return (
-      <div className="w-full h-full flex flex-col bg-gray-50 border-r border-gray-200">
-        <div className="px-4 py-3 border-b border-gray-200 bg-white">
-          <h2 className="text-sm font-semibold text-gray-900">Variables</h2>
-          <p className="text-xs text-gray-500 mt-0.5">Click to insert into template</p>
+      <div className="w-full h-full flex flex-col bg-muted/30 border-r border-border">
+        <div className="px-4 py-3 border-b border-border bg-background">
+          <h2 className="text-sm font-semibold text-foreground">Variables</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Click to insert into template</p>
         </div>
         <VariableList
           variables={availableVariables}
@@ -88,10 +88,10 @@ export function FormWrapper({
 
   // Compose mode: Show form fields
   return (
-    <div className="w-full h-full flex flex-col bg-white border-r border-gray-200">
-      <div className="px-4 py-3 border-b border-gray-200">
-        <h2 className="text-sm font-semibold text-gray-900">Fill Message Details</h2>
-        <p className="text-xs text-gray-500 mt-0.5">Complete fields to compose message</p>
+    <div className="w-full h-full flex flex-col bg-background border-r border-border">
+      <div className="px-4 py-3 border-b border-border">
+        <h2 className="text-sm font-semibold text-foreground">Fill Message Details</h2>
+        <p className="text-xs text-muted-foreground mt-0.5">Complete fields to compose message</p>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
@@ -108,8 +108,8 @@ export function FormWrapper({
                     <span>{GROUP_LABELS[groupKey] || groupKey}</span>
                     <span className={`text-xs px-2 py-0.5 rounded-full ${
                       allFilled
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-600'
+                        ? 'bg-accent/30 text-accent-foreground'
+                        : 'bg-muted text-muted-foreground'
                     }`}>
                       {filled}/{total}
                     </span>
@@ -122,11 +122,11 @@ export function FormWrapper({
                     <div key={variable.name} className="flex flex-col gap-1">
                       <label
                         htmlFor={variable.name}
-                        className="text-xs font-medium text-gray-700"
+                        className="text-xs font-medium text-foreground/80"
                       >
                         {variable.label}
                         {variable.description && (
-                          <span className="text-gray-500 font-normal ml-1">
+                          <span className="text-muted-foreground font-normal ml-1">
                             · {variable.description}
                           </span>
                         )}
@@ -137,7 +137,7 @@ export function FormWrapper({
                         value={values[variable.name] || ''}
                         onChange={(e) => updateValue(variable.name, e.target.value)}
                         placeholder={variable.example}
-                        className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                        className="px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors"
                       />
                     </div>
                   ))}
@@ -149,10 +149,10 @@ export function FormWrapper({
       </div>
 
       {/* Actions */}
-      <div className="p-4 border-t border-gray-200 space-y-2 bg-white">
+      <div className="p-4 border-t border-border space-y-2 bg-background">
         <button
           onClick={handleCopy}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-md transition-all font-medium shadow-sm hover:shadow-md active:scale-95"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm bg-primary text-white hover:bg-primary/90 rounded-md transition-all font-medium shadow-sm hover:shadow-md active:scale-95"
         >
           <Copy className="w-4 h-4" />
           Copy Message
@@ -160,7 +160,7 @@ export function FormWrapper({
         {onUpdateTemplate && (
           <button
             onClick={() => onUpdateTemplate(renderedText)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 rounded-md transition-all active:scale-95"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-foreground/80 bg-background hover:bg-muted/30 border border-border rounded-md transition-all active:scale-95"
           >
             <Save className="w-4 h-4" />
             Update Template

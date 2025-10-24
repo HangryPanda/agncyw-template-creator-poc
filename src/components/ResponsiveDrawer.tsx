@@ -62,17 +62,17 @@ export function ResponsiveDrawer({ isOpen, onClose, children }: ResponsiveDrawer
             style={{ maxHeight: '85vh' }}
           >
             {/* Handle */}
-            <div className="flex items-center justify-center py-3 border-b border-gray-200">
-              <div className="w-12 h-1 bg-gray-300 rounded-full" />
+            <div className="flex items-center justify-center py-3 border-b border-border">
+              <div className="w-12 h-1 bg-muted rounded-full" />
             </div>
 
             {/* Close button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 p-1 hover:bg-gray-100 rounded-full transition-colors"
+              className="absolute top-4 right-4 p-1 hover:bg-muted rounded-full transition-colors"
               aria-label="Close drawer"
             >
-              <X className="w-5 h-5 text-gray-500" />
+              <X className="w-5 h-5 text-muted-foreground" />
             </button>
 
             {/* Content */}

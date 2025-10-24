@@ -251,8 +251,8 @@ export default function TemplateSidebar({
 const sidebarStyle: React.CSSProperties = {
   width: '300px',
   height: '100vh',
-  backgroundColor: '#f5f5f5',
-  borderRight: '1px solid #ddd',
+  backgroundColor: 'hsl(var(--sidebar))',
+  borderRight: '1px solid hsl(var(--sidebar-border))',
   display: 'flex',
   flexDirection: 'column',
   overflow: 'hidden',
@@ -260,24 +260,24 @@ const sidebarStyle: React.CSSProperties = {
 
 const headerStyle: React.CSSProperties = {
   padding: '16px',
-  borderBottom: '1px solid #ddd',
+  borderBottom: '1px solid hsl(var(--border))',
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-  backgroundColor: 'white',
+  backgroundColor: 'hsl(var(--background))',
 };
 
 const titleStyle: React.CSSProperties = {
   margin: '0',
   fontSize: '20px',
   fontWeight: '600',
-  color: '#333',
+  color: 'hsl(var(--foreground))',
 };
 
 const newButtonStyle: React.CSSProperties = {
   padding: '8px 16px',
-  backgroundColor: '#1976d2',
-  color: 'white',
+  backgroundColor: 'hsl(var(--primary))',
+  color: 'hsl(var(--primary-foreground))',
   border: 'none',
   borderRadius: '4px',
   cursor: 'pointer',
@@ -287,35 +287,37 @@ const newButtonStyle: React.CSSProperties = {
 
 const searchContainerStyle: React.CSSProperties = {
   padding: '12px 16px',
-  borderBottom: '1px solid #ddd',
-  backgroundColor: 'white',
+  borderBottom: '1px solid hsl(var(--border))',
+  backgroundColor: 'hsl(var(--background))',
 };
 
 const searchInputStyle: React.CSSProperties = {
   width: '100%',
   padding: '8px 12px',
-  border: '1px solid #ddd',
+  border: '1px solid hsl(var(--border))',
   borderRadius: '4px',
   fontSize: '14px',
   boxSizing: 'border-box',
+  backgroundColor: 'hsl(var(--input-bg))',
+  color: 'hsl(var(--foreground))',
 };
 
 const actionsStyle: React.CSSProperties = {
   padding: '12px 16px',
-  borderBottom: '1px solid #ddd',
-  backgroundColor: 'white',
+  borderBottom: '1px solid hsl(var(--border))',
+  backgroundColor: 'hsl(var(--background))',
 };
 
 const manageTagsButtonStyle: React.CSSProperties = {
   width: '100%',
   padding: '8px 12px',
-  backgroundColor: '#f5f5f5',
-  border: '1px solid #ddd',
+  backgroundColor: 'hsl(var(--secondary))',
+  border: '1px solid hsl(var(--border))',
   borderRadius: '4px',
   cursor: 'pointer',
   fontSize: '13px',
   fontWeight: '500',
-  color: '#333',
+  color: 'hsl(var(--secondary-foreground))',
 };
 
 const treeContainerStyle: React.CSSProperties = {
@@ -339,13 +341,13 @@ const tagHeaderStyle: React.CSSProperties = {
   gap: '8px',
   fontSize: '14px',
   fontWeight: '500',
-  color: '#333',
+  color: 'hsl(var(--foreground))',
   textAlign: 'left',
 };
 
 const expandIconStyle: React.CSSProperties = {
   fontSize: '10px',
-  color: '#666',
+  color: 'hsl(var(--muted-foreground))',
   width: '12px',
 };
 
@@ -360,8 +362,8 @@ const tagNameStyle: React.CSSProperties = {
 };
 
 const countBadgeStyle: React.CSSProperties = {
-  backgroundColor: '#e0e0e0',
-  color: '#666',
+  backgroundColor: 'hsl(var(--muted))',
+  color: 'hsl(var(--muted-foreground))',
   padding: '2px 8px',
   borderRadius: '10px',
   fontSize: '11px',
@@ -383,8 +385,8 @@ const templateItemStyle: React.CSSProperties = {
 };
 
 const selectedTemplateStyle: React.CSSProperties = {
-  backgroundColor: '#e3f2fd',
-  borderLeft: '3px solid #1976d2',
+  backgroundColor: 'hsl(var(--primary) / 0.1)',
+  borderLeft: '3px solid hsl(var(--primary))',
 };
 
 const templateContentStyle: React.CSSProperties = {
@@ -395,7 +397,7 @@ const templateContentStyle: React.CSSProperties = {
 const templateNameStyle: React.CSSProperties = {
   fontSize: '13px',
   fontWeight: '500',
-  color: '#333',
+  color: 'hsl(var(--foreground))',
   marginBottom: '2px',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
@@ -411,7 +413,7 @@ const typeIconStyle: React.CSSProperties = {
 
 const templateMetaStyle: React.CSSProperties = {
   fontSize: '11px',
-  color: '#999',
+  color: 'hsl(var(--muted-foreground))',
 };
 
 const deleteIconStyle: React.CSSProperties = {
@@ -419,7 +421,7 @@ const deleteIconStyle: React.CSSProperties = {
   height: '20px',
   border: 'none',
   backgroundColor: 'transparent',
-  color: '#999',
+  color: 'hsl(var(--muted-foreground))',
   cursor: 'pointer',
   fontSize: '20px',
   lineHeight: '20px',
@@ -432,6 +434,6 @@ const deleteIconStyle: React.CSSProperties = {
 const emptyStateStyle: React.CSSProperties = {
   padding: '24px 16px',
   textAlign: 'center',
-  color: '#999',
+  color: 'hsl(var(--muted-foreground))',
   fontSize: '13px',
 };

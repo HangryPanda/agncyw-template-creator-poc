@@ -146,11 +146,11 @@ export default function InlineVariableEditor({
 
       {/* Modal */}
       <div ref={modalRef} style={modalStyle}>
-        <div className="bg-white rounded-lg shadow-2xl border border-gray-200 w-[380px] max-h-[520px] overflow-hidden animate-scale-in">
+        <div className="bg-background rounded-lg shadow-2xl border border-border w-[380px] max-h-[520px] overflow-hidden animate-scale-in">
           {/* Header */}
-          <div className="p-3 border-b border-gray-100">
+          <div className="p-3 border-b border-border">
             <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
               </svg>
               <input
@@ -167,42 +167,42 @@ export default function InlineVariableEditor({
           {/* Content */}
           <div className="overflow-y-auto max-h-[400px]">
             {isCreating ? (
-              <div className="p-4 bg-gray-50 border-b border-gray-100">
+              <div className="p-4 bg-muted/30 border-b border-border">
                 <div className="space-y-3">
                   {/* Variable Name */}
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                      Variable Name <span className="text-red-500">*</span>
+                    <label className="block text-xs font-medium text-foreground/80 mb-1">
+                      Variable Name <span className="text-destructive">*</span>
                     </label>
                     <input
                       type="text"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="customer_id"
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                      className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent font-mono"
                       pattern="^[a-z][a-z0-9_]*$"
                       disabled={editingIndex !== null}
                     />
-                    <p className="text-xs text-gray-500 mt-1">Use lowercase letters, numbers, and underscores</p>
+                    <p className="text-xs text-muted-foreground mt-1">Use lowercase letters, numbers, and underscores</p>
                   </div>
 
                   {/* Display Label */}
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
-                      Display Label <span className="text-red-500">*</span>
+                    <label className="block text-xs font-medium text-foreground/80 mb-1">
+                      Display Label <span className="text-destructive">*</span>
                     </label>
                     <input
                       type="text"
                       value={formData.label}
                       onChange={(e) => setFormData({ ...formData, label: e.target.value })}
                       placeholder="Customer ID"
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                     />
                   </div>
 
                   {/* Description */}
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-foreground/80 mb-1">
                       Description
                     </label>
                     <input
@@ -210,13 +210,13 @@ export default function InlineVariableEditor({
                       value={formData.description}
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       placeholder="Unique customer identifier"
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                     />
                   </div>
 
                   {/* Example */}
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-foreground/80 mb-1">
                       Example Value
                     </label>
                     <input
@@ -224,7 +224,7 @@ export default function InlineVariableEditor({
                       value={formData.example}
                       onChange={(e) => setFormData({ ...formData, example: e.target.value })}
                       placeholder="CUST-12345"
-                      className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                     />
                   </div>
 
@@ -233,7 +233,7 @@ export default function InlineVariableEditor({
                     <button
                       onClick={handleSubmit}
                       disabled={!formData.name || !formData.label}
-                      className="flex-1 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-300"
+                      className="flex-1 px-3 py-1.5 bg-primary text-white text-xs font-medium rounded-md hover:bg-primary/90 transition-colors disabled:bg-muted"
                     >
                       {editingIndex !== null ? 'Update' : 'Create'}
                     </button>
@@ -243,7 +243,7 @@ export default function InlineVariableEditor({
                         setEditingIndex(null);
                         resetForm();
                       }}
-                      className="px-3 py-1.5 bg-gray-100 text-gray-700 text-xs font-medium rounded-md hover:bg-gray-200 transition-colors"
+                      className="px-3 py-1.5 bg-muted text-foreground/80 text-xs font-medium rounded-md hover:bg-muted transition-colors"
                     >
                       Cancel
                     </button>
@@ -258,7 +258,7 @@ export default function InlineVariableEditor({
                     {/* System Variables */}
                     {filteredVariables.filter(v => SYSTEM_VARIABLES.includes(v)).length > 0 && (
                       <>
-                        <div className="px-3 py-1.5 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">
+                        <div className="px-3 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider bg-muted/30">
                           System Variables
                         </div>
                         {filteredVariables.filter(v => SYSTEM_VARIABLES.some(sv => sv.name === v.name)).map((variable) => (
@@ -278,7 +278,7 @@ export default function InlineVariableEditor({
                     {/* Custom Variables */}
                     {customVariables.filter(v => filteredVariables.includes(v)).length > 0 && (
                       <>
-                        <div className="px-3 py-1.5 text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50 mt-2">
+                        <div className="px-3 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider bg-muted/30 mt-2">
                           Custom Variables
                         </div>
                         {customVariables.filter(v => filteredVariables.includes(v)).map((variable, index) => (
@@ -300,7 +300,7 @@ export default function InlineVariableEditor({
                     )}
                   </div>
                 ) : (
-                  <div className="p-8 text-center text-sm text-gray-500">
+                  <div className="p-8 text-center text-sm text-muted-foreground">
                     {searchQuery ? 'No variables found' : 'No variables yet'}
                   </div>
                 )}
@@ -310,10 +310,10 @@ export default function InlineVariableEditor({
 
           {/* Footer */}
           {!isCreating && (
-            <div className="p-2 border-t border-gray-100 bg-gray-50">
+            <div className="p-2 border-t border-border bg-muted/30">
               <button
                 onClick={() => setIsCreating(true)}
-                className="w-full px-3 py-1.5 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors text-left"
+                className="w-full px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors text-left"
               >
                 + New custom variable
               </button>
@@ -342,7 +342,7 @@ function VariableItem({
   onClose: () => void;
 }) {
   return (
-    <div className="group flex items-start justify-between px-3 py-2 hover:bg-gray-50 transition-colors">
+    <div className="group flex items-start justify-between px-3 py-2 hover:bg-muted/30 transition-colors">
       <button
         onClick={() => {
           if (onInsert) {
@@ -353,16 +353,16 @@ function VariableItem({
         className="flex-1 text-left"
       >
         <div className="flex items-center gap-2 mb-1">
-          <code className="text-xs font-mono bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-200">
+          <code className="text-xs font-mono bg-primary/10 text-primary/90 px-2 py-0.5 rounded border border-primary/30">
             {`{{${variable.name}}}`}
           </code>
-          <span className="text-sm font-medium text-gray-900">{variable.label}</span>
+          <span className="text-sm font-medium text-foreground">{variable.label}</span>
         </div>
         {variable.description && (
-          <p className="text-xs text-gray-500 mt-1">{variable.description}</p>
+          <p className="text-xs text-muted-foreground mt-1">{variable.description}</p>
         )}
         {variable.example && (
-          <p className="text-xs text-gray-400 mt-0.5">Example: {variable.example}</p>
+          <p className="text-xs text-muted-foreground/60 mt-0.5">Example: {variable.example}</p>
         )}
       </button>
 
@@ -373,7 +373,7 @@ function VariableItem({
               e.stopPropagation();
               onEdit();
             }}
-            className="p-1 text-gray-400 hover:text-gray-600"
+            className="p-1 text-muted-foreground/60 hover:text-muted-foreground"
             title="Edit variable"
           >
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -385,7 +385,7 @@ function VariableItem({
               e.stopPropagation();
               onDelete();
             }}
-            className="p-1 text-gray-400 hover:text-red-600"
+            className="p-1 text-muted-foreground/60 hover:text-destructive"
             title="Delete variable"
           >
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

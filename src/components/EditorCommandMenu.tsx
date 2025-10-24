@@ -189,6 +189,14 @@ export function EditorCommandMenu({ open, onOpenChange, position }: EditorComman
       case 'pagebreak':
         editor.dispatchCommand(INSERT_PAGE_BREAK, undefined);
         break;
+      case 'variable':
+        // Insert {{ which will trigger the VariablePopover automatically
+        editor.update(() => {
+          const selection = $getSelection();
+          if (!$isRangeSelection(selection)) return;
+          selection.insertText('{{');
+        });
+        break;
     }
 
     onOpenChange(false);
@@ -242,6 +250,20 @@ export function EditorCommandMenu({ open, onOpenChange, position }: EditorComman
           />
           <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
+
+          <CommandGroup heading="Template">
+            <CommandItem onSelect={() => insertNode('variable')}>
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-md border bg-muted bg-brand-purple/10 border-brand-purple/30">
+                  <span className="text-sm font-mono text-brand-purple">{'{{}}'}</span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Variable</p>
+                  <p className="text-xs text-muted-foreground">Insert a template variable</p>
+                </div>
+              </div>
+            </CommandItem>
+          </CommandGroup>
 
           <CommandGroup heading="Basic blocks">
             <CommandItem onSelect={() => insertNode('heading1')}>

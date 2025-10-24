@@ -23,12 +23,12 @@ export function ComposePreview({
   // SMS limits
   const SMS_LIMIT_1 = 160;
   let smsCount = 1;
-  let colorClass = 'text-green-600';
+  let colorClass = 'text-accent-foreground';
 
   if (templateType === 'sms') {
     if (charCount > 306) {
       smsCount = Math.ceil((charCount - 6) / 153);
-      colorClass = 'text-red-600';
+      colorClass = 'text-destructive';
     } else if (charCount > SMS_LIMIT_1) {
       smsCount = 2;
       colorClass = 'text-orange-600';
@@ -45,24 +45,24 @@ export function ComposePreview({
   };
 
   return (
-    <div className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
+    <div className="sticky top-0 z-10 bg-background border-b border-border shadow-sm">
       <div className="px-6 py-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-4">
-            <h3 className="text-sm font-medium text-gray-700">Live Preview</h3>
+            <h3 className="text-sm font-medium text-foreground/80">Live Preview</h3>
             {templateType === 'sms' && (
               <div className="flex items-center gap-3 text-xs">
-                <span className="text-gray-500">
+                <span className="text-muted-foreground">
                   <span className={colorClass}>{charCount}</span> characters
                 </span>
-                <span className="text-gray-300">•</span>
-                <span className="text-gray-500">
+                <span className="text-muted-foreground">•</span>
+                <span className="text-muted-foreground">
                   {wordCount} words
                 </span>
                 {charCount > SMS_LIMIT_1 && (
                   <>
-                    <span className="text-gray-300">•</span>
+                    <span className="text-muted-foreground">•</span>
                     <span className={colorClass}>
                       {smsCount} SMS {smsCount === 1 ? 'message' : 'messages'}
                     </span>
@@ -74,7 +74,7 @@ export function ComposePreview({
           <div className="flex items-center gap-2">
             <button
               onClick={onClear}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-all active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-all active:scale-95"
               title="Clear all fields (Cmd+K)"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -82,7 +82,7 @@ export function ComposePreview({
             </button>
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1.5 px-4 py-1.5 text-xs bg-blue-600 text-white hover:bg-blue-700 rounded-md transition-all font-medium shadow-sm hover:shadow-md active:scale-95"
+              className="flex items-center gap-1.5 px-4 py-1.5 text-xs bg-primary text-white hover:bg-primary/90 rounded-md transition-all font-medium shadow-sm hover:shadow-md active:scale-95"
               title="Copy to clipboard (Cmd+Enter)"
             >
               {copied ? (
@@ -101,10 +101,10 @@ export function ComposePreview({
         </div>
 
         {/* Preview Card */}
-        <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 min-h-[120px] max-h-[200px] overflow-y-auto">
-          <div className="text-sm text-gray-900 whitespace-pre-wrap leading-relaxed">
+        <div className="bg-muted/30 rounded-lg border border-border p-4 min-h-[120px] max-h-[200px] overflow-y-auto">
+          <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
             {renderedText || (
-              <span className="text-gray-400 italic">
+              <span className="text-muted-foreground/60 italic">
                 Fill in the fields below to see your message preview...
               </span>
             )}

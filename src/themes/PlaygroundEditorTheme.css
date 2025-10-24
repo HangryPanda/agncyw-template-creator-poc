@@ -15,21 +15,21 @@
   margin-left: 20px;
   margin-bottom: 10px;
   font-size: 15px;
-  color: rgb(101, 103, 107);
-  border-left-color: rgb(206, 208, 212);
+  color: hsl(var(--muted-foreground));
+  border-left-color: hsl(var(--border));
   border-left-width: 4px;
   border-left-style: solid;
   padding-left: 16px;
 }
 .PlaygroundEditorTheme__h1 {
   font-size: 24px;
-  color: rgb(5, 5, 5);
+  color: hsl(var(--foreground));
   font-weight: 400;
   margin: 0;
 }
 .PlaygroundEditorTheme__h2 {
   font-size: 15px;
-  color: rgb(101, 103, 107);
+  color: hsl(var(--muted-foreground));
   font-weight: 700;
   margin: 0;
   text-transform: uppercase;
@@ -49,8 +49,8 @@
   background-color: unset;
 }
 .PlaygroundEditorTheme__textHighlight {
-  background: rgba(255, 212, 0, 0.14);
-  border-bottom: 2px solid rgba(255, 212, 0, 0.3);
+  background: hsl(var(--primary) / 0.14);
+  border-bottom: 2px solid hsl(var(--primary) / 0.3);
 }
 .PlaygroundEditorTheme__textItalic {
   font-style: italic;
@@ -117,7 +117,7 @@
   vertical-align: super;
 }
 .PlaygroundEditorTheme__textCode {
-  background-color: rgb(240, 242, 245);
+  background-color: hsl(var(--muted));
   padding: 1px 0.25rem;
   font-family: Menlo, Consolas, Monaco, monospace;
   font-size: 94%;
@@ -132,11 +132,11 @@
   text-transform: capitalize;
 }
 .PlaygroundEditorTheme__hashtag {
-  background-color: rgba(88, 144, 255, 0.15);
-  border-bottom: 1px solid rgba(88, 144, 255, 0.3);
+  background-color: hsl(var(--primary) / 0.15);
+  border-bottom: 1px solid hsl(var(--primary) / 0.3);
 }
 .PlaygroundEditorTheme__link {
-  color: rgb(33, 111, 219);
+  color: hsl(var(--primary));
   text-decoration: none;
 }
 .PlaygroundEditorTheme__link:hover {
@@ -154,7 +154,7 @@
   position: absolute;
   top: -2px;
   width: 20px;
-  border-top: 1px solid black;
+  border-top: 1px solid hsl(var(--foreground));
   animation: CursorBlink 1.1s steps(2, start) infinite;
 }
 @keyframes CursorBlink {
@@ -163,7 +163,7 @@
   }
 }
 .PlaygroundEditorTheme__code {
-  background-color: rgb(240, 242, 245);
+  background-color: hsl(var(--muted));
   font-family: Menlo, Consolas, Monaco, monospace;
   display: block;
   padding: 8px 8px 8px 52px;
@@ -179,12 +179,12 @@
 .PlaygroundEditorTheme__code:before {
   content: attr(data-gutter);
   position: absolute;
-  background-color: #eee;
+  background-color: hsl(var(--muted) / 0.5);
   left: 0;
   top: 0;
-  border-right: 1px solid #ccc;
+  border-right: 1px solid hsl(var(--border));
   padding: 8px;
-  color: #777;
+  color: hsl(var(--muted-foreground));
   white-space: pre-wrap;
   text-align: right;
   min-width: 25px;
@@ -222,14 +222,14 @@
 }
 .PlaygroundEditorTheme__tableFrozenRow tr:nth-of-type(1) > td {
   overflow: clip;
-  background-color: #ffffff;
+  background-color: hsl(var(--background));
   position: sticky;
   z-index: 2;
   top: 44px;
 }
 .PlaygroundEditorTheme__tableFrozenRow tr:nth-of-type(1) > th {
   overflow: clip;
-  background-color: #f2f3f5;
+  background-color: hsl(var(--muted) / 0.3);
   position: sticky;
   z-index: 2;
   top: 44px;
@@ -241,16 +241,16 @@
   left: 0;
   bottom: 0;
   width: 100%;
-  border-bottom: 1px solid #bbb;
+  border-bottom: 1px solid hsl(var(--border));
 }
 .PlaygroundEditorTheme__tableFrozenColumn tr > td:first-child {
-  background-color: #ffffff;
+  background-color: hsl(var(--background));
   position: sticky;
   z-index: 2;
   left: 0;
 }
 .PlaygroundEditorTheme__tableFrozenColumn tr > th:first-child {
-  background-color: #f2f3f5;
+  background-color: hsl(var(--muted) / 0.3);
   position: sticky;
   z-index: 2;
   left: 0;
@@ -262,23 +262,23 @@
   top: 0;
   right: 0;
   height: 100%;
-  border-right: 1px solid #bbb;
+  border-right: 1px solid hsl(var(--border));
 }
 .PlaygroundEditorTheme__tableRowStriping tr:nth-child(even),
 .PlaygroundEditorTheme__tableFrozenColumn
   .PlaygroundEditorTheme__table.PlaygroundEditorTheme__tableRowStriping
   tr:nth-child(even)
   > td:first-child {
-  background-color: #f2f5fb;
+  background-color: hsl(var(--muted) / 0.2);
 }
 .PlaygroundEditorTheme__tableSelection *::selection {
   background-color: transparent;
 }
 .PlaygroundEditorTheme__tableSelected {
-  outline: 2px solid rgb(60, 132, 244);
+  outline: 2px solid hsl(var(--primary));
 }
 .PlaygroundEditorTheme__tableCell {
-  border: 1px solid #bbb;
+  border: 1px solid hsl(var(--border));
   width: 75px;
   vertical-align: top;
   text-align: start;
@@ -304,7 +304,7 @@
   top: 0;
 }
 .PlaygroundEditorTheme__tableCellHeader {
-  background-color: #f2f3f5;
+  background-color: hsl(var(--muted) / 0.3);
   text-align: start;
 }
 .PlaygroundEditorTheme__tableCellSelected {
@@ -323,7 +323,7 @@
 }
 .PlaygroundEditorTheme__tableAddColumns {
   position: absolute;
-  background-color: #eee;
+  background-color: hsl(var(--muted) / 0.5);
   height: 100%;
   animation: table-controls 0.2s ease;
   border: 0;
@@ -345,12 +345,12 @@
 }
 .PlaygroundEditorTheme__tableAddColumns:hover,
 .PlaygroundEditorTheme__tableAddRows:hover {
-  background-color: #c9dbf0;
+  background-color: hsl(var(--primary) / 0.2);
 }
 .PlaygroundEditorTheme__tableAddRows {
   position: absolute;
   width: calc(100% - 25px);
-  background-color: #eee;
+  background-color: hsl(var(--muted) / 0.5);
   animation: table-controls 0.2s ease;
   border: 0;
   cursor: pointer;
@@ -381,7 +381,7 @@
   display: block;
   position: absolute;
   width: 1px;
-  background-color: rgb(60, 132, 244);
+  background-color: hsl(var(--primary));
   height: 100%;
   top: 0;
 }
@@ -395,21 +395,21 @@
   height: 20px;
 }
 .PlaygroundEditorTheme__tableCellActionButton {
-  background-color: #eee;
+  background-color: hsl(var(--muted) / 0.5);
   display: block;
   border: 0;
   border-radius: 20px;
   width: 20px;
   height: 20px;
-  color: #222;
+  color: hsl(var(--foreground));
   cursor: pointer;
 }
 .PlaygroundEditorTheme__tableCellActionButton:hover {
-  background-color: #ddd;
+  background-color: hsl(var(--muted));
 }
 .PlaygroundEditorTheme__characterLimit {
   display: inline;
-  background-color: #ffbbbb !important;
+  background-color: hsl(var(--destructive) / 0.3) !important;
 }
 .PlaygroundEditorTheme__ol1 {
   padding: 0;
@@ -491,23 +491,23 @@
 }
 .PlaygroundEditorTheme__listItemUnchecked:focus:before,
 .PlaygroundEditorTheme__listItemChecked:focus:before {
-  box-shadow: 0 0 0 2px #a6cdfe;
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.3);
   border-radius: 2px;
 }
 .PlaygroundEditorTheme__listItemUnchecked:before {
-  border: 1px solid #999;
+  border: 1px solid hsl(var(--border));
   border-radius: 2px;
 }
 .PlaygroundEditorTheme__listItemChecked:before {
-  border: 1px solid rgb(61, 135, 245);
+  border: 1px solid hsl(var(--primary));
   border-radius: 2px;
-  background-color: #3d87f5;
+  background-color: hsl(var(--primary));
   background-repeat: no-repeat;
 }
 .PlaygroundEditorTheme__listItemChecked:after {
   content: '';
   cursor: pointer;
-  border-color: #fff;
+  border-color: hsl(var(--primary-foreground));
   border-style: solid;
   position: absolute;
   display: block;
@@ -526,63 +526,63 @@
   display: none;
 }
 .PlaygroundEditorTheme__tokenComment {
-  color: slategray;
+  color: hsl(var(--muted-foreground));
 }
 .PlaygroundEditorTheme__tokenDeleted {
-  border-image: linear-gradient(to right, #ffcecb 50%, #ffebe9 50%) fill 0/0/0
+  border-image: linear-gradient(to right, hsl(var(--destructive) / 0.3) 50%, hsl(var(--destructive) / 0.1) 50%) fill 0/0/0
     100vw;
 }
 .PlaygroundEditorTheme__tokenInserted {
-  border-image: linear-gradient(to right, #aceebb 50%, #dafbe1 50%) fill 0/0/0
+  border-image: linear-gradient(to right, hsl(var(--accent-foreground) / 0.3) 50%, hsl(var(--accent-foreground) / 0.1) 50%) fill 0/0/0
     100vw;
 }
 .PlaygroundEditorTheme__tokenUnchanged {
-  border-image: linear-gradient(to right, #ddd 50%, #f0f2f5 50%) fill 0/0/0
+  border-image: linear-gradient(to right, hsl(var(--border)) 50%, hsl(var(--muted)) 50%) fill 0/0/0
     100vw;
 }
 .PlaygroundEditorTheme__tokenPunctuation {
-  color: #999;
+  color: hsl(var(--muted-foreground));
 }
 .PlaygroundEditorTheme__tokenProperty {
-  color: #905;
+  color: hsl(var(--primary) / 0.8);
 }
 .PlaygroundEditorTheme__tokenSelector {
-  color: #690;
+  color: hsl(var(--accent-foreground));
 }
 .PlaygroundEditorTheme__tokenOperator {
-  color: #9a6e3a;
+  color: hsl(var(--primary) / 0.7);
 }
 .PlaygroundEditorTheme__tokenAttr {
-  color: #07a;
+  color: hsl(var(--primary) / 0.85);
 }
 .PlaygroundEditorTheme__tokenVariable {
-  color: #e90;
+  color: hsl(var(--destructive) / 0.8);
 }
 .PlaygroundEditorTheme__tokenFunction {
-  color: #dd4a68;
+  color: hsl(var(--primary) / 0.75);
 }
 .PlaygroundEditorTheme__mark {
-  background: rgba(255, 212, 0, 0.14);
-  border-bottom: 2px solid rgba(255, 212, 0, 0.3);
+  background: hsl(var(--primary) / 0.14);
+  border-bottom: 2px solid hsl(var(--primary) / 0.3);
   padding-bottom: 2px;
 }
 .PlaygroundEditorTheme__markOverlap {
-  background: rgba(255, 212, 0, 0.3);
-  border-bottom: 2px solid rgba(255, 212, 0, 0.7);
+  background: hsl(var(--primary) / 0.3);
+  border-bottom: 2px solid hsl(var(--primary) / 0.7);
 }
 .PlaygroundEditorTheme__mark.selected {
-  background: rgba(255, 212, 0, 0.5);
-  border-bottom: 2px solid rgba(255, 212, 0, 1);
+  background: hsl(var(--primary) / 0.5);
+  border-bottom: 2px solid hsl(var(--primary));
 }
 .PlaygroundEditorTheme__markOverlap.selected {
-  background: rgba(255, 212, 0, 0.7);
-  border-bottom: 2px solid rgba(255, 212, 0, 0.7);
+  background: hsl(var(--primary) / 0.7);
+  border-bottom: 2px solid hsl(var(--primary) / 0.7);
 }
 .PlaygroundEditorTheme__embedBlock {
   user-select: none;
 }
 .PlaygroundEditorTheme__embedBlockFocus {
-  outline: 2px solid rgb(60, 132, 244);
+  outline: 2px solid hsl(var(--primary));
 }
 .PlaygroundEditorTheme__layoutContainer {
   display: grid;
@@ -590,13 +590,13 @@
   margin: 10px 0;
 }
 .PlaygroundEditorTheme__layoutItem {
-  border: 1px dashed #ddd;
+  border: 1px dashed hsl(var(--border));
   padding: 8px 16px;
   min-width: 0;
   max-width: 100%;
 }
 .PlaygroundEditorTheme__autocomplete {
-  color: #ccc;
+  color: hsl(var(--muted-foreground) / 0.5);
 }
 .PlaygroundEditorTheme__hr {
   padding: 2px 2px;
@@ -608,24 +608,24 @@
   content: '';
   display: block;
   height: 2px;
-  background-color: #ccc;
+  background-color: hsl(var(--border));
   line-height: 2px;
 }
 .PlaygroundEditorTheme__hr.PlaygroundEditorTheme__hrSelected {
-  outline: 2px solid rgb(60, 132, 244);
+  outline: 2px solid hsl(var(--primary));
   user-select: none;
 }
 
 .PlaygroundEditorTheme__specialText {
-  background-color: yellow;
+  background-color: hsl(var(--primary) / 0.3);
   font-weight: bold;
 }
 
 .PlaygroundEditorTheme__contextMenu {
   outline: 0;
-  background: #fff;
-  border: 1px solid #ddd;
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0px 5px 10px hsl(var(--foreground) / 0.3);
   border-radius: 8px;
 }
 .PlaygroundEditorTheme__contextMenu button:first-child {
@@ -642,8 +642,8 @@
   display: flex;
   justify-content: left;
   width: 100%;
-  background-color: #fff;
-  color: #050505;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
   border: 0;
   border-radius: 0px;
   font-size: 15px;
@@ -655,15 +655,15 @@
   cursor: pointer;
 }
 .PlaygroundEditorTheme__contextMenuItem.open {
-  background: #ddd;
+  background: hsl(var(--muted));
 }
 .PlaygroundEditorTheme__contextMenuItem:focus,
 .PlaygroundEditorTheme__contextMenuItem:not([disabled]):active {
-  background: #eee;
+  background: hsl(var(--muted) / 0.5);
 }
 .PlaygroundEditorTheme__contextMenuItem:disabled {
-  background: #fff;
-  color: #aaa;
+  background: hsl(var(--background));
+  color: hsl(var(--muted-foreground));
   cursor: not-allowed;
 }
 .PlaygroundEditorTheme__contextMenuItemIcon {

@@ -22,9 +22,11 @@ import { Button } from '@/components/ui/button';
 import MarkdownShortcutPlugin from '@/plugins/MarkdownShortcutPlugin';
 import AutoLinkPlugin from '@/plugins/AutoLinkPlugin';
 import FloatingTextFormatToolbarPlugin from '@/plugins/FloatingTextFormatToolbarPlugin';
+import ToolbarPlugin from '@/plugins/ToolbarPlugin';
 import FloatingLinkEditorPlugin from '@/plugins/FloatingLinkEditorPlugin';
 import TableActionMenuPlugin from '@/plugins/TableActionMenuPlugin';
 import DraggableBlockPlugin from '@/plugins/DraggableBlockPlugin';
+import { DirtyStatePlugin } from '@/plugins/DirtyStatePlugin';
 import { VariableValuesProvider } from '@/context/VariableValuesContext';
 
 interface TemplateEditorProps {
@@ -35,8 +37,89 @@ interface TemplateEditorProps {
   onManageVariables?: () => void;
   mode?: 'create' | 'use';
   values?: Record<string, string>;
+  setValue?: (variableName: string, value: string) => void;
   variableToInsert?: string | null;
   onVariableInserted?: () => void;
+  onModeToggle?: () => void;
+  isOutlineVisible?: boolean;
+  onToggleOutline?: () => void;
+  onDirtyChange?: (isDirty: boolean) => void;
+}
+
+// Plugin to handle tab navigation and auto-focus in Compose mode
+function VariableNavigationPlugin({ mode }: { mode: 'create' | 'use' }): null {
+  useEffect(() => {
+    if (mode !== 'use') return;
+
+    // Auto-focus first unfilled variable when entering Compose mode
+    const timer = setTimeout(() => {
+      const firstUnfilled = document.querySelector('.template-variable-unfilled-first') as HTMLElement;
+      if (firstUnfilled) {
+        firstUnfilled.click(); // Trigger inline editing
+      }
+    }, 150);
+
+    // Tab navigation handler
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab' || mode !== 'use') return;
+
+      const activeElement = document.activeElement;
+
+      // Only handle Tab if we're in a variable or the editor
+      const isInVariable = activeElement?.closest('[data-variable-name]');
+      const isInEditor = activeElement?.closest('.ContentEditable__root');
+
+      if (!isInVariable && !isInEditor) return;
+
+      e.preventDefault();
+
+      // Find all unfilled variables
+      const unfilledVariables = Array.from(
+        document.querySelectorAll('.template-variable-unfilled, .template-variable-unfilled-first')
+      ) as HTMLElement[];
+
+      if (unfilledVariables.length === 0) return;
+
+      // Find current index
+      const currentVariable = activeElement?.closest('[data-variable-name]') as HTMLElement;
+      let currentIndex = -1;
+
+      if (currentVariable) {
+        currentIndex = unfilledVariables.indexOf(currentVariable);
+      }
+
+      // Navigate to next/previous
+      let nextIndex: number;
+      if (e.shiftKey) {
+        // Shift+Tab: go backwards
+        nextIndex = currentIndex <= 0 ? unfilledVariables.length - 1 : currentIndex - 1;
+      } else {
+        // Tab: go forwards
+        nextIndex = currentIndex >= unfilledVariables.length - 1 ? 0 : currentIndex + 1;
+      }
+
+      const nextVariable = unfilledVariables[nextIndex];
+      if (nextVariable) {
+        // If it has contentEditable attribute (already editing), focus it
+        const editableChild = nextVariable.querySelector('[contenteditable="true"]') as HTMLElement;
+        if (editableChild) {
+          editableChild.focus();
+        } else {
+          // Otherwise, click to start editing
+          nextVariable.click();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mode]);
+
+  return null;
 }
 
 // Plugin to handle external variable insertion
@@ -167,8 +250,13 @@ export default function TemplateEditor({
   onManageVariables,
   mode = 'create',
   values = {},
+  setValue = () => {},
   variableToInsert,
-  onVariableInserted
+  onVariableInserted,
+  onModeToggle,
+  isOutlineVisible,
+  onToggleOutline,
+  onDirtyChange,
 }: TemplateEditorProps): JSX.Element {
   const [isLinkEditMode, setIsLinkEditMode] = useState(false);
   const [floatingAnchorElem, setFloatingAnchorElem] = useState<HTMLElement | undefined>(undefined);
@@ -186,28 +274,28 @@ export default function TemplateEditor({
       // Clean, minimal theme using shadcn CSS variables
       paragraph: 'leading-relaxed mb-2',
       heading: {
-        h1: 'text-2xl font-bold mb-4 mt-6',
-        h2: 'text-xl font-semibold mb-3 mt-5',
-        h3: 'text-lg font-medium mb-2 mt-4',
+        h1: 'text-2xl font-bold mb-4 mt-6 text-foreground',
+        h2: 'text-xl font-semibold mb-3 mt-5 text-foreground',
+        h3: 'text-lg font-medium mb-2 mt-4 text-foreground',
       },
       text: {
         bold: 'font-semibold',
         italic: 'italic',
-        underline: 'underline',
+        underline: 'underline decoration-brand-purple decoration-2',
         strikethrough: 'line-through',
-        code: 'font-mono bg-muted px-1 py-0.5 rounded text-sm',
+        code: 'font-mono bg-secondary/50 text-secondary-foreground px-1.5 py-0.5 rounded text-sm border border-secondary',
       },
       list: {
         ul: 'list-disc list-outside ml-6 mb-2',
         ol: 'list-decimal list-outside ml-6 mb-2',
         listitem: 'mb-1',
       },
-      link: 'text-primary hover:underline cursor-pointer',
-      quote: 'border-l-4 border-muted-foreground/30 pl-4 italic my-4',
+      link: 'text-brand-blue hover:text-brand-purple hover:underline cursor-pointer transition-colors',
+      quote: 'border-l-4 border-brand-purple/40 bg-secondary/30 pl-4 py-2 italic my-4',
       table: 'border-collapse my-2 text-sm',
-      tableRow: 'border-b border-border/50',
+      tableRow: 'border-b border-border/50 hover:bg-muted/30 transition-colors',
       tableCell: 'border-r border-border/50 px-3 py-1.5 text-left min-w-[100px] last:border-r-0',
-      tableCellHeader: 'border-r border-border/50 px-3 py-1.5 text-left font-medium text-muted-foreground text-xs uppercase tracking-wider',
+      tableCellHeader: 'border-r border-border/50 px-3 py-1.5 text-left font-medium bg-muted/50 text-muted-foreground text-xs uppercase tracking-wider',
     },
     onError: (error: Error) => {
       console.error('Editor error:', error);
@@ -239,31 +327,58 @@ export default function TemplateEditor({
     }
   };
 
+  // Extract all variable names from availableVariables
+  const allVariableNames = availableVariables.map(v => v.name);
+
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <VariableValuesProvider values={values} mode={mode}>
-        <div ref={onRef} className="rounded-lg border bg-card text-card-foreground relative">
-          {/* Clean, distraction-free editor */}
-          <div className="relative">
+      <VariableValuesProvider
+        values={values}
+        mode={mode}
+        setValue={setValue}
+        allVariableNames={allVariableNames}
+      >
+        <div
+          ref={onRef}
+          className={`relative rounded-lg overflow-visible ${
+            mode === 'create'
+              ? ''
+              : ''
+          }`}
+        >
+          <div
+            className={`rounded-lg overflow-hidden border-2 transition-all duration-300 ${
+              mode === 'create'
+                ? 'border-brand-blue/30 bg-card shadow-md hover:border-brand-blue/50 hover:shadow-lg'
+                : 'border-brand-green/30 bg-card shadow-md hover:border-brand-green/50 hover:shadow-lg'
+            }`}
+          >
+            {/* Formatting Toolbar */}
+            <ToolbarPlugin
+              availableVariables={availableVariables}
+              onManageVariables={onManageVariables}
+              mode={mode}
+              onModeToggle={onModeToggle}
+              isOutlineVisible={isOutlineVisible}
+              onToggleOutline={onToggleOutline}
+            />
+
+            {/* Clean, distraction-free editor */}
+            <div className="relative bg-background">
             <RichTextPlugin
               contentEditable={
                 <ContentEditable
-                  className="min-h-[400px] px-8 py-6 outline-none focus:outline-none text-base
-                    selection:bg-primary/20 selection:text-primary-foreground
-                    [&_.template-variable]:inline-flex [&_.template-variable]:items-center
-                    [&_.template-variable]:px-2 [&_.template-variable]:py-0.5
-                    [&_.template-variable]:bg-primary/10 [&_.template-variable]:text-primary
-                    [&_.template-variable]:rounded-md [&_.template-variable]:text-sm
-                    [&_.template-variable]:font-mono [&_.template-variable]:border
-                    [&_.template-variable]:border-primary/20 [&_.template-variable]:mx-0.5
-                    [&_.template-variable]:cursor-default [&_.template-variable]:select-none
-                    hover:[&_.template-variable]:bg-primary/20 hover:[&_.template-variable]:border-primary/30
-                    transition-colors"
+                  className={`min-h-[400px] px-8 py-6 outline-none focus:outline-none text-base
+                    transition-all duration-200 ${
+                      mode === 'create'
+                        ? 'selection:bg-brand-blue/20 selection:text-brand-blue'
+                        : 'selection:bg-brand-green/20 selection:text-brand-green'
+                    }`}
                 />
               }
               placeholder={
                 <div className="absolute top-6 left-8 text-muted-foreground pointer-events-none select-none text-base">
-                  Start typing or use <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded border">{'{{'}</kbd> for variables, <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded border">/</kbd> for blocks
+                  Start typing or use <kbd className="px-2 py-1 text-xs font-mono bg-brand-purple/10 text-brand-purple border border-brand-purple/30 rounded shadow-sm">{'{{'}</kbd> for variables, <kbd className="px-2 py-1 text-xs font-mono bg-brand-orange/10 text-brand-orange border border-brand-orange/30 rounded shadow-sm">/</kbd> for blocks
                 </div>
               }
               ErrorBoundary={LexicalErrorBoundary}
@@ -271,6 +386,7 @@ export default function TemplateEditor({
 
             {/* Plugins */}
             <HistoryPlugin />
+            <DirtyStatePlugin onDirtyChange={onDirtyChange} />
             <OnChangePlugin onChange={handleChange} />
             <ListPlugin />
             <CheckListPlugin />
@@ -302,30 +418,35 @@ export default function TemplateEditor({
               variableToInsert={variableToInsert}
               onVariableInserted={onVariableInserted}
             />
+            <VariableNavigationPlugin mode={mode} />
           </div>
 
-          {/* Minimal footer with shortcuts */}
-          <div className="px-8 py-3 bg-muted/50 border-t flex items-center justify-between">
-            <div className="flex items-center gap-6 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">{'{{'}</kbd>
-                <span>Variables</span>
+          {/* Enhanced footer with color-coded shortcuts */}
+          <div className={`px-8 py-3 border-t-2 flex items-center justify-between transition-colors ${
+            mode === 'create'
+              ? 'bg-gradient-to-r from-brand-blue/5 via-brand-purple/5 to-brand-blue/5 border-brand-blue/20'
+              : 'bg-gradient-to-r from-brand-green/5 via-brand-green/10 to-brand-green/5 border-brand-green/20'
+          }`}>
+            <div className="flex items-center gap-6 text-xs">
+              <span className="flex items-center gap-2 group hover:scale-105 transition-transform">
+                <kbd className="px-2 py-1 bg-brand-purple/10 text-brand-purple border border-brand-purple/30 rounded font-mono text-[11px] font-medium shadow-sm group-hover:shadow-md group-hover:bg-brand-purple/20 transition-all">{'{{'}</kbd>
+                <span className="text-muted-foreground group-hover:text-brand-purple transition-colors font-medium">Variables</span>
               </span>
-              <span className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">/</kbd>
-                <span>Commands</span>
+              <span className="flex items-center gap-2 group hover:scale-105 transition-transform">
+                <kbd className="px-2 py-1 bg-brand-orange/10 text-brand-orange border border-brand-orange/30 rounded font-mono text-[11px] font-medium shadow-sm group-hover:shadow-md group-hover:bg-brand-orange/20 transition-all">/</kbd>
+                <span className="text-muted-foreground group-hover:text-brand-orange transition-colors font-medium">Commands</span>
               </span>
-              <span className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">⌘B</kbd>
-                <span>Bold</span>
+              <span className="flex items-center gap-2 group hover:scale-105 transition-transform">
+                <kbd className="px-2 py-1 bg-secondary border border-border rounded font-mono text-[11px] font-medium shadow-sm group-hover:shadow-md transition-all">⌘B</kbd>
+                <span className="text-muted-foreground group-hover:text-foreground transition-colors">Bold</span>
               </span>
-              <span className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">⌘I</kbd>
-                <span>Italic</span>
+              <span className="flex items-center gap-2 group hover:scale-105 transition-transform">
+                <kbd className="px-2 py-1 bg-secondary border border-border rounded font-mono text-[11px] font-medium shadow-sm group-hover:shadow-md transition-all">⌘I</kbd>
+                <span className="text-muted-foreground group-hover:text-foreground transition-colors">Italic</span>
               </span>
-              <span className="flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 bg-background rounded border font-mono text-[10px]">⌘K</kbd>
-                <span>Link</span>
+              <span className="flex items-center gap-2 group hover:scale-105 transition-transform">
+                <kbd className="px-2 py-1 bg-brand-blue/10 text-brand-blue border border-brand-blue/30 rounded font-mono text-[11px] font-medium shadow-sm group-hover:shadow-md group-hover:bg-brand-blue/20 transition-all">⌘K</kbd>
+                <span className="text-muted-foreground group-hover:text-brand-blue transition-colors font-medium">Link</span>
               </span>
             </div>
             {onManageVariables && (
@@ -333,11 +454,12 @@ export default function TemplateEditor({
                 onClick={onManageVariables}
                 variant="ghost"
                 size="sm"
-                className="text-xs"
+                className="text-xs font-medium text-brand-purple hover:text-brand-purple hover:bg-brand-purple/10 transition-all hover:scale-105"
               >
                 Manage Variables →
               </Button>
             )}
+          </div>
           </div>
         </div>
       </VariableValuesProvider>

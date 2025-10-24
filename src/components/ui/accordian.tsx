@@ -17,17 +17,17 @@ export function AccordionItem({ title, children, defaultOpen = false }: Accordio
   }, [defaultOpen])
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+    <div className="border border-border rounded-lg overflow-hidden bg-background">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors text-left"
+        className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/30 transition-colors text-left"
       >
-        <div className="font-medium text-sm text-gray-900">{title}</div>
+        <div className="font-medium text-sm text-foreground">{title}</div>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
         >
-          <ChevronDown className="w-4 h-4 text-gray-500" />
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
         </motion.div>
       </button>
       <motion.div

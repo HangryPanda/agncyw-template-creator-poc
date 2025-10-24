@@ -130,8 +130,8 @@ export default function TemplatePreview({
                     <span>{GROUP_LABELS[groupKey] || groupKey}</span>
                     <span className={`text-xs px-2 py-0.5 rounded-full ${
                       allFilled
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-600'
+                        ? 'bg-accent/30 text-accent-foreground'
+                        : 'bg-muted text-muted-foreground'
                     }`}>
                       {filled}/{total}
                     </span>
@@ -144,11 +144,11 @@ export default function TemplatePreview({
                     <div key={variable.name} className="flex flex-col gap-1">
                       <label
                         htmlFor={variable.name}
-                        className="text-xs font-medium text-gray-700"
+                        className="text-xs font-medium text-foreground/80"
                       >
                         {variable.label}
                         {variable.description && (
-                          <span className="text-gray-500 font-normal ml-1">
+                          <span className="text-muted-foreground font-normal ml-1">
                             · {variable.description}
                           </span>
                         )}
@@ -159,7 +159,7 @@ export default function TemplatePreview({
                         value={values[variable.name] || ''}
                         onChange={(e) => updateValue(variable.name, e.target.value)}
                         placeholder={variable.example}
-                        className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                        className="px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors"
                       />
                     </div>
                   ))}
@@ -171,10 +171,10 @@ export default function TemplatePreview({
 
         {/* Keyboard Shortcuts Hint */}
         <div className="mt-8 max-w-3xl mx-auto">
-          <div className="text-xs text-gray-400 text-center space-x-4">
-            <span><kbd className="px-1.5 py-0.5 bg-gray-100 rounded border border-gray-200">⌘</kbd> + <kbd className="px-1.5 py-0.5 bg-gray-100 rounded border border-gray-200">Enter</kbd> to copy</span>
+          <div className="text-xs text-muted-foreground/60 text-center space-x-4">
+            <span><kbd className="px-1.5 py-0.5 bg-muted rounded border border-border">⌘</kbd> + <kbd className="px-1.5 py-0.5 bg-muted rounded border border-border">Enter</kbd> to copy</span>
             <span>·</span>
-            <span><kbd className="px-1.5 py-0.5 bg-gray-100 rounded border border-gray-200">⌘</kbd> + <kbd className="px-1.5 py-0.5 bg-gray-100 rounded border border-gray-200">K</kbd> to clear</span>
+            <span><kbd className="px-1.5 py-0.5 bg-muted rounded border border-border">⌘</kbd> + <kbd className="px-1.5 py-0.5 bg-muted rounded border border-border">K</kbd> to clear</span>
           </div>
         </div>
       </div>

@@ -43,7 +43,7 @@ export function VariableList({ variables, onInsertVariable }: VariableListProps)
       <div className="p-4 space-y-6">
         {groupedVariables.map(([groupKey, groupVars]) => (
           <div key={groupKey}>
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
               {GROUP_LABELS[groupKey] || groupKey}
             </h3>
             <div className="space-y-1">
@@ -51,17 +51,17 @@ export function VariableList({ variables, onInsertVariable }: VariableListProps)
                 <button
                   key={variable.name}
                   onClick={() => onInsertVariable(variable.name)}
-                  className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 transition-colors group"
+                  className="w-full text-left px-3 py-2 rounded-md hover:bg-muted transition-colors group"
                   title={variable.description}
                 >
                   <div className="flex items-start gap-2">
-                    <Hash className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                    <Hash className="w-4 h-4 text-muted-foreground/60 mt-0.5 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-gray-900 truncate">
+                      <div className="text-sm font-medium text-foreground truncate">
                         {variable.label}
                       </div>
                       {variable.description && (
-                        <div className="text-xs text-gray-500 truncate">
+                        <div className="text-xs text-muted-foreground truncate">
                           {variable.description}
                         </div>
                       )}

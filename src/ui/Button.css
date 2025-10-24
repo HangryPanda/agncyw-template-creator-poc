@@ -13,13 +13,13 @@
   padding-left: 15px;
   padding-right: 15px;
   border: 0px;
-  background-color: #eee;
+  background-color: hsl(var(--muted) / 0.5);
   border-radius: 5px;
   cursor: pointer;
   font-size: 14px;
 }
 .Button__root:hover {
-  background-color: #ddd;
+  background-color: hsl(var(--muted));
 }
 .Button__small {
   padding-top: 5px;
@@ -32,5 +32,5 @@
   cursor: not-allowed;
 }
 .Button__disabled:hover {
-  background-color: #eee;
+  background-color: hsl(var(--muted) / 0.5);
 }

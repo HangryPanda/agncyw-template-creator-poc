@@ -27,9 +27,15 @@ export default function KatexRenderer({
     const katexElement = katexElementRef.current;
 
     if (katexElement !== null) {
+      // Compute the error color from the current theme
+      const destructiveColor = getComputedStyle(document.documentElement)
+        .getPropertyValue('--destructive')
+        .trim();
+      const errorColor = destructiveColor ? `hsl(${destructiveColor})` : 'hsl(0 84% 60%)';
+
       katex.render(equation, katexElement, {
         displayMode: !inline, // true === block display //
-        errorColor: '#cc0000',
+        errorColor,
         output: 'html',
         strict: 'warn',
         throwOnError: false,

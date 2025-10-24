@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Tag } from '@/types';
 import React from 'react';
+import { PRESET_COLORS, getNextDistinctColor } from '@/utils/colorSystem';
 
 interface InlineTagEditorProps {
   isOpen: boolean;
@@ -13,19 +14,6 @@ interface InlineTagEditorProps {
   onDeleteTag: (tagId: string) => void;
   position?: { top: number; left: number };
 }
-
-const PRESET_COLORS = [
-  { name: 'Blue', light: '#E3F2FD', dark: '#1976D2' },
-  { name: 'Green', light: '#E8F5E9', dark: '#388E3C' },
-  { name: 'Orange', light: '#FFF3E0', dark: '#F57C00' },
-  { name: 'Purple', light: '#F3E5F5', dark: '#7B1FA2' },
-  { name: 'Teal', light: '#E0F2F1', dark: '#00796B' },
-  { name: 'Red', light: '#FFEBEE', dark: '#C62828' },
-  { name: 'Indigo', light: '#E8EAF6', dark: '#303F9F' },
-  { name: 'Pink', light: '#FCE4EC', dark: '#AD1457' },
-  { name: 'Brown', light: '#EFEBE9', dark: '#5D4037' },
-  { name: 'Gray', light: '#FAFAFA', dark: '#616161' },
-];
 
 export default function InlineTagEditor({
   isOpen,
@@ -41,7 +29,7 @@ export default function InlineTagEditor({
   const [isCreating, setIsCreating] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [newTagName, setNewTagName] = useState('');
-  const [selectedColor, setSelectedColor] = useState(PRESET_COLORS[0]);
+  const [selectedColor, setSelectedColor] = useState<string>(PRESET_COLORS[0]);
   const [editingTag, setEditingTag] = useState<Tag | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -97,7 +85,7 @@ export default function InlineTagEditor({
       const newTag: Tag = {
         id: `tag_${Date.now()}`,
         name: newTagName.trim(),
-        color: selectedColor.dark,
+        color: selectedColor,
       };
       onAddTag(newTag);
       setNewTagName('');
@@ -111,7 +99,7 @@ export default function InlineTagEditor({
       onEditTag(editingTag.id, {
         ...editingTag,
         name: newTagName.trim(),
-        color: selectedColor.dark,
+        color: selectedColor,
       });
       setEditingTag(null);
       setNewTagName('');
@@ -121,7 +109,7 @@ export default function InlineTagEditor({
   const handleStartEdit = (tag: Tag) => {
     setEditingTag(tag);
     setNewTagName(tag.name);
-    const color = PRESET_COLORS.find(c => c.dark === tag.color) || PRESET_COLORS[0];
+    const color = PRESET_COLORS.find(c => c === tag.color) || PRESET_COLORS[0];
     setSelectedColor(color);
   };
 
@@ -151,11 +139,11 @@ export default function InlineTagEditor({
 
       {/* Modal */}
       <div ref={modalRef} style={modalStyle}>
-        <div className="bg-white rounded-lg shadow-2xl border border-gray-200 w-[320px] max-h-[480px] overflow-hidden animate-scale-in">
+        <div className="bg-background rounded-lg shadow-2xl border border-border w-[320px] max-h-[480px] overflow-hidden animate-scale-in">
           {/* Header */}
-          <div className="p-3 border-b border-gray-100">
+          <div className="p-3 border-b border-border">
             <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
               </svg>
               <input
@@ -179,14 +167,14 @@ export default function InlineTagEditor({
           {/* Content */}
           <div className="overflow-y-auto max-h-[360px]">
             {isCreating || editingTag ? (
-              <div className="p-4 border-b border-gray-100 bg-gray-50">
+              <div className="p-4 border-b border-border bg-muted/30">
                 <div className="mb-3">
                   <input
                     type="text"
                     value={newTagName}
                     onChange={(e) => setNewTagName(e.target.value)}
                     placeholder="Tag name"
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                     autoFocus
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -198,18 +186,17 @@ export default function InlineTagEditor({
 
                 {/* Color Picker */}
                 <div className="grid grid-cols-5 gap-2 mb-3">
-                  {PRESET_COLORS.map((color) => (
+                  {PRESET_COLORS.map((color, index) => (
                     <button
-                      key={color.name}
+                      key={index}
                       type="button"
                       onClick={() => setSelectedColor(color)}
                       className={`relative w-full h-7 rounded-md transition-all ${
-                        selectedColor.name === color.name
-                          ? 'ring-2 ring-offset-1 ring-gray-400 scale-110'
+                        selectedColor === color
+                          ? 'ring-2 ring-offset-1 ring-ring scale-110'
                           : 'hover:scale-105'
                       }`}
-                      style={{ backgroundColor: color.dark }}
-                      title={color.name}
+                      style={{ backgroundColor: color }}
                     />
                   ))}
                 </div>
@@ -218,7 +205,7 @@ export default function InlineTagEditor({
                 <div className="flex gap-2">
                   <button
                     onClick={editingTag ? handleUpdateTag : handleCreateTag}
-                    className="flex-1 px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700 transition-colors"
+                    className="flex-1 px-3 py-1.5 bg-primary text-white text-xs font-medium rounded-md hover:bg-primary/90 transition-colors"
                   >
                     {editingTag ? 'Update' : 'Create'}
                   </button>
@@ -229,7 +216,7 @@ export default function InlineTagEditor({
                       setNewTagName('');
                       setSearchQuery('');
                     }}
-                    className="px-3 py-1.5 bg-gray-100 text-gray-700 text-xs font-medium rounded-md hover:bg-gray-200 transition-colors"
+                    className="px-3 py-1.5 bg-muted text-foreground/80 text-xs font-medium rounded-md hover:bg-muted transition-colors"
                   >
                     Cancel
                   </button>
@@ -245,12 +232,12 @@ export default function InlineTagEditor({
                       setIsCreating(true);
                       setSearchQuery('');
                     }}
-                    className="w-full px-3 py-2.5 text-left hover:bg-gray-50 transition-colors flex items-center gap-2 text-sm"
+                    className="w-full px-3 py-2.5 text-left hover:bg-muted/30 transition-colors flex items-center gap-2 text-sm"
                   >
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-muted-foreground/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
-                    <span>Create "<span className="font-medium text-gray-900">{searchQuery}</span>"</span>
+                    <span>Create "<span className="font-medium text-foreground">{searchQuery}</span>"</span>
                   </button>
                 )}
 
@@ -260,7 +247,7 @@ export default function InlineTagEditor({
                     {filteredTags.map((tag) => (
                       <div
                         key={tag.id}
-                        className="group flex items-center justify-between px-3 py-2 hover:bg-gray-50 transition-colors"
+                        className="group flex items-center justify-between px-3 py-2 hover:bg-muted/30 transition-colors"
                       >
                         <button
                           onClick={() => handleToggleTag(tag.id)}
@@ -268,11 +255,11 @@ export default function InlineTagEditor({
                         >
                           <div className="flex items-center justify-center w-4 h-4">
                             {selectedTags.includes(tag.id) ? (
-                              <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                              <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                               </svg>
                             ) : (
-                              <div className="w-3 h-3 border border-gray-300 rounded-sm" />
+                              <div className="w-3 h-3 border border-border rounded-sm" />
                             )}
                           </div>
                           <span
@@ -289,7 +276,7 @@ export default function InlineTagEditor({
                               e.stopPropagation();
                               handleStartEdit(tag);
                             }}
-                            className="p-1 text-gray-400 hover:text-gray-600"
+                            className="p-1 text-muted-foreground/60 hover:text-muted-foreground"
                             title="Edit tag"
                           >
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -303,7 +290,7 @@ export default function InlineTagEditor({
                                 onDeleteTag(tag.id);
                               }
                             }}
-                            className="p-1 text-gray-400 hover:text-red-600"
+                            className="p-1 text-muted-foreground/60 hover:text-destructive"
                             title="Delete tag"
                           >
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -315,7 +302,7 @@ export default function InlineTagEditor({
                     ))}
                   </div>
                 ) : (
-                  <div className="p-8 text-center text-sm text-gray-500">
+                  <div className="p-8 text-center text-sm text-muted-foreground">
                     {searchQuery ? 'No tags found' : 'No tags yet'}
                   </div>
                 )}
@@ -325,10 +312,10 @@ export default function InlineTagEditor({
 
           {/* Footer with Quick Actions */}
           {!isCreating && !editingTag && tags.length > 0 && (
-            <div className="p-2 border-t border-gray-100 bg-gray-50">
+            <div className="p-2 border-t border-border bg-muted/30">
               <button
                 onClick={() => setIsCreating(true)}
-                className="w-full px-3 py-1.5 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors text-left"
+                className="w-full px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors text-left"
               >
                 + New tag
               </button>

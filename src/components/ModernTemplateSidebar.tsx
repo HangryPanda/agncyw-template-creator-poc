@@ -100,8 +100,8 @@ export default function ModernTemplateSidebar({
       onClick={() => onSelectTemplate(template.id)}
       className={`group p-3 mb-1.5 rounded-lg cursor-pointer transition-all duration-200 border ${
         selectedTemplateId === template.id
-          ? 'bg-primary-50 border-primary-300 shadow-sm'
-          : 'bg-white border-gray-200 hover:border-primary-200 hover:bg-primary-25 hover:shadow-sm'
+          ? 'bg-primary/10 border-primary shadow-sm'
+          : 'bg-background border-border hover:border-primary/50 hover:bg-accent/50 hover:shadow-sm'
       }`}
     >
       <div className="flex items-start justify-between mb-1">
@@ -109,7 +109,7 @@ export default function ModernTemplateSidebar({
           <span className="text-sm flex-shrink-0">
             {template.type === 'email' ? '✉️' : '💬'}
           </span>
-          <span className="font-medium text-sm text-gray-800 truncate">
+          <span className="font-medium text-sm text-foreground/90 truncate">
             {template.name}
           </span>
         </div>
@@ -119,17 +119,17 @@ export default function ModernTemplateSidebar({
               e.stopPropagation();
               onToggleStar(template.id);
             }}
-            className="text-base hover:scale-110 transition-transform duration-150 flex-shrink-0"
+            className="text-base hover:scale-110 transition-all duration-150 flex-shrink-0 p-1 rounded hover:bg-brand-orange/20"
             title={template.isStarred ? 'Remove from favorites' : 'Add to favorites'}
           >
-            {template.isStarred ? '⭐' : '☆'}
+            {template.isStarred ? '★' : '☆'}
           </button>
         )}
       </div>
-      <div className="flex items-center gap-2 text-xs text-gray-500">
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <span>{formatDate(template.updatedAt)}</span>
         {template.useCount && template.useCount > 0 && (
-          <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-medium">
+          <span className="px-2 py-0.5 bg-accent/30 text-accent-foreground rounded-full font-medium">
             {template.useCount}x
           </span>
         )}
@@ -140,7 +140,7 @@ export default function ModernTemplateSidebar({
               onDeleteTemplate(template.id);
             }
           }}
-          className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-150 hover:text-red-600"
+          className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-150 text-base p-1 rounded hover:bg-destructive/20"
           title="Delete template"
         >
           🗑️
@@ -162,16 +162,16 @@ export default function ModernTemplateSidebar({
       <div key={id} className="mb-2">
         <div
           onClick={() => toggleSection(id)}
-          className="flex items-center justify-between p-2.5 rounded-lg bg-gray-100 hover:bg-gray-150 cursor-pointer transition-colors duration-150 select-none"
+          className="flex items-center justify-between p-2.5 rounded-lg bg-muted/30 hover:bg-muted/50 cursor-pointer transition-colors duration-150 select-none"
         >
-          <span className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+          <span className="flex items-center gap-2 text-sm font-semibold text-foreground/80">
             <span>{icon}</span>
             {title}
-            <span className="px-2 py-0.5 bg-gray-200 text-gray-600 rounded-full text-xs font-medium">
+            <span className="px-2 py-0.5 bg-muted text-muted-foreground rounded-full text-xs font-medium">
               {templates.length}
             </span>
           </span>
-          <span className="text-xs text-gray-500 transition-transform duration-150" style={{
+          <span className="text-xs text-muted-foreground transition-transform duration-150" style={{
             transform: expandedSections.has(id) ? 'rotate(90deg)' : 'rotate(0deg)'
           }}>
             ▶
@@ -180,7 +180,7 @@ export default function ModernTemplateSidebar({
         {expandedSections.has(id) && (
           <div className="mt-1.5 pl-2 animate-slide-in">
             {templates.length === 0 ? (
-              <div className="p-3 text-xs text-gray-400 italic text-center">
+              <div className="p-3 text-xs text-muted-foreground/60 italic text-center">
                 No templates found
               </div>
             ) : (
@@ -193,14 +193,14 @@ export default function ModernTemplateSidebar({
   };
 
   return (
-    <div className="w-full h-full bg-gradient-to-b from-white to-gray-50 flex flex-col shadow-lg">
-      {/* Header */}
-      <div className="p-4 bg-gradient-to-r from-primary-600 to-blue-600 border-b border-primary-700 shadow">
+    <div className="w-full h-full bg-background flex flex-col">
+      {/* Header - Darkest background */}
+      <div className="p-4 bg-background border-b border-border">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xl font-bold text-white">Templates</h2>
+          <h2 className="text-lg font-bold text-foreground">Templates</h2>
           <button
             onClick={onNewTemplate}
-            className="px-3 py-1.5 bg-white text-primary-600 rounded-lg text-sm font-semibold hover:bg-blue-50 transition-all duration-200 shadow-sm hover:shadow active:scale-95"
+            className="px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-sm font-semibold hover:bg-primary/90 transition-all duration-200 shadow-sm hover:shadow active:scale-95"
             title="Create new template"
           >
             + New
@@ -214,7 +214,7 @@ export default function ModernTemplateSidebar({
             placeholder="🔍 Search templates..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-primary-300 rounded-lg bg-white/95 backdrop-blur focus:outline-none focus:ring-2 focus:ring-white/50 transition-all duration-150"
+            className="w-full px-3 py-2 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-150"
           />
         </div>
       </div>
@@ -222,7 +222,7 @@ export default function ModernTemplateSidebar({
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {/* Starred Section */}
-        {renderSection('starred', 'Favorites', starredTemplates, '⭐', false)}
+        {renderSection('starred', 'Favorites', starredTemplates, '⭐', true)}
 
         {/* Recently Used Section */}
         {renderSection('recent', 'Recently Used', recentTemplates, '🕐', true)}
@@ -244,10 +244,10 @@ export default function ModernTemplateSidebar({
       </div>
 
       {/* Footer */}
-      <div className="p-3 border-t border-gray-200 bg-white">
+      <div className="p-3 border-t border-border bg-background">
         <button
           onClick={onManageTags}
-          className="w-full px-4 py-2.5 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 transition-all duration-150 hover:shadow-sm"
+          className="w-full px-4 py-2.5 bg-background hover:bg-muted border border-border rounded-lg text-sm font-medium text-foreground/80 transition-all duration-150 hover:shadow-sm"
         >
           ⚙️ Manage Tags
         </button>
