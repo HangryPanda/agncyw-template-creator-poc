@@ -18,7 +18,7 @@
  * ```
  */
 
-import { TabBar } from '@/lib/tabs';
+import { TabBar } from '../../core';
 import { Template } from '@/types';
 import { Mail, MessageSquare } from 'lucide-react';
 

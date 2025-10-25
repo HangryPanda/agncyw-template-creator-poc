@@ -1,20 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
-import TemplateEditor from './components/TemplateEditor';
-import ModernTemplateSidebar from './components/ModernTemplateSidebar';
-import TemplateMetadataEditor from './components/TemplateMetadataEditor';
+import TemplateEditor from './apps/TemplateEditor/features/editor/components/TemplateEditor.view';
+import ModernTemplateSidebar from './apps/TemplateEditor/features/sidebar/components/ModernTemplateSidebar.view';
+import TemplateMetadataEditor from './apps/TemplateEditor/features/metadata/components/TemplateMetadataEditor.view';
 import CharacterCounter from './components/CharacterCounter';
-import GlobalSearch from './components/GlobalSearch';
-import InlineTagEditor from './components/InlineTagEditor';
-import InlineVariableEditor from './components/InlineVariableEditor';
+import GlobalSearch from './apps/TemplateEditor/features/sidebar/components/GlobalSearch.view';
+import InlineTagEditor from './apps/TemplateEditor/features/metadata/components/InlineTagEditor.view';
+import InlineVariableEditor from './apps/TemplateEditor/features/metadata/components/InlineVariableEditor.view';
 import { FormWrapper } from './components/FormWrapper';
 import { ResponsiveDrawer } from './components/ResponsiveDrawer';
-import { TemplateEditorTabs } from './components/TemplateEditorTabs';
+import { TemplateEditorTabs, useTemplateEditorTabs } from '@/lib/tabs/integrations/lexical';
 import { useTemplateValues } from './hooks/use-template-values';
 import { useTemplateRegistry } from './hooks/useTemplateRegistry';
-import { useTemplateEditorTabs } from './hooks/useTemplateEditorTabs';
 import { Toaster } from './components/ui/sonner';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from './components/ui/resizable';
-import { TemplateVariable, EditorState, Template, Tag } from './types';
+import { TemplateVariable, EditorState, Template, Tag } from '@/apps/_shared/template/types';
 import GitHubEditorPage from './pages/GitHubEditorPage';
 // Removed App.css - using Tailwind and shadcn styles instead
 
@@ -40,8 +39,8 @@ const INSURANCE_VARIABLES: TemplateVariable[] = [
   { name: 'phone_number', label: 'Agency Phone', description: 'Agency contact number', example: '(555) 123-4567', group: 'agency' },
 ];
 
-// Import EMPTY_TEMPLATE from config
-import { EMPTY_TEMPLATE } from './config/defaultTemplates';
+// Import EMPTY_TEMPLATE from new location
+import { EMPTY_TEMPLATE } from './apps/TemplateEditor/data/defaultTemplates';
 
 const CUSTOM_VARIABLES_KEY = 'insurance_template_custom_variables';
 const TAGS_KEY = 'insurance_template_tags';
@@ -302,28 +301,59 @@ function App() {
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const isMod = e.metaKey || e.ctrlKey;
+
       // Cmd/Ctrl + K for search
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if (isMod && e.key === 'k') {
         e.preventDefault();
         setIsSearchOpen(true);
       }
       // Cmd/Ctrl + N for new template
-      if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
+      if (isMod && e.key === 'n') {
         e.preventDefault();
         handleNewTemplate();
       }
       // Cmd/Ctrl + B for toggle sidebar
-      if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
+      if (isMod && e.key === 'b') {
         e.preventDefault();
         if (windowWidth >= 768) {
           setIsSidebarCollapsed(!isSidebarCollapsed);
+        }
+      }
+
+      // Tab navigation shortcuts
+      // Cmd/Ctrl + W to close active tab
+      if (isMod && e.key === 'w') {
+        e.preventDefault();
+        if (activeTabId) {
+          closeTab(activeTabId);
+        }
+      }
+
+      // Cmd/Ctrl + Tab to switch to next tab
+      if (isMod && e.key === 'Tab' && !e.shiftKey) {
+        e.preventDefault();
+        if (openTabs.length > 0 && activeTabId) {
+          const currentIndex = openTabs.indexOf(activeTabId);
+          const nextIndex = (currentIndex + 1) % openTabs.length;
+          setActiveTab(openTabs[nextIndex]);
+        }
+      }
+
+      // Cmd/Ctrl + Shift + Tab to switch to previous tab
+      if (isMod && e.shiftKey && e.key === 'Tab') {
+        e.preventDefault();
+        if (openTabs.length > 0 && activeTabId) {
+          const currentIndex = openTabs.indexOf(activeTabId);
+          const prevIndex = (currentIndex - 1 + openTabs.length) % openTabs.length;
+          setActiveTab(openTabs[prevIndex]);
         }
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isSidebarCollapsed, windowWidth]);
+  }, [isSidebarCollapsed, windowWidth, openTabs, activeTabId, closeTab, setActiveTab]);
 
   // If GitHub editor view is active, render that page
   if (currentView === 'github-editor') {
@@ -481,6 +511,7 @@ function App() {
                     onDeleteTemplate={handleDeleteTemplate}
                     onToggleStar={handleToggleStar}
                     onManageTags={() => setShowTagEditor(true)}
+                    openTabIds={openTabs}
                   />
                 </ResizablePanel>
                 <ResizableHandle className="w-px bg-border hover:bg-primary/30 transition-colors" />
@@ -851,6 +882,7 @@ function App() {
                           setShowTagEditor(true);
                           setIsSidebarDrawerOpen(false);
                         }}
+                        openTabIds={openTabs}
                       />
                     </ResponsiveDrawer>
                   </>

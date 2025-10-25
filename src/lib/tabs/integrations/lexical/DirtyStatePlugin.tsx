@@ -21,7 +21,7 @@
  */
 
 import { useEffect } from 'react';
-import { useLexicalDirtyState } from '@/hooks/useLexicalDirtyState';
+import { useLexicalDirtyState } from './useLexicalDirtyState';
 
 export interface DirtyStatePluginProps {
   /**

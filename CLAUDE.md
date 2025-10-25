@@ -36,6 +36,60 @@ The project uses **strict TypeScript** with additional linting rules:
 
 ## Architecture
 
+### Tab Management System
+
+The application uses a modular, reusable tab navigation system inspired by VS Code. See **[complete documentation](src/lib/tabs/CLAUDE.md)** for full API reference and usage examples.
+
+**Key Features:**
+- VS Code-style horizontal tabs with drag-and-drop reordering
+- localStorage persistence across browser sessions
+- Dirty state tracking with unsaved change indicators
+- Keyboard shortcuts (Cmd/Ctrl+W to close, Cmd/Ctrl+Tab to switch)
+- Context menu (close, close others, close to right, close all)
+- Generic core system + Lexical-specific integration
+
+**File Structure:**
+```
+src/lib/tabs/
+├── core/                          # Generic, reusable tab system
+│   ├── useTabManager.ts           # State management hook
+│   ├── TabBar.tsx                 # VS Code-style UI component
+│   └── types.ts                   # TypeScript definitions
+└── integrations/lexical/          # Lexical editor integration
+    ├── useLexicalDirtyState.ts    # Dirty state tracking
+    ├── DirtyStatePlugin.tsx       # Headless dirty state plugin
+    ├── useTemplateEditorTabs.ts   # Template-specific wrapper
+    └── TemplateEditorTabs.tsx     # Template tab bar component
+```
+
+**Quick Integration:**
+```typescript
+import {
+  useTemplateEditorTabs,
+  TemplateEditorTabs,
+  DirtyStatePlugin
+} from '@/lib/tabs/integrations/lexical';
+
+const { tabs, activeTabId, openTab, closeTab, dirtyTabs, markTabDirty } = useTemplateEditorTabs();
+
+// Render tabs
+<TemplateEditorTabs
+  tabs={tabs}
+  activeTabId={activeTabId}
+  templates={templates}
+  modifiedTabs={dirtyTabs}
+  onTabClick={setActiveTab}
+  onTabClose={closeTab}
+/>
+
+// Track dirty state in Lexical
+<LexicalComposer>
+  <DirtyStatePlugin onDirtyChange={(isDirty) => markTabDirty(activeTabId, isDirty)} />
+</LexicalComposer>
+```
+
+For detailed documentation, examples, and API reference, see [src/lib/tabs/CLAUDE.md](src/lib/tabs/CLAUDE.md).
+
 ### Lexical Custom Node System
 
 The core architecture revolves around **Lexical's DecoratorNode** system for creating custom template variables:

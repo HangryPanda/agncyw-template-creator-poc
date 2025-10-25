@@ -26,7 +26,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { useTabManager } from '@/lib/tabs';
+import { useTabManager } from '../../core';
 
 export interface UseTemplateEditorTabsReturn {
   /**

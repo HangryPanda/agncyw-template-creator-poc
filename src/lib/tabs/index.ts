@@ -1,36 +1,21 @@
 /**
- * Generic Tab System
+ * Tab Management System
  *
- * Modular tab management system that can be used in any React application.
- * Provides both state management (hooks) and UI (components).
+ * A modular, reusable VS Code-style tab navigation system for React applications.
  *
- * @example
- * ```typescript
- * import { useTabManager, TabBar } from '@/lib/tabs';
+ * ## Core System
+ * Generic tab state management with persistence, drag-and-drop, and keyboard shortcuts.
+ * Import from `@/lib/tabs/core` for framework-agnostic usage.
  *
- * function MyApp() {
- *   const tabManager = useTabManager({
- *     storageKey: 'my_app_tabs',
- *     persist: true,
- *   });
+ * ## Integrations
+ * Editor-specific integrations (e.g., Lexical) that add dirty state tracking and
+ * custom tab behaviors. Import from `@/lib/tabs/integrations/[integration-name]`.
  *
- *   return (
- *     <TabBar
- *       {...tabManager}
- *       items={myItemsMap}
- *       renderTabContent={(item) => <div>{item.name}</div>}
- *     />
- *   );
- * }
- * ```
+ * @see {@link file://./CLAUDE.md} for complete documentation
  */
 
-export { useTabManager } from './useTabManager';
-export { TabBar } from './TabBar';
-export type {
-  TabItem,
-  TabsState,
-  UseTabManagerOptions,
-  TabManagerReturn,
-} from './types';
-export type { TabBarProps } from './TabBar';
+// Export core tab system
+export * from './core';
+
+// Export integrations
+export * from './integrations';
