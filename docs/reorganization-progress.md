@@ -56,6 +56,196 @@ All completed Phase 1 steps used the OLD naming convention. These files need to 
 
 ---
 
+## Phase 1 Reconciliation: Naming Convention Fix
+
+**Status**: ⏸️ READY TO EXECUTE
+**Audit Document**: See `/docs/phase1-naming-audit.md` for complete file list
+**Estimated Time**: 1-2 hours
+
+### Summary of Required Changes
+
+**Files to Rename**: 25 total
+- 17 components: `.view.tsx` → `.tsx` (PascalCase)
+- 3 services: `.service.ts` → `Service.ts` (camelCase)
+- 5 types: `.model.ts` → `.ts` (PascalCase)
+
+**Import Updates**: ~15-20 locations
+- 6 imports in `App.tsx`
+- 4+ barrel exports (`index.ts` files)
+- 5-10 component/hook imports of services/types
+
+### Step-by-Step Reconciliation Plan
+
+#### **Phase 1.R1: Rename Editor Feature Components ✓ READY**
+
+**Files to rename (3):**
+```bash
+git mv src/apps/TemplateEditor/features/editor/components/EditorCommandMenu.view.tsx \
+       src/apps/TemplateEditor/features/editor/components/EditorCommandMenu.tsx
+
+git mv src/apps/TemplateEditor/features/editor/components/TemplateEditor.view.tsx \
+       src/apps/TemplateEditor/features/editor/components/TemplateEditor.tsx
+
+git mv src/apps/TemplateEditor/features/editor/components/VariablePopover.view.tsx \
+       src/apps/TemplateEditor/features/editor/components/VariablePopover.tsx
+```
+
+**Update imports in:**
+- [ ] `src/apps/TemplateEditor/features/editor/index.ts` (barrel export)
+- [ ] `src/App.tsx` (TemplateEditor import)
+
+**Verify:**
+- [ ] `npm run build` succeeds
+
+---
+
+#### **Phase 1.R2: Rename Metadata Feature Components ✓ READY**
+
+**Files to rename (6):**
+```bash
+# In src/apps/TemplateEditor/features/metadata/components/
+git mv InlineTagEditor.view.tsx InlineTagEditor.tsx
+git mv InlineTitleEditor.view.tsx InlineTitleEditor.tsx
+git mv InlineVariableEditor.view.tsx InlineVariableEditor.tsx
+git mv TemplateMetadataEditor.view.tsx TemplateMetadataEditor.tsx
+git mv VariableList.view.tsx VariableList.tsx
+git mv VariableManager.view.tsx VariableManager.tsx
+```
+
+**Update imports in:**
+- [ ] `src/apps/TemplateEditor/features/metadata/index.ts` (barrel export)
+- [ ] `src/App.tsx` (3 imports: TemplateMetadataEditor, InlineTagEditor, InlineVariableEditor)
+
+**Verify:**
+- [ ] `npm run build` succeeds
+
+---
+
+#### **Phase 1.R3: Rename Preview Feature Components ✓ READY**
+
+**Files to rename (2):**
+```bash
+# In src/apps/TemplateEditor/features/preview/components/
+git mv ComposePreview.view.tsx ComposePreview.tsx
+git mv TemplatePreview.view.tsx TemplatePreview.tsx
+```
+
+**Update imports in:**
+- [ ] `src/apps/TemplateEditor/features/preview/index.ts` (barrel export)
+
+**Verify:**
+- [ ] `npm run build` succeeds
+
+---
+
+#### **Phase 1.R4: Rename Sidebar Feature Components ✓ READY**
+
+**Files to rename (6):**
+```bash
+# In src/apps/TemplateEditor/features/sidebar/components/
+git mv AdvancedFilters.view.tsx AdvancedFilters.tsx
+git mv BackupRestorePanel.view.tsx BackupRestorePanel.tsx
+git mv EnhancedTemplateSidebar.view.tsx EnhancedTemplateSidebar.tsx
+git mv GlobalSearch.view.tsx GlobalSearch.tsx
+git mv ModernTemplateSidebar.view.tsx ModernTemplateSidebar.tsx
+git mv TagManager.view.tsx TagManager.tsx
+```
+
+**Update imports in:**
+- [ ] `src/apps/TemplateEditor/features/sidebar/index.ts` (barrel export)
+- [ ] `src/App.tsx` (2 imports: ModernTemplateSidebar, GlobalSearch)
+
+**Verify:**
+- [ ] `npm run build` succeeds
+
+---
+
+#### **Phase 1.R5: Rename Shared Services ✓ READY**
+
+**Files to rename (3):**
+```bash
+# In src/apps/_shared/template/services/
+git mv templateBackup.service.ts templateBackupService.ts
+git mv templateMigrations.service.ts templateMigrationsService.ts
+git mv templateRegistry.service.ts templateRegistryService.ts
+```
+
+**Update imports in:**
+- [ ] `src/apps/_shared/template/services/index.ts` (barrel export)
+- [ ] `src/hooks/templateRegistry/useTemplateRegistry.ts` (if exists)
+- [ ] `src/apps/TemplateEditor/features/sidebar/components/BackupRestorePanel.tsx`
+- [ ] Any other components importing these services
+
+**Verify:**
+- [ ] `npm run build` succeeds
+
+---
+
+#### **Phase 1.R6: Rename Shared Types ✓ READY**
+
+**Files to rename (5):**
+```bash
+# In src/apps/_shared/template/types/
+git mv editorState.model.ts EditorState.ts
+git mv registry.model.ts Registry.ts
+git mv tag.model.ts Tag.ts
+git mv template.model.ts Template.ts
+git mv variable.model.ts Variable.ts
+```
+
+**Update imports in:**
+- [ ] `src/apps/_shared/template/types/index.ts` (barrel export)
+- [ ] All components importing these types (search for `.model`)
+- [ ] All services importing these types
+
+**Verify:**
+- [ ] `npm run build` succeeds
+
+---
+
+#### **Phase 1.R7: Final Verification ✓ READY**
+
+- [ ] No `.view.tsx` files remain in `src/apps/`
+- [ ] No `.service.ts` files remain in `src/apps/`
+- [ ] No `.model.ts` files remain in `src/apps/`
+- [ ] `npm run build` succeeds with 0 errors
+- [ ] `npm run dev` works
+- [ ] App loads in browser without errors
+- [ ] All features work as expected
+
+---
+
+### Rollback Plan
+
+If any step breaks the build:
+
+```bash
+# Undo all changes since last commit
+git restore .
+
+# Or if you've already committed
+git reset --hard HEAD~1
+```
+
+### After Successful Reconciliation
+
+1. Mark all Phase 1.R steps as complete in this document
+2. Commit changes:
+   ```bash
+   git add -A
+   git commit -m "refactor: reconcile Phase 1 naming to hybrid convention
+
+   - Rename .view.tsx → .tsx (17 components)
+   - Rename .service.ts → Service.ts (3 services)
+   - Rename .model.ts → .ts (5 types)
+   - Update all imports in App.tsx and barrel exports
+   - Verified build succeeds"
+   ```
+3. Update Phase 1 steps below to reflect correct naming
+4. Continue with Phase 2 using correct naming convention
+
+---
+
 ## Summary
 
 ### Phase 2 Step 2.4.1 Completion Summary ✓
