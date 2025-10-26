@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { useTemplateRegistry } from '@/hooks/useTemplateRegistry';
+import { useTemplateRegistry } from '@/hooks/templateRegistry';
 import { ImportStrategy, TemplateBackup } from '@/types';
 import { toast } from 'sonner';
 

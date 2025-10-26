@@ -1,13 +1,120 @@
 # File System Reorganization Progress Tracker
 
 **Started**: 2025-01-24
-**Last Updated**: 2025-01-24
-**Status**: Phase 1 Complete ✓ - App Using New Structure
-**Current Phase**: Ready for Phase 2 or cleanup old files
+**Last Updated**: 2025-01-25
+**Status**: ⚠️ NAMING CONVENTION UPDATE - Reconciliation Required
+**Current Phase**: Pending - Awaiting naming convention reconciliation
+
+---
+
+## ⚠️ **CRITICAL UPDATE: Naming Convention Change**
+
+**Date**: 2025-01-25
+
+### What Changed
+
+The project has adopted a **hybrid naming convention** that respects React/TypeScript ecosystem standards:
+
+**OLD Approach (No Longer Valid):**
+- ❌ Components: `TemplateEditor.view.tsx`
+- ❌ Hooks: `use-template-registry.hook.ts`
+- ❌ Services: `template-registry.service.ts`
+- ❌ All files used kebab-case + dot notation suffixes
+
+**NEW Approach (Current Standard):**
+- ✅ Components: `TemplateEditor.tsx` (PascalCase, no suffix)
+- ✅ Hooks: `useTemplateRegistry.ts` (useCamelCase, no suffix)
+- ✅ Services: `templateRegistryService.ts` (camelCase + Service)
+- ✅ Directories: `kebab-case/` (universal)
+- ✅ CSS: `kebab-case.css`
+
+**Reference:** See `/docs/naming-quick-reference.md` for complete guidelines
+
+### Impact on This Document
+
+All completed Phase 1 steps used the OLD naming convention. These files need to be renamed to match the NEW convention:
+
+**Phase 1 Completed Files (Need Renaming):**
+- ✅ Created but need renaming: 20 `.view.tsx` files → `.tsx`
+- ✅ Created but need renaming: 3 `.service.ts` files → `Service.ts` (camelCase)
+- ✅ Created but need renaming: 5 `.model.ts` files → `.ts`
+
+**Phase 2-5 Pending Steps:**
+- ⚠️ All file naming examples in pending steps are now OUTDATED
+- ⚠️ Do NOT follow the `.view.tsx`, `.hook.ts`, `.service.ts` patterns shown below
+- ⚠️ Refer to `/docs/naming-quick-reference.md` for correct naming
+
+### Next Actions Required
+
+1. **Rename all Phase 1 completed files** to match new convention
+2. **Update all import statements** in consuming files
+3. **Verify build still works** after renaming
+4. **Update this document** with correct naming examples
+5. **Continue Phase 2+** using new naming convention
+
+**DO NOT proceed with Phase 2+ tasks until Phase 1 files are renamed!**
 
 ---
 
 ## Summary
+
+### Phase 2 Step 2.4.1 Completion Summary ✓
+
+Successfully completed design token reorganization:
+
+**Files Created**:
+- `src/styles/tokens/colorSystem.css` - Color palette, semantic colors, dark mode
+- `src/styles/tokens/typography.css` - Fonts, sizes, spacing, z-index
+- `src/styles/tokens/effects.css` - Shadows, transitions, animations, utility classes
+- `src/styles/tokens/index.css` - Barrel export for all tokens
+
+**Improvements**:
+- Split generic `design-system.css` into specific, purpose-driven files
+- Merged `premium-ui.css` content into `effects.css`
+- Eliminated generic naming ("design-system", "premium-ui")
+- Used descriptive names that indicate purpose (colorSystem, typography, effects)
+
+**Current State**:
+- NEW structure: Design tokens organized by purpose in `src/styles/tokens/`
+- OLD structure: Original files still exist (will be deleted in Phase 5)
+- Ready for Step 2.4.2: Lexical theme reorganization
+
+### Phase 2 Step 2.0 Summary ✓
+
+Successfully identified and documented existing reusable libraries:
+
+**Tab Management System** (`src/lib/tabs/`):
+- ✅ Already follows all best practices (domain-specific naming, core/integrations separation)
+- ✅ Comprehensive CLAUDE.md documentation for AI assistants
+- ✅ Ready for multi-app workspace migration
+- ✅ Serves as exemplary reference for other shared infrastructure
+- ✅ No reorganization needed - use as template for other code
+
+### Phase 2 Steps 2.1 & 2.2 Completion Summary ✓
+
+Successfully completed Phase 2 shared infrastructure reorganization:
+
+**Files Created**:
+- 3 component files with `.view.tsx` suffix moved to domain directories
+- 5 hook files moved to domain-specific directories
+- 9 barrel export files created
+
+**Directory Structure**:
+- `src/components/forms/` - Form-related UI (FormWrapper, ResponsiveDrawer)
+- `src/components/indicators/` - Status indicators (CharacterCounter)
+- `src/hooks/templateRegistry/` - Template CRUD and persistence
+- `src/hooks/templateValues/` - Template value management
+- `src/hooks/modalSystem/` - Modal and notification UI
+- `src/hooks/reporting/` - Reporting functionality
+
+**Imports Updated**: ✅ All imports updated in App.tsx and feature components
+**Build Status**: ✅ `npm run build` succeeds with 0 errors
+**Naming Convention**: ✅ Domain-specific names (not generic like "data", "ui", "platform")
+
+**Current State**:
+- NEW structure: All components and hooks using domain-specific organization
+- OLD structure: Original files still exist (can be deleted in Phase 5)
+- Both structures coexist without conflicts
 
 ### Phase 1 Completion Summary ✓
 
@@ -161,61 +268,323 @@ Reorganizing insurance template POC to prepare for multi-app workspace integrati
 
 ## Phase 2: Shared Frontend Infrastructure ⏸️ PENDING
 
-### Step 2.1: Reorganize Components
-- [ ] Create `src/components/primitives/`
-- [ ] Create `src/components/workspace/`
-- [ ] Move `FormWrapper.tsx` → `src/components/primitives/FormWrapper.view.tsx`
-- [ ] Move `ResponsiveDrawer.tsx` → `src/components/primitives/ResponsiveDrawer.view.tsx`
-- [ ] Move `CharacterCounter.tsx` → `src/components/primitives/CharacterCounter.view.tsx`
-- [ ] Create barrel exports for each bucket
+### Step 2.0: Document Existing Reusable Libraries ✓ COMPLETED
+Already well-organized reusable libraries that serve as examples of best practices:
 
-### Step 2.2: Organize Hooks by Domain
-We need to rethink our strategy here. I feel these are too generic. They should be specific to our application so we know exactly what they are for. Also each application contains their own hooks
-- [ ] Create `src/hooks/data/`
-- [ ] Create `src/hooks/ui/`
-- [ ] Create `src/hooks/platform/`
-- [ ] Move `useTemplateRegistry.ts` → `src/hooks/data/useTemplateRegistry.ts`
-- [ ] Move `useTemplateValues.ts` → `src/hooks/data/useTemplateValues.ts`
-- [ ] Move `useModal.tsx` → `src/hooks/ui/useModal.tsx`
-- [ ] Move `useFlashMessage.tsx` → `src/hooks/ui/useFlashMessage.tsx`
-- [ ] Move `useReport.ts` → `src/hooks/platform/useReport.ts`
-- [ ] Create barrel exports
+**Canvas Tab Management System** (`src/lib/tabs/` → will become `src/lib/canvasTabs/`) - ✅ EXEMPLARY
+- [x] Location: `src/lib/tabs/` - Well-structured but needs better naming
+- [x] Structure:
+  - [x] `core/` - Generic, framework-agnostic tab state management
+    - [x] `useTabManager.ts` - React hook for tab state
+    - [x] `TabBar.tsx` - VS Code-style UI component
+    - [x] `types.ts` - TypeScript interfaces
+    - [x] `index.ts` - Barrel exports
+  - [x] `integrations/` - Editor-specific extensions
+    - [x] `lexical/` - Lexical editor integration (dirty state tracking)
+      - [x] `useLexicalDirtyState.ts` - Monitors Lexical undo stack
+      - [x] `DirtyStatePlugin.tsx` - Headless dirty state plugin
+      - [x] `useTemplateEditorTabs.ts` - Template-specific wrapper
+      - [x] `TemplateEditorTabs.tsx` - Template tab bar component
+      - [x] `index.ts` - Barrel exports
+  - [x] `CLAUDE.md` - Comprehensive AI-friendly documentation
+  - [x] `index.ts` - Top-level barrel export
+- [x] **Key Features**:
+  - [x] Modular and reusable across applications
+  - [x] TypeScript generics for type safety
+  - [x] localStorage persistence
+  - [x] Drag-and-drop reordering
+  - [x] Context menus and keyboard shortcuts
+  - [x] Dirty state tracking
+  - [x] Separation of concerns (core vs integrations)
+- [x] **Why It's Exemplary**:
+  - ✅ Clear separation: core (generic) vs integrations (specific)
+  - ✅ Comprehensive documentation (CLAUDE.md)
+  - ✅ Barrel exports at every level
+  - ✅ TypeScript strict mode compliance
+  - ✅ Ready for multi-app workspace migration
+- [x] **Current Import Paths** (will be updated):
+  - Core only: `import { useTabManager, TabBar } from '@/lib/tabs/core'`
+  - Lexical integration: `import { useTemplateEditorTabs } from '@/lib/tabs/integrations/lexical'`
+  - Everything: `import { ... } from '@/lib/tabs'`
 
-### Step 2.3: Organize Assets
+**Notes**:
+- This system follows structural best practices but needs better naming
+- "tabs" is too generic - conflicts with "editor" terminology
+- Will be renamed to "canvasTabs" (inspired by VS Code's workbench + design tools)
+- Use as reference/template when organizing other shared infrastructure
+- Critical for multi-app workspace - designed to be reusable
+- Already includes AI-friendly documentation (CLAUDE.md)
+
+### Step 2.1: Reorganize Shared Components ✓ COMPLETED
+- [x] Create `src/components/forms/` - Form-related UI components
+- [x] Create `src/components/indicators/` - Status and feedback indicators
+- [x] Create `src/components/layout/` - Layout components (if needed) - SKIPPED (not needed yet)
+- [x] Move `FormWrapper.tsx` → `src/components/forms/FormWrapper.view.tsx`
+- [x] Move `ResponsiveDrawer.tsx` → `src/components/forms/ResponsiveDrawer.view.tsx`
+- [x] Move `CharacterCounter.tsx` → `src/components/indicators/CharacterCounter.view.tsx`
+- [x] Create `src/components/forms/index.ts` barrel export
+- [x] Create `src/components/indicators/index.ts` barrel export
+- [x] Create `src/components/index.ts` barrel export
+
+### Step 2.2: Organize Hooks by Application Domain ✓ COMPLETED
+Hooks are organized by their specific application domain/feature, not generic categories.
+- [x] Create `src/hooks/templateRegistry/` - Template CRUD and persistence
+- [x] Create `src/hooks/templateValues/` - Template value management
+- [x] Create `src/hooks/modalSystem/` - Modal and notification UI
+- [x] Create `src/hooks/reporting/` - Reporting functionality
+- [x] Move `useTemplateRegistry.ts` → `src/hooks/templateRegistry/useTemplateRegistry.ts`
+- [x] Move `useTemplateValues.ts` → `src/hooks/templateValues/useTemplateValues.ts`
+- [x] Move `useModal.tsx` → `src/hooks/modalSystem/useModal.tsx`
+- [x] Move `useFlashMessage.tsx` → `src/hooks/modalSystem/useFlashMessage.tsx`
+- [x] Move `useReport.ts` → `src/hooks/reporting/useReport.ts`
+- [x] Create `src/hooks/templateRegistry/index.ts` barrel export
+- [x] Create `src/hooks/templateValues/index.ts` barrel export
+- [x] Create `src/hooks/modalSystem/index.ts` barrel export
+- [x] Create `src/hooks/reporting/index.ts` barrel export
+- [x] Create `src/hooks/index.ts` barrel export
+- [x] Update all imports in App.tsx and feature components
+- [x] Fixed import paths in FormWrapper.view.tsx, TemplatePreview.view.tsx, BackupRestorePanel.view.tsx
+
+### Step 2.3: Rename Canvas Tab Management System
+Rename `src/lib/tabs/` to `src/lib/canvasTabs/` with improved naming conventions.
+
+**Rationale**:
+- "tabs" is too generic and conflicts with "editor" terminology
+- "canvas" clearly represents the workspace where users create/edit (templates, documents, designs)
+- "canvasTabs" = navigation between multiple open canvases
+- Inspired by VS Code's workbench architecture and design tools (Figma, Sketch)
+- Avoids confusion: Canvas (workspace) vs Text Editor (Lexical component within canvas)
+
+**Step 2.3.1: Create New Directory Structure**
+- [ ] Create `src/lib/canvasTabs/` directory
+- [ ] Create `src/lib/canvasTabs/core/` directory
+- [ ] Create `src/lib/canvasTabs/integrations/` directory
+- [ ] Create `src/lib/canvasTabs/integrations/lexical/` directory
+
+**Step 2.3.2: Copy and Rename Core Files**
+- [ ] `src/lib/tabs/core/useTabManager.ts` → `src/lib/canvasTabs/core/useCanvasTabsManager.ts`
+  - [ ] Rename function: `useTabManager` → `useCanvasTabsManager`
+  - [ ] Update internal variable names (tabs → canvasTabs where contextually appropriate)
+- [ ] `src/lib/tabs/core/TabBar.tsx` → `src/lib/canvasTabs/core/CanvasTabsControl.tsx`
+  - [ ] Rename component: `TabBar` → `CanvasTabsControl`
+  - [ ] Update interface: `TabBarProps` → `CanvasTabsControlProps`
+  - [ ] Update CSS class names: `tab-bar` → `canvas-tabs-control`
+- [ ] `src/lib/tabs/core/types.ts` → `src/lib/canvasTabs/core/types.ts`
+  - [ ] Rename interface: `TabItem` → `CanvasTabItem`
+  - [ ] Rename interface: `TabsState` → `CanvasTabsState`
+  - [ ] Rename interface: `UseTabManagerOptions` → `UseCanvasTabsManagerOptions`
+  - [ ] Rename interface: `TabManagerReturn` → `CanvasTabsManagerReturn`
+- [ ] `src/lib/tabs/core/index.ts` → `src/lib/canvasTabs/core/index.ts`
+  - [ ] Update all export names to new naming convention
+
+**Step 2.3.3: Copy and Rename Lexical Integration Files**
+- [ ] `src/lib/tabs/integrations/lexical/useLexicalDirtyState.ts` → `src/lib/canvasTabs/integrations/lexical/useLexicalDirtyState.ts`
+  - [ ] No renaming needed (remains lexical-specific)
+- [ ] `src/lib/tabs/integrations/lexical/DirtyStatePlugin.tsx` → `src/lib/canvasTabs/integrations/lexical/DirtyStatePlugin.tsx`
+  - [ ] No renaming needed (remains lexical-specific)
+- [ ] `src/lib/tabs/integrations/lexical/useTemplateEditorTabs.ts` → `src/lib/canvasTabs/integrations/lexical/useTemplateCanvasTabs.ts`
+  - [ ] Rename function: `useTemplateEditorTabs` → `useTemplateCanvasTabs`
+  - [ ] Rename interface: `UseTemplateEditorTabsReturn` → `UseTemplateCanvasTabsReturn`
+  - [ ] Update localStorage key: `insurance_template_editor_tabs` → `insurance_template_canvas_tabs`
+- [ ] `src/lib/tabs/integrations/lexical/TemplateEditorTabs.tsx` → `src/lib/canvasTabs/integrations/lexical/TemplateCanvasTabsControl.tsx`
+  - [ ] Rename component: `TemplateEditorTabs` → `TemplateCanvasTabsControl`
+  - [ ] Rename interface: `TemplateEditorTabsProps` → `TemplateCanvasTabsControlProps`
+- [ ] `src/lib/tabs/integrations/lexical/index.ts` → `src/lib/canvasTabs/integrations/lexical/index.ts`
+  - [ ] Update all export names
+
+**Step 2.3.4: Copy Top-Level Files**
+- [ ] `src/lib/tabs/integrations/index.ts` → `src/lib/canvasTabs/integrations/index.ts`
+- [ ] `src/lib/tabs/index.ts` → `src/lib/canvasTabs/index.ts`
+- [ ] `src/lib/tabs/CLAUDE.md` → `src/lib/canvasTabs/CANVAS_TABS.md`
+  - [ ] Update all documentation to use new terminology
+  - [ ] Update title: "Tab Management System" → "Canvas Tab Management System"
+  - [ ] Update all code examples with new import paths
+  - [ ] Update all references: "tab" → "canvas tab" where contextually appropriate
+
+**Step 2.3.5: Update All Imports Across Codebase**
+- [ ] Update `src/App.tsx`:
+  - [ ] Change: `import { TemplateEditorTabs, useTemplateEditorTabs } from '@/lib/tabs/integrations/lexical'`
+  - [ ] To: `import { TemplateCanvasTabsControl, useTemplateCanvasTabs } from '@/lib/canvasTabs/integrations/lexical'`
+  - [ ] Update variable names: `useTemplateEditorTabs()` → `useTemplateCanvasTabs()`
+  - [ ] Update JSX: `<TemplateEditorTabs ... />` → `<TemplateCanvasTabsControl ... />`
+- [ ] Update `src/apps/TemplateEditor/features/editor/components/TemplateEditor.view.tsx`:
+  - [ ] Update any imports from `@/lib/tabs`
+- [ ] Update `src/components/TemplateEditor.tsx`:
+  - [ ] Update any imports from `@/lib/tabs`
+- [ ] Update root `CLAUDE.md`:
+  - [ ] Update Tab Management System section with new paths and naming
+  - [ ] Update code examples
+- [ ] Update `tsconfig.json` path aliases (if needed):
+  - [ ] Verify `@/lib/canvasTabs` resolves correctly
+
+**Step 2.3.6: Verification**
+- [ ] Run `npm run build` - zero errors
+- [ ] Run `npm run dev` - verify app loads
+- [ ] Test all canvas tab functionality:
+  - [ ] Open multiple templates (canvas tabs)
+  - [ ] Switch between canvas tabs
+  - [ ] Close canvas tabs
+  - [ ] Drag-and-drop reorder canvas tabs
+  - [ ] Right-click context menu
+  - [ ] Dirty state indicators (unsaved changes)
+  - [ ] localStorage persistence (reload page)
+  - [ ] Confirmation dialog when closing dirty canvas
+- [ ] Verify keyboard shortcuts work (Cmd/Ctrl+W, Cmd/Ctrl+Tab)
+- [ ] Check browser localStorage for new key: `insurance_template_canvas_tabs`
+
+**Step 2.3.7: Document New Terminology**
+- [ ] Add terminology section to `CANVAS_TABS.md`:
+  - **Canvas** = The workspace for a single template/document/design
+  - **Canvas Tab** = Visual representation of an open canvas in the tab bar
+  - **Canvas Tabs Control** = The UI component showing all open canvas tabs
+  - **Text Editor** = Lexical editor component within a canvas (distinct from canvas navigation)
+  - **Template Canvas** = A canvas specifically for editing templates
+  - **Document Canvas** = A canvas for editing documents (future)
+
+### Step 2.4: Organize Assets
 - [ ] Create `src/assets/TemplateEditor/`
 - [ ] Move app-specific assets if any
 
-### Step 2.4: Verification
-- [ ] Run `npm run build`
-- [ ] Run `npm run dev`
+### Step 2.5: Reorganize Styles and Themes
+Reorganize styling to use descriptive, purpose-driven naming instead of generic terms.
+
+**Step 2.5.1: Reorganize Design Tokens** ✓ COMPLETED
+- [x] Create `src/styles/tokens/` - Design token directory
+- [x] Split `design-system.css` → `src/styles/tokens/colorSystem.css` (color palette & semantic colors)
+- [x] Split `design-system.css` → `src/styles/tokens/typography.css` (fonts & text styles)
+- [x] Split `premium-ui.css` → `src/styles/tokens/effects.css` (shadows, transitions, animations)
+- [x] Create `src/styles/base/` - Base styles directory
+- [x] Move global styles → `src/styles/base/global.css` (if needed) - SKIPPED (not needed)
+- [x] Create `src/styles/tokens/index.css` - Barrel export for all tokens
+- [ ] Update imports in main.tsx or index.css
+
+**Step 2.5.2: Reorganize Lexical Editor Themes**
+- [ ] Create `src/themes/lexicalEditor/` - Lexical-specific theme directory
+- [ ] Rename `PlaygroundEditorTheme.ts` → `src/themes/lexicalEditor/templateEditor.theme.ts`
+- [ ] Rename `PlaygroundEditorTheme.css` → `src/themes/lexicalEditor/templateEditor.theme.css`
+- [ ] Rename `CommentEditorTheme.ts` → `src/themes/lexicalEditor/commentEditor.theme.ts`
+- [ ] Rename `CommentEditorTheme.css` → `src/themes/lexicalEditor/commentEditor.theme.css`
+- [ ] Rename `StickyEditorTheme.ts` → `src/themes/lexicalEditor/stickyNote.theme.ts`
+- [ ] Rename `StickyEditorTheme.css` → `src/themes/lexicalEditor/stickyNote.theme.css`
+- [ ] Update all CSS class names inside theme files (PlaygroundEditorTheme__ → TemplateEditorTheme__)
+- [ ] Update all imports in components that use these themes
+- [ ] Create `src/themes/lexicalEditor/index.ts` barrel export
+
+### Step 2.6: Audit and Reorganize UI Components
+Audit the generic `src/ui/` folder and reorganize into domain-specific, purpose-driven groups.
+
+**Step 2.6.1: Analyze Current UI Components**
+- [ ] Document all 29 UI components and their purpose
+- [ ] Identify usage patterns (form controls, overlays, pickers, specialized)
+- [ ] Determine grouping strategy based on component domain
+- [ ] Create `src/components/COMPONENT_REGISTRY.md` - AI-assistant friendly component catalog with:
+  - [ ] Component inventory table (name, path, purpose, category, props signature)
+  - [ ] Usage examples for each component
+  - [ ] Common patterns and anti-patterns
+  - [ ] Import path mappings (old `@/ui/*` → new `@/components/*`)
+  - [ ] Dependencies between components
+  - [ ] Styling approach (CSS file locations)
+  - [ ] TypeScript prop interfaces with descriptions
+
+**Step 2.6.2: Create Domain-Specific UI Directory Structure**
+Organize by component purpose rather than generic "ui" folder:
+- [ ] Create `src/components/primitives/` - Basic reusable controls (Button, TextInput, Select, Switch, FileInput)
+- [ ] Create `src/components/overlays/` - Modal, Dialog, DropDown components
+- [ ] Create `src/components/pickers/` - ColorPicker, DropdownColorPicker components
+- [ ] Create `src/components/editors/` - ContentEditable, specialized editor components
+- [ ] Create `src/components/lexical/` - Lexical-specific UI (ExcalidrawModal, EquationEditor, KatexEquationAlterer, KatexRenderer, ImageResizer)
+
+**Step 2.6.3: Copy UI Components to New Structure with .view.tsx Suffix**
+- [ ] **Primitives** (`src/components/primitives/`):
+  - [ ] `Button.tsx` → `Button.view.tsx`
+  - [ ] `TextInput.tsx` → `TextInput.view.tsx`
+  - [ ] `Select.tsx` → `Select.view.tsx`
+  - [ ] `Switch.tsx` → `Switch.view.tsx`
+  - [ ] `FileInput.tsx` → `FileInput.view.tsx`
+  - [ ] Move corresponding CSS files (Button.css, Select.css, Input.css)
+- [ ] **Overlays** (`src/components/overlays/`):
+  - [ ] `Modal.tsx` → `Modal.view.tsx`
+  - [ ] `Dialog.tsx` → `Dialog.view.tsx`
+  - [ ] `DropDown.tsx` → `DropDown.view.tsx`
+  - [ ] `FlashMessage.tsx` → `FlashMessage.view.tsx`
+  - [ ] Move corresponding CSS files (Modal.css, Dialog.css, DropDown.css, FlashMessage.css)
+- [ ] **Pickers** (`src/components/pickers/`):
+  - [ ] `ColorPicker.tsx` → `ColorPicker.view.tsx`
+  - [ ] `DropdownColorPicker.tsx` → `DropdownColorPicker.view.tsx`
+  - [ ] Move corresponding CSS files (ColorPicker.css)
+- [ ] **Editors** (`src/components/editors/`):
+  - [ ] `ContentEditable.tsx` → `ContentEditable.view.tsx`
+  - [ ] Move corresponding CSS files (ContentEditable.css)
+- [ ] **Lexical Components** (`src/components/lexical/`):
+  - [ ] `ExcalidrawModal.tsx` → `ExcalidrawModal.view.tsx`
+  - [ ] `EquationEditor.tsx` → `EquationEditor.view.tsx`
+  - [ ] `KatexEquationAlterer.tsx` → `KatexEquationAlterer.view.tsx`
+  - [ ] `KatexRenderer.tsx` → `KatexRenderer.view.tsx`
+  - [ ] `ImageResizer.tsx` → `ImageResizer.view.tsx`
+  - [ ] Move corresponding CSS files (ExcalidrawModal.css, EquationEditor.css, KatexEquationAlterer.css)
+
+**Step 2.6.4: Create Barrel Exports for New UI Structure**
+- [ ] Create `src/components/primitives/index.ts` - Export all primitive components
+- [ ] Create `src/components/overlays/index.ts` - Export all overlay components
+- [ ] Create `src/components/pickers/index.ts` - Export all picker components
+- [ ] Create `src/components/editors/index.ts` - Export all editor components
+- [ ] Create `src/components/lexical/index.ts` - Export all Lexical-specific components
+- [ ] Update `src/components/index.ts` - Re-export from all subdirectories
+
+**Step 2.6.5: Update Imports Across Codebase**
+Update all imports from `@/ui/*` to new paths:
+- [ ] Update imports in `src/plugins/` directory (~15 files)
+- [ ] Update imports in `src/nodes/` directory (~5 files)
+- [ ] Update imports in `src/hooks/` directory (~2 files)
+- [ ] Update imports in `src/context/` directory (~1 file)
+- [ ] Update imports in `src/ui/KatexEquationAlterer.tsx` (internal import)
+- [ ] Verify all imports use new structure (e.g., `@/components/primitives`, `@/components/overlays`)
+
+**Step 2.6.6: Verification**
+- [ ] Run `npm run build` - zero errors
+- [ ] Run `npm run dev` - verify app loads
+- [ ] Test UI components in various contexts (toolbar, plugins, modals)
+- [ ] Verify CSS files are loaded correctly
+
+### Step 2.7: Final Phase 2 Verification
+- [ ] Run `npm run build` - zero errors
+- [ ] Run `npm run dev` - verify app loads
 - [ ] Test shared components work
+- [ ] Verify all styles load correctly
+- [ ] Test all reorganized hooks, UI components, and design tokens
 
 ---
 
-## Phase 3: Backend Structure ⏸️ PENDING
-I would like to discuss the naming convention used here. We have backend web db servers (not in this repo, but we do have them in our parent repo) and localStorage backend localStorage so we need to rethink our naming conventions here. 
-### Step 3.1: Create Backend Directory Structure
-- [ ] Create `backend/app/Http/Controllers/Api/Templates/`
-- [ ] Create `backend/app/Services/Templates/`
-- [ ] Create `backend/app/Models/`
-- [ ] Create `backend/app/Http/Requests/Templates/`
-- [ ] Create `backend/database/migrations/templates/`
-- [ ] Create `backend/database/seeders/templates/`
-- [ ] Create `backend/routes/api/`
-- [ ] Create `backend/tests/Feature/Templates/`
-- [ ] Create `backend/tests/Unit/Services/Templates/`
-- [ ] Create `backend/config/`
+## Phase 3: localStorage Infrastructure ⏸️ PENDING
 
-### Step 3.2: Create Placeholder PHP Files
-- [ ] `backend/app/Http/Controllers/Api/Templates/TemplateController.php`
-- [ ] `backend/app/Services/Templates/TemplateService.php`
-- [ ] `backend/app/Models/Template.php`
-- [ ] `backend/routes/api/templates.php`
-- [ ] Create README explaining backend is placeholder
+Organize localStorage persistence layer with clear, domain-specific naming. This is the **local storage** implementation, not server-side backend (which exists in parent repo).
 
-### Step 3.3: Verification
-- [ ] Verify directory structure matches plan
-- [ ] Ensure backend README is clear
+### Step 3.1: Create localStorage Directory Structure
+- [ ] Create `src/localStorage/` - Root for all localStorage-based persistence
+- [ ] Create `src/localStorage/templateRegistry/` - Template storage implementation
+- [ ] Create `src/localStorage/templateRegistry/adapters/` - Storage adapters
+- [ ] Create `src/localStorage/templateRegistry/migrations/` - Schema migrations
+- [ ] Create `src/localStorage/userPreferences/` - User settings (future)
+- [ ] Create `src/localStorage/drafts/` - Auto-saved drafts (future)
+- [ ] Create `src/localStorage/cache/` - Cached data (future)
+
+### Step 3.2: Move Existing localStorage Services
+- [ ] Move `src/apps/_shared/template/services/templateRegistry.service.ts` → `src/localStorage/templateRegistry/templateRegistry.service.ts`
+- [ ] Move `src/apps/_shared/template/services/templateBackup.service.ts` → `src/localStorage/templateRegistry/templateBackup.service.ts`
+- [ ] Move `src/apps/_shared/template/services/templateMigrations.service.ts` → `src/localStorage/templateRegistry/migrations/templateMigrations.service.ts`
+- [ ] Update all imports in hooks and components
+- [ ] Create `src/localStorage/templateRegistry/index.ts` barrel export
+- [ ] Create `src/localStorage/index.ts` barrel export
+
+### Step 3.3: Create README Documentation
+- [ ] Create `src/localStorage/README.md` - Explain localStorage vs server backend
+- [ ] Create `src/localStorage/templateRegistry/README.md` - Document template storage architecture
+
+### Step 3.4: Verification
+- [ ] Run `npm run build` - zero errors
+- [ ] Run `npm run dev` - verify app loads
+- [ ] Test template CRUD operations work with new paths
+- [ ] Verify migrations still run correctly
 
 ---
 

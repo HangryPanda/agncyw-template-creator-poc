@@ -1,13 +1,19 @@
-import { useEffect, useMemo } from 'react';
-import { TemplateVariable, EditorState, Template } from '@/types';
 import React from 'react';
-import { useTemplateValues } from '@/hooks/templateValues';
-import { ComposePreview } from './ComposePreview.view';
+import { Template, TemplateVariable } from '@/types';
+import { VariableList } from '@/components/VariableList';
 import { AccordionItem } from '@/components/ui/accordian';
+import { useTemplateValues } from '@/hooks/templateValues';
+import { Save, Copy } from 'lucide-react';
+import { toast } from 'sonner';
 
-interface TemplatePreviewProps {
+interface FormWrapperProps {
+  mode: 'create' | 'use';
   template: Template;
   availableVariables: TemplateVariable[];
+  onInsertVariable: (variableName: string) => void;
+  onUpdateTemplate?: (content: string) => void;
+  onCopyMessage?: () => void;
+  renderedText?: string;
 }
 
 const GROUP_LABELS: Record<string, string> = {
@@ -18,72 +24,23 @@ const GROUP_LABELS: Record<string, string> = {
   custom: 'Custom Variables',
 };
 
-export default function TemplatePreview({
+export function FormWrapper({
+  mode,
   template,
   availableVariables,
-}: TemplatePreviewProps): JSX.Element {
+  onInsertVariable,
+  onUpdateTemplate,
+  onCopyMessage,
+  renderedText = '',
+}: FormWrapperProps): JSX.Element {
   const {
     values,
     updateValue,
-    clearValues,
     getGroupFillCount,
   } = useTemplateValues(template.id, availableVariables);
 
-  // Render template with current values
-  const renderedText = useMemo((): string => {
-    if (!template.content) return '';
-
-    const processNode = (node: any): string => {
-      if (node.type === 'template-variable') {
-        return values[node.variableName] || `{{${node.variableName}}}`;
-      } else if (node.type === 'text') {
-        return node.text;
-      } else if (node.type === 'heading') {
-        const content = node.children?.map(processNode).join('') || '';
-        return content + '\n\n';
-      } else if (node.type === 'paragraph') {
-        const content = node.children?.map(processNode).join('') || '';
-        return content + '\n';
-      } else if (node.children) {
-        return node.children.map(processNode).join('');
-      }
-      return '';
-    };
-
-    if (template.content.root?.children) {
-      const output = template.content.root.children.map(processNode).join('');
-      return output.trimEnd();
-    }
-
-    return '';
-  }, [template.content, values]);
-
-  // Copy to clipboard
-  const handleCopy = (): void => {
-    navigator.clipboard.writeText(renderedText);
-  };
-
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Cmd+Enter to copy
-      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-        e.preventDefault();
-        handleCopy();
-      }
-      // Cmd+K to clear
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        clearValues();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [renderedText, clearValues]);
-
-  // Group variables by their group property
-  const groupedVariables = useMemo(() => {
+  // Group variables for Compose mode
+  const groupedVariables = React.useMemo(() => {
     const groups: Record<string, TemplateVariable[]> = {
       customer: [],
       message: [],
@@ -101,23 +58,44 @@ export default function TemplatePreview({
       }
     });
 
-    // Filter out empty groups
     return Object.entries(groups).filter(([_, vars]) => vars.length > 0);
   }, [availableVariables]);
 
-  return (
-    <div className="flex flex-col h-full">
-      {/* Sticky Preview */}
-      <ComposePreview
-        renderedText={renderedText}
-        templateType={template.type}
-        onCopy={handleCopy}
-        onClear={clearValues}
-      />
+  const handleCopy = () => {
+    if (onCopyMessage) {
+      onCopyMessage();
+      toast.success('Copied to clipboard!', {
+        description: 'Message text has been copied.',
+      });
+    }
+  };
 
-      {/* Form Fields with Accordions */}
-      <div className="flex-1 overflow-y-auto px-6 py-6">
-        <div className="max-w-3xl mx-auto space-y-3">
+  if (mode === 'create') {
+    // Editor mode: Show variable list
+    return (
+      <div className="w-full h-full flex flex-col bg-muted/30 border-r border-border">
+        <div className="px-4 py-3 border-b border-border bg-background">
+          <h2 className="text-sm font-semibold text-foreground">Variables</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">Click to insert into template</p>
+        </div>
+        <VariableList
+          variables={availableVariables}
+          onInsertVariable={onInsertVariable}
+        />
+      </div>
+    );
+  }
+
+  // Compose mode: Show form fields
+  return (
+    <div className="w-full h-full flex flex-col bg-background border-r border-border">
+      <div className="px-4 py-3 border-b border-border">
+        <h2 className="text-sm font-semibold text-foreground">Fill Message Details</h2>
+        <p className="text-xs text-muted-foreground mt-0.5">Complete fields to compose message</p>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-4">
+        <div className="space-y-3">
           {groupedVariables.map(([groupKey, variables]) => {
             const { filled, total } = getGroupFillCount(groupKey);
             const allFilled = filled === total && total > 0;
@@ -168,15 +146,26 @@ export default function TemplatePreview({
             );
           })}
         </div>
+      </div>
 
-        {/* Keyboard Shortcuts Hint */}
-        <div className="mt-8 max-w-3xl mx-auto">
-          <div className="text-xs text-muted-foreground/60 text-center space-x-4">
-            <span><kbd className="px-1.5 py-0.5 bg-muted rounded border border-border">⌘</kbd> + <kbd className="px-1.5 py-0.5 bg-muted rounded border border-border">Enter</kbd> to copy</span>
-            <span>·</span>
-            <span><kbd className="px-1.5 py-0.5 bg-muted rounded border border-border">⌘</kbd> + <kbd className="px-1.5 py-0.5 bg-muted rounded border border-border">K</kbd> to clear</span>
-          </div>
-        </div>
+      {/* Actions */}
+      <div className="p-4 border-t border-border space-y-2 bg-background">
+        <button
+          onClick={handleCopy}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm bg-primary text-white hover:bg-primary/90 rounded-md transition-all font-medium shadow-sm hover:shadow-md active:scale-95"
+        >
+          <Copy className="w-4 h-4" />
+          Copy Message
+        </button>
+        {onUpdateTemplate && (
+          <button
+            onClick={() => onUpdateTemplate(renderedText)}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-foreground/80 bg-background hover:bg-muted/30 border border-border rounded-md transition-all active:scale-95"
+          >
+            <Save className="w-4 h-4" />
+            Update Template
+          </button>
+        )}
       </div>
     </div>
   );
