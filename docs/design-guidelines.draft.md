@@ -247,6 +247,36 @@ Schema     → [NEEDS DEFINITION]
 - Are Schemas type definitions, validation rules, or data structures?
 - Should these live in the same component hierarchy or be separate concerns?
 
+---
+
+**📝 YOUR RESPONSE (fill in before proceeding with reorg):**
+
+**View Definition:**
+```
+[Your answer here - e.g., "Views are page-level compositions that combine layouts + constructs"]
+```
+
+**Preset Definition:**
+```
+[Your answer here - e.g., "Presets are UI configuration objects for construct variants"]
+```
+
+**Schema Definition:**
+```
+[Your answer here - e.g., "Schemas are Zod validation rules co-located with forms"]
+```
+
+**File Location Impact:**
+```
+Based on above definitions:
+- TemplateEditor.tsx should live in: [your answer]
+- TemplatePreview.tsx should live in: [your answer]
+- Preset files should live in: [your answer]
+- Schema files should live in: [your answer]
+```
+
+---
+
 **Claude's Suggestions:**
 
 **View** - Most likely one of these patterns:
@@ -372,6 +402,23 @@ Schema     → [NEEDS DEFINITION]
 - Apps define their semantic tokens in `apps/[app-name]/styles/tokens.css`
 - Import order: primitives → shared semantics → app semantics → construct variables
 
+---
+
+**📝 YOUR DECISION:**
+```
+[ ] Accept tiered token strategy (Primitive → Semantic → Construct)
+[ ] Use different token organization
+[ ] Needs modification: [specify changes]
+
+App-specific tokens approach:
+[ ] Use data-app attributes as suggested
+[ ] Different approach: [specify]
+
+Reasoning: [your reasoning here]
+```
+
+---
+
 ### 3. Construct Governance
 
 **Challenge:**
@@ -429,6 +476,27 @@ If you grow to 10+ developers:
 - Implement semantic versioning with changelog
 - Consider monorepo versioning tools (Changesets, Lerna)
 
+---
+
+**📝 YOUR DECISION:**
+```
+[ ] Accept lightweight governance model (review from each consuming app)
+[ ] Use stricter governance: [specify approach]
+[ ] Start with no governance, add later when needed
+
+Promotion criteria:
+[ ] Accept suggested 5-point checklist
+[ ] Modify criteria: [specify changes]
+
+Fork/deprecation process:
+[ ] Accept suggested process
+[ ] Different approach: [specify]
+
+Reasoning: [your reasoning here]
+```
+
+---
+
 ### 4. Cross-App Reuse Criteria
 
 **When to promote a component to a shared construct:**
@@ -477,6 +545,23 @@ If you grow to 10+ developers:
 
 **Rule of Thumb:**
 If unsure, **start app-specific**. Premature abstraction is worse than duplication. After you see the same pattern 2-3 times, the right abstraction becomes obvious.
+
+---
+
+**📝 YOUR DECISION:**
+```
+[ ] Accept suggested decision matrix and examples
+[ ] Modify promotion criteria: [specify changes]
+[ ] Different threshold (e.g., 3+ apps instead of 2+)
+
+Rule of thumb:
+[ ] Start app-specific, promote after seeing pattern 2-3 times
+[ ] Different approach: [specify]
+
+Reasoning: [your reasoning here]
+```
+
+---
 
 ### 5. File Structure & Co-location
 
@@ -542,6 +627,27 @@ export { TAG_EDITOR_PRESETS } from './presets'
 - **Easy to delete**: Remove entire folder when construct is deprecated
 - **Clear boundaries**: If you're importing from another construct's internals, you're doing it wrong
 - **Easier to extract**: Can become a separate package later if needed
+
+---
+
+**📝 YOUR DECISION:**
+```
+[ ] Accept recommended file structure (including stories, types, hooks co-located)
+[ ] Modify structure: [specify changes]
+
+Co-location approach:
+[ ] Co-locate everything construct-specific (types, hooks, tests, stories)
+[ ] Keep some items global: [specify what]
+
+Public API pattern:
+[ ] Use index.ts to control exports
+[ ] Export everything
+[ ] Different approach: [specify]
+
+Reasoning: [your reasoning here]
+```
+
+---
 
 ### 6. Migration Strategy
 
@@ -632,6 +738,31 @@ This keeps the core generic while allowing app-specific extensions without pollu
 
 ---
 
+**📝 YOUR DECISION:**
+```
+[ ] Accept phased migration plan (Phase 0 → Phase 1 → Phase 2 → Phase 3)
+[ ] Modify timeline: [specify changes]
+
+Hybrid strategy during migration:
+[ ] YES - Allow old inline Tailwind + new construct pattern to coexist
+[ ] NO - Convert all at once
+[ ] Different approach: [specify]
+
+Timeline triggers for Phase 2:
+[ ] Start when backend rearchitecture begins
+[ ] Start when second app needs the component
+[ ] Start when component becomes painful to maintain
+[ ] Different trigger: [specify]
+
+Handling 80/20 shared components:
+[ ] Use adapter pattern as suggested
+[ ] Different approach: [specify]
+
+Reasoning: [your reasoning here]
+```
+
+---
+
 ## Reference Implementation
 
 See `/docs/construct-splitting.example.md` for a detailed example of the construct pattern applied to `InlineTagEditor`.
@@ -687,6 +818,19 @@ _Use this section to capture ongoing debates and decisions that need stakeholder
 
 **Claude's Suggestion**: Start with Option A (JSON/CSS). If you find yourself with token typos causing production bugs, migrate to Option B. Don't over-engineer early.
 
+---
+
+**📝 YOUR DECISION:**
+```
+[ ] Option A: JSON + CSS Variables
+[ ] Option B: TypeScript (Vanilla Extract/Panda CSS)
+[ ] Other: [specify]
+
+Reasoning: [your reasoning here]
+```
+
+---
+
 ### Design Tool Integration (Figma Tokens)
 
 **Do you need it?**
@@ -696,6 +840,19 @@ _Use this section to capture ongoing debates and decisions that need stakeholder
 - ❌ NO if: Design changes are infrequent
 
 **Claude's Suggestion**: Skip it initially. Figma Tokens adds complexity and requires design team process changes. Revisit when you have 5+ apps or external design team.
+
+---
+
+**📝 YOUR DECISION:**
+```
+[ ] YES: Implement Figma Tokens integration
+[ ] NO: Skip for now
+[ ] MAYBE: Revisit in [specify timeline]
+
+Reasoning: [your reasoning here]
+```
+
+---
 
 ### Variant API Patterns
 
@@ -725,6 +882,20 @@ _Use this section to capture ongoing debates and decisions that need stakeholder
 - ❌ Less discoverable (need to import presets)
 
 **Claude's Suggestion**: Start with Option A (props). If you find certain combinations are always used together, add Option C (presets) as shortcuts. Option B is overkill unless variants are fundamentally different.
+
+---
+
+**📝 YOUR DECISION:**
+```
+[ ] Option A: Prop-based variants
+[ ] Option B: Compound components
+[ ] Option C: Preset objects
+[ ] Hybrid: [specify combination]
+
+Reasoning: [your reasoning here]
+```
+
+---
 
 ### Construct Deprecation Strategy
 
@@ -1109,3 +1280,41 @@ Is this component used (or likely to be used) in 2+ apps?
 
 5. **Style Separation**: All CSS in `src/styles/components/`
    - Breaks co-location, harder to maintain
+
+---
+
+**📝 YOUR DECISION:**
+```
+Component grouping strategy:
+[ ] Accept hybrid organization (purpose-based + technology-based)
+[ ] Different approach: [specify]
+
+Specific locations approved:
+[ ] Primitives in core/ui/primitives/
+[ ] Overlays in core/ui/overlays/
+[ ] Pickers in core/ui/pickers/
+[ ] Constructs in core/ui/constructs/
+[ ] Lexical components in core/lexical/components/
+[ ] Lexical themes in core/lexical/themes/
+[ ] Modify locations: [specify changes]
+
+Style organization:
+[ ] Co-locate component styles (Pattern 1 + Pattern 2)
+[ ] Centralize tokens (Pattern 3)
+[ ] Lexical themes separate (Pattern 4)
+[ ] Different approach: [specify]
+
+Migration path:
+[ ] Follow suggested priority order (Lexical → Primitives → Overlays → Constructs)
+[ ] Different order: [specify]
+
+Handling 70/30 components:
+[ ] Use composition (Option A)
+[ ] Use optional props (Option B)
+[ ] Fork only as last resort (Option C)
+[ ] Different approach: [specify]
+
+Reasoning: [your reasoning here]
+```
+
+---
