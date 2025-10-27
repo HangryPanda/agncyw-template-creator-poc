@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Tag } from '@/types';
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/primitives/shadcn/Button';
+import { Input } from '@/components/ui/primitives/shadcn/Input';
+import { Label } from '@/components/ui/primitives/shadcn/Label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/constructs/shadcn/Card';
+import { Badge } from '@/components/ui/primitives/shadcn/Badge';
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter
-} from '@/components/ui/dialog';
+} from '@/components/ui/overlays/shadcn/Dialog';
 
 interface TagManagerProps {
   tags: Tag[];

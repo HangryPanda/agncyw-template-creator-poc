@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Popover, PopoverContent } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/overlays/shadcn/Command';
+import { Popover, PopoverContent } from '@/components/ui/overlays/shadcn/Popover';
 import { TemplateVariable } from '@/types';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $getSelection, $isRangeSelection } from 'lexical';

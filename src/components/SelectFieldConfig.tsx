@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/primitives/shadcn/Button';
+import { Input } from '@/components/ui/primitives/shadcn/Input';
+import { Switch } from '@/components/ui/primitives/shadcn/Switch';
 import { X, Plus, GripVertical, ChevronDown, Info } from 'lucide-react';
 import {
   Select,
@@ -9,12 +9,12 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/ui/primitives/shadcn/Select';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from '@/components/ui/overlays/shadcn/Popover';
 import {
   COLOR_PALETTE,
   PRESET_COLORS,

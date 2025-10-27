@@ -3,7 +3,7 @@ import { TemplateVariable, EditorState, Template } from '@/types';
 import React from 'react';
 import { useTemplateValues } from '@/hooks/use-template-values';
 import { ComposePreview } from './ComposePreview';
-import { AccordionItem } from './ui/accordian';
+import { AccordionItem } from '@/components/ui/primitives/shadcn/Accordion';
 
 interface TemplatePreviewProps {
   template: Template;

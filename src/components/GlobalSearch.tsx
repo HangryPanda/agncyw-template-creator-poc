@@ -8,12 +8,12 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from '@/components/ui/overlays/shadcn/Command';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from '@/components/ui/overlays/shadcn/Popover';
 import { FileText, Mail, MessageSquare, Search } from 'lucide-react';
 
 interface GlobalSearchProps {

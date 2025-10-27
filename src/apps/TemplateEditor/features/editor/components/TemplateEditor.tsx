@@ -18,7 +18,7 @@ import { VariablePopover } from './VariablePopover';
 import { EditorCommandMenu } from './EditorCommandMenu';
 import PlaygroundNodes from '@/nodes/PlaygroundNodes';
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/primitives/shadcn/Button';
 import MarkdownShortcutPlugin from '@/plugins/MarkdownShortcutPlugin';
 import AutoLinkPlugin from '@/plugins/AutoLinkPlugin';
 import FloatingTextFormatToolbarPlugin from '@/plugins/FloatingTextFormatToolbarPlugin';

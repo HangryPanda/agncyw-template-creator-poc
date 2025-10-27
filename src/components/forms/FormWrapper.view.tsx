@@ -1,7 +1,7 @@
 import React from 'react';
 import { Template, TemplateVariable } from '@/types';
 import { VariableList } from '@/components/VariableList';
-import { AccordionItem } from '@/components/ui/accordian';
+import { AccordionItem } from '@/components/ui/primitives/shadcn/Accordion';
 import { useTemplateValues } from '@/hooks/templateValues';
 import { Save, Copy } from 'lucide-react';
 import { toast } from 'sonner';
