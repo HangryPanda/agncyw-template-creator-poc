@@ -1,4 +1,4 @@
-import SelectFieldConfig from '@/components/SelectFieldConfig';
+import TemplateSelectFieldConfig from '@/components/TemplateSelectFieldConfig';
 
 export default function SelectFieldDemo(): JSX.Element {
   const handleSave = (config: any) => {
@@ -11,7 +11,7 @@ export default function SelectFieldDemo(): JSX.Element {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-8">
-      <SelectFieldConfig
+      <TemplateSelectFieldConfig
         onSave={handleSave}
         onCancel={handleCancel}
       />

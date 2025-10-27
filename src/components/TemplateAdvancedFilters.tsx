@@ -19,7 +19,7 @@ interface FilterCriteria {
   starred: 'all' | 'starred' | 'not-starred';
 }
 
-export default function AdvancedFilters({
+export default function TemplateAdvancedFilters({
   templates,
   availableVariables,
   onFilterChange,

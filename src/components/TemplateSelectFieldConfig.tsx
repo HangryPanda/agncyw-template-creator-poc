@@ -40,7 +40,7 @@ interface SelectFieldConfigProps {
   onCancel?: () => void;
 }
 
-export default function SelectFieldConfig({ onSave, onCancel }: SelectFieldConfigProps): JSX.Element {
+export default function TemplateSelectFieldConfig({ onSave, onCancel }: SelectFieldConfigProps): JSX.Element {
   const [fieldName, setFieldName] = useState('Platform Name');
   const [fieldType, setFieldType] = useState('single-select');
   const [colorCode, setColorCode] = useState(true);

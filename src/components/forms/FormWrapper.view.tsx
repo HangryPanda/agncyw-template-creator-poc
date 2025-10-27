@@ -1,6 +1,6 @@
 import React from 'react';
 import { Template, TemplateVariable } from '@/types';
-import { VariableList } from '@/components/VariableList';
+import { TemplateVariableList } from '@/components/TemplateVariableList';
 import { AccordionItem } from '@/components/ui/primitives/shadcn/Accordion';
 import { useTemplateValues } from '@/hooks/templateValues';
 import { Save, Copy } from 'lucide-react';
@@ -78,7 +78,7 @@ export function FormWrapper({
           <h2 className="text-sm font-semibold text-foreground">Variables</h2>
           <p className="text-xs text-muted-foreground mt-0.5">Click to insert into template</p>
         </div>
-        <VariableList
+        <TemplateVariableList
           variables={availableVariables}
           onInsertVariable={onInsertVariable}
         />

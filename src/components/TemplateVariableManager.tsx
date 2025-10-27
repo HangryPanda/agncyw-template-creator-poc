@@ -9,7 +9,7 @@ interface VariableManagerProps {
   onDelete: (index: number) => void;
 }
 
-export default function VariableManager({
+export default function TemplateVariableManager({
   customVariables,
   onAdd,
   onEdit,

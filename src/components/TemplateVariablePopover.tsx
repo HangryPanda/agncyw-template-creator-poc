@@ -14,7 +14,7 @@ interface VariablePopoverProps {
   onManageVariables?: () => void;
 }
 
-export function VariablePopover({
+export function TemplateVariablePopover({
   open,
   onOpenChange,
   position,

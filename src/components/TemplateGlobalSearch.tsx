@@ -32,7 +32,7 @@ interface SearchResult {
   relevanceScore: number;
 }
 
-export default function GlobalSearch({ templates, onSelectTemplate, onClose, onOpen, isOpen, trigger }: GlobalSearchProps): JSX.Element {
+export default function TemplateGlobalSearch({ templates, onSelectTemplate, onClose, onOpen, isOpen, trigger }: GlobalSearchProps): JSX.Element {
   const [query, setQuery] = useState<string>('');
 
   // Extract text content from editor state

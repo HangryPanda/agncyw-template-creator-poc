@@ -3,11 +3,11 @@ import TemplateEditor from './apps/TemplateEditor/features/editor/components/Tem
 import ModernTemplateSidebar from './apps/TemplateEditor/features/sidebar/components/ModernTemplateSidebar';
 import TemplateMetadataEditor from './apps/TemplateEditor/features/metadata/components/TemplateMetadataEditor';
 import { CharacterCounter } from '@/components/indicators';
-import GlobalSearch from './apps/TemplateEditor/features/sidebar/components/GlobalSearch';
+import TemplateGlobalSearch from './components/TemplateGlobalSearch';
 import InlineTagEditor from './apps/TemplateEditor/features/metadata/components/InlineTagEditor';
 import InlineVariableEditor from './apps/TemplateEditor/features/metadata/components/InlineVariableEditor';
 import { FormWrapper, ResponsiveDrawer } from '@/components/forms';
-import { VariableListDisplay } from '@/components/VariableListDisplay';
+import { TemplateVariableListDisplay } from '@/components/TemplateVariableListDisplay';
 import { TemplateCanvasTabsControl, useTemplateCanvasTabs } from '@/lib/canvasTabs/integrations/lexical';
 import { useTemplateValues } from '@/hooks/templateValues';
 import { useTemplateRegistry } from '@/hooks/templateRegistry';
@@ -441,7 +441,7 @@ function App() {
               </button>
 
               {/* Global Search */}
-              <GlobalSearch
+              <TemplateGlobalSearch
                 templates={templates}
                 onSelectTemplate={(id) => {
                   openTab(id);
@@ -849,7 +849,7 @@ function App() {
 
                                 {/* Variable List Display */}
                                 <div className="max-h-[400px] overflow-y-auto">
-                                  <VariableListDisplay
+                                  <TemplateVariableListDisplay
                                     variables={allVariables}
                                     mode={mode}
                                     values={templateValues.values}

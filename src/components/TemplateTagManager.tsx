@@ -34,7 +34,7 @@ const PRESET_COLORS = [
   '#616161', // Gray
 ];
 
-export default function TagManager({
+export default function TemplateTagManager({
   tags,
   onAdd,
   onEdit,

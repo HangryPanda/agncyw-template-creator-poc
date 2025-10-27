@@ -5,8 +5,8 @@
  */
 
 export { default as ModernTemplateSidebar } from './components/ModernTemplateSidebar';
-export { default as GlobalSearch } from './components/GlobalSearch';
-export { default as TagManager } from './components/TagManager';
+export { default as TemplateGlobalSearch } from '@/components/TemplateGlobalSearch';
+export { default as TemplateTagManager } from '@/components/TemplateTagManager';
 export { default as BackupRestorePanel } from './components/BackupRestorePanel';
 export { default as EnhancedTemplateSidebar } from './components/EnhancedTemplateSidebar';
-export { default as AdvancedFilters } from './components/AdvancedFilters';
+export { default as TemplateAdvancedFilters } from '@/components/TemplateAdvancedFilters';

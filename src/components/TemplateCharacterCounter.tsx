@@ -6,7 +6,7 @@ interface CharacterCounterProps {
   type: 'email' | 'sms';
 }
 
-export default function CharacterCounter({ editorState, type }: CharacterCounterProps): JSX.Element | null {
+export default function TemplateCharacterCounter({ editorState, type }: CharacterCounterProps): JSX.Element | null {
   // Only show counter for SMS templates
   if (type !== 'sms') return null;
 

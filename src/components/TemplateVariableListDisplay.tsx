@@ -16,7 +16,7 @@ const GROUP_LABELS: Record<string, string> = {
   custom: 'Custom Variables',
 };
 
-export function VariableListDisplay({ variables, mode, values = {} }: VariableListDisplayProps): JSX.Element {
+export function TemplateVariableListDisplay({ variables, mode, values = {} }: VariableListDisplayProps): JSX.Element {
   // Group variables
   const groupedVariables = React.useMemo(() => {
     const groups: Record<string, TemplateVariable[]> = {

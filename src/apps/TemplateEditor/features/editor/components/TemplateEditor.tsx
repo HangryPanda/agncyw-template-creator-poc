@@ -14,7 +14,7 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { TemplateVariableNode, $createTemplateVariableNode } from '@/nodes/TemplateVariableNode';
 import { TemplateVariable, EditorState } from '@/types';
 import { EditorState as LexicalEditorState } from 'lexical';
-import { VariablePopover } from './VariablePopover';
+import { TemplateVariablePopover } from '@/components/TemplateVariablePopover';
 import { EditorCommandMenu } from './EditorCommandMenu';
 import PlaygroundNodes from '@/nodes/PlaygroundNodes';
 import { useEffect, useState, useRef, useCallback } from 'react';
@@ -226,7 +226,7 @@ function MenuControlPlugin({
 
   return (
     <>
-      <VariablePopover
+      <TemplateVariablePopover
         open={showVariablePopover}
         onOpenChange={setShowVariablePopover}
         position={popoverPosition}
