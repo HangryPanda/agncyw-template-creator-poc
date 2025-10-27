@@ -1,4 +1,4 @@
-# Variant API Patterns Decision Roadmap
+# Variant Component Handling Decision Roadmap
 
 > **Purpose**: Decision framework for choosing the right variant pattern when building components
 > **Audience**: AI assistants, developers, designers

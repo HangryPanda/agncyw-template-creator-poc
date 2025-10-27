@@ -1,6 +1,6 @@
 # Designer's Quick Start Guide
 
-## What You Need to Know
+##  Color System - Development and Refinement
 
 The color system uses **OKLCH color space** - a modern, designer-friendly format that works like this:
 

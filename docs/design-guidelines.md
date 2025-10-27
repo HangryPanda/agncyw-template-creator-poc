@@ -51,7 +51,7 @@
 6. [Construct Deprecation Strategy](#6-construct-deprecation-strategy)
 7. [Claude Code as Permanent Workflow Fixture](#7-claude-code-as-permanent-workflow-fixture)
 8. [Token Implementation Strategy](#8-token-implementation-strategy)
-9. [Variant API Pattern Selection](#9-variant-api-pattern-selection)
+9. [Variant Component Handling](#9-variant-component-handling)
 10. [Additional Semantic Color Tokens](#10-additional-semantic-color-tokens)
 11. [Cross-App Reuse Decision Matrix](#11-cross-app-reuse-decision-matrix)
 12. [App-Specific/Brand Color Token Guidelines](#12-app-specificbrand-color-token-guidelines)
@@ -338,7 +338,7 @@ Use JSON + CSS Variables with TypeScript compilation verification (Enhanced Opti
 
 ---
 
-### 9. Variant API Pattern Selection
+### 9. Variant Component Handling
 
 **STATUS**: ✅ APPROVED - Decision Roadmap Approach
 
@@ -361,7 +361,7 @@ When building components with variations, Claude Code will evaluate using the de
 3. Recommends pattern with reasoning
 4. User/designer approves or adjusts
 
-**Detailed Documentation**: See `/docs/decision-roadmaps/variant-api-patterns.md` for complete framework, decision trees, and examples.
+**Detailed Documentation**: See `/docs/decision-roadmaps/variant-component-handling.md` for complete framework, decision trees, and examples.
 
 ---
 
@@ -584,7 +584,7 @@ For detailed frameworks, flowcharts, and practical examples, see:
   - Descriptive naming anti-patterns
   - Practical examples for each component type
 
-- **Variant API Patterns**: `/docs/decision-roadmaps/variant-api-patterns.md`
+- **Variant Component Handling**: `/docs/decision-roadmaps/variant-component-handling.md`
   - Props vs Compound vs Presets framework
   - Decision tree flowchart
   - Trade-offs comparison

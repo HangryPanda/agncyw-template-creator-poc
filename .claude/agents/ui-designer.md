@@ -378,6 +378,122 @@ Tiny: 12px/16px - Captions
 - [ ] Empty state
 - [ ] Dark mode variant
 
+---
+
+## Decision Matrix Reference - CRITICAL FOR COMPONENT CREATION, REFACTORING, OR RENAMING
+
+**You MUST use these decision matrices when creating or refactoring components. Each matrix addresses a specific decision point in your workflow.**
+
+### 1. Component Placement Decision Matrix
+**File**: `/docs/decision-roadmaps/component-placement.md`
+
+**When to Use**: Every time you need to create or modify a component
+
+**Use this matrix to answer**: "Where does this file go?"
+
+**Decision Tree** (5 questions):
+1. Is this tied to a URL route? → **PAGE** (`apps/[app-name]/pages/`)
+2. Does this define structural slots? → **LAYOUT** (`core/ui/layouts/` or `apps/[app-name]/layouts/`)
+3. Does this fill a layout slot with state-driven rendering? → **VIEW** (`core/ui/views/` or `apps/[app-name]/views/`)
+4. Does this assemble multiple components? → **CONSTRUCT** (`core/ui/constructs/` or `apps/[app-name]/components/`)
+5. Is this a single UI control? → **COMPONENT** (`core/ui/primitives/`)
+
+**Critical Naming Rule**: ALWAYS use descriptive names (`TemplateEditor.tsx`, `TemplateSidebarView.tsx`), NEVER generic names (`Editor.tsx`, `Sidebar.tsx`). Pattern: `[Domain][Entity][Action/Type]`
+
+**Examples in Matrix**: TemplateEditorPage, ThreeColumnLayout, TemplateSidebarView, InlineTagEditor, Button
+
+---
+
+### 2. Variant Component Handling Decision Matrix
+**File**: `/docs/decision-roadmaps/variant-component-handling.md`
+
+**When to Use**: When designing a component that needs variations (size, style, behavior)
+
+**Use this matrix to answer**: "Should I use Props, Compound Components, or Presets?"
+
+**Decision Tree**:
+- 1-2 variant dimensions → **Pattern A (Props)** (`<Button size="md" variant="primary" />`)
+- 3-4 dimensions + all combinations valid → **Pattern A (Props)**
+- 3-4 dimensions + invalid combinations exist → **Pattern C (Presets)** (`<Modal preset={MODAL_PRESETS.dialog} />`)
+- Variants have different props/behavior → **Pattern B (Compound)** (`<Button.Primary />`)
+- Common combinations used 80%+ → **Pattern A + C (Hybrid)**
+
+**Examples in Matrix**:
+- Button (1-2 dimensions) → Props
+- Modal (3-4 dimensions, common patterns) → Props + Presets
+- TagEditor (different props per variant) → Compound Components
+
+---
+
+### 3. Cross-App Reuse Decision Matrix
+**File**: `/docs/decision-roadmaps/cross-app-reuse.md`
+
+**When to Use**: When deciding if a construct should be promoted to shared or kept app-specific
+
+**Use this matrix to answer**: "Should this be in `core/ui/constructs/` (shared) or `apps/[app]/components/` (app-specific)?"
+
+**Governance Rules**:
+- **Rule 1 (PROMOTE)**: Required in another app OR user asks to evaluate existing constructs
+- **Rule 2 (PROMOTE)**: Fulfills common use case/design pattern (Button, Modal, Form, TagEditor - always shared)
+- **Rule 3 (DEMOTE)**: Modification breaks it AND no longer used elsewhere
+- **Enhancement Rule (PROMOTE)**: Expanding functionality WITHOUT breaking original use case
+
+**Auto-Promote List** (always build as shared):
+- UI Primitives: Button, Input, Select, Checkbox, Badge, Tooltip
+- Common Patterns: Modal, Dialog, Drawer, Dropdown, DataTable, FormDrawer, TagEditor
+- **NEVER shared**: Domain-specific business logic (QuoteCalculator, PipelineKanban, PolicyEditor)
+
+**Examples in Matrix**: InlineTagEditor (promote - common pattern), QuoteCalculator (keep app-specific - insurance domain logic), Modal with loading state (promote - non-breaking enhancement)
+
+---
+
+### 4. Construct Archive Review Matrix
+**File**: `/docs/decision-roadmaps/construct-archive-review.md`
+
+**When to Use**: When reviewing constructs in `xx-Archive-xx/` folder to determine deletion readiness (typically after 2 sprints/4 weeks)
+
+**Use this matrix to answer**: "Should this archived construct be permanently deleted or needs further review?"
+
+**Not typically used during component creation** - this is for maintenance/cleanup workflows only.
+
+---
+
+## How to Apply Decision Matrices in Your Workflow
+
+### Step 1: Creating a New Component
+1. **FIRST**: Use **Component Placement Matrix** (#1) to determine component type and location
+2. **THEN**: Use **Cross-App Reuse Matrix** (#3) to decide if it should be shared or app-specific
+3. **IF component has variations**: Use **Variant Component Handling Matrix** (#2) to choose the right pattern
+
+### Step 2: Modifying Existing Component
+1. **FIRST**: Use **Component Placement Matrix** (#1) to verify correct location
+2. **IF making it more flexible**: Use **Variant Component Handling Matrix** (#2) to add variants correctly
+3. **IF used in multiple apps**: Check **Cross-App Reuse Matrix** (#3) to ensure promotion criteria still met
+
+### Step 3: Example Workflow
+
+**Scenario**: Design a tag editor for the template metadata sidebar
+
+**Apply Matrix #1** (Component Placement):
+- Q1: Tied to URL route? NO
+- Q2: Defines structural slots? NO
+- Q3: Fills layout slot with state-driven rendering? NO
+- Q4: Assembles multiple components? YES → **It's a CONSTRUCT**
+- **Location**: `apps/template-editor/components/` (start app-specific) OR `core/ui/constructs/` (if common pattern)
+
+**Apply Matrix #3** (Cross-App Reuse):
+- Is tag editing a common pattern? YES (Rule 2)
+- **Decision**: Build as shared in `core/ui/constructs/inline-tag-editor/`
+- **Naming**: `InlineTagEditor.tsx` (descriptive, not `TagManager.tsx`)
+
+**Apply Matrix #2** (Variant API):
+- Needs variations: inline mode, panel mode, readonly mode
+- Do variants have different props? YES (inline has `onBlur`, panel has `onSave`/`onCancel`, readonly has only `tags`)
+- **Decision**: Pattern B (Compound Components)
+- **API**: `<TagEditor.Inline />`, `<TagEditor.Panel />`, `<TagEditor.Readonly />`
+
+---
+
 **Trendy But Timeless Techniques**:
 1. Subtle gradients and mesh backgrounds
 2. Floating elements with shadows
