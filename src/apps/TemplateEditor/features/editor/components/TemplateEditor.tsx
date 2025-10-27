@@ -14,8 +14,8 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { TemplateVariableNode, $createTemplateVariableNode } from '@/nodes/TemplateVariableNode';
 import { TemplateVariable, EditorState } from '@/types';
 import { EditorState as LexicalEditorState } from 'lexical';
-import { VariablePopover } from './VariablePopover.view';
-import { EditorCommandMenu } from './EditorCommandMenu.view';
+import { VariablePopover } from './VariablePopover';
+import { EditorCommandMenu } from './EditorCommandMenu';
 import PlaygroundNodes from '@/nodes/PlaygroundNodes';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';

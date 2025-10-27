@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import TemplateEditor from './apps/TemplateEditor/features/editor/components/TemplateEditor.view';
-import ModernTemplateSidebar from './apps/TemplateEditor/features/sidebar/components/ModernTemplateSidebar.view';
-import TemplateMetadataEditor from './apps/TemplateEditor/features/metadata/components/TemplateMetadataEditor.view';
+import TemplateEditor from './apps/TemplateEditor/features/editor/components/TemplateEditor';
+import ModernTemplateSidebar from './apps/TemplateEditor/features/sidebar/components/ModernTemplateSidebar';
+import TemplateMetadataEditor from './apps/TemplateEditor/features/metadata/components/TemplateMetadataEditor';
 import { CharacterCounter } from '@/components/indicators';
-import GlobalSearch from './apps/TemplateEditor/features/sidebar/components/GlobalSearch.view';
-import InlineTagEditor from './apps/TemplateEditor/features/metadata/components/InlineTagEditor.view';
-import InlineVariableEditor from './apps/TemplateEditor/features/metadata/components/InlineVariableEditor.view';
+import GlobalSearch from './apps/TemplateEditor/features/sidebar/components/GlobalSearch';
+import InlineTagEditor from './apps/TemplateEditor/features/metadata/components/InlineTagEditor';
+import InlineVariableEditor from './apps/TemplateEditor/features/metadata/components/InlineVariableEditor';
 import { FormWrapper, ResponsiveDrawer } from '@/components/forms';
 import { VariableListDisplay } from '@/components/VariableListDisplay';
 import { TemplateEditorTabs, useTemplateEditorTabs } from '@/lib/tabs/integrations/lexical';

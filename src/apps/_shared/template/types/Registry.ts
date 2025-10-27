@@ -4,7 +4,7 @@
  * Types for template registry, backup, restore, and migration
  */
 
-import { Template } from './template.model';
+import { Template } from './Template';
 
 // Template Registry Configuration
 export interface RegistryConfig {

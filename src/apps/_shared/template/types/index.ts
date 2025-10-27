@@ -4,8 +4,8 @@
  * Barrel export for all template-related type definitions
  */
 
-export * from './template.model';
-export * from './variable.model';
-export * from './tag.model';
-export * from './editorState.model';
-export * from './registry.model';
+export * from './Template';
+export * from './Variable';
+export * from './Tag';
+export * from './EditorState';
+export * from './Registry';

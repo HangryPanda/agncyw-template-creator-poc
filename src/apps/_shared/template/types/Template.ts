@@ -4,7 +4,7 @@
  * Core template types and definitions
  */
 
-import { EditorState } from './editorState.model';
+import { EditorState } from './EditorState';
 
 export type TemplateType = 'system' | 'agency' | 'user';
 

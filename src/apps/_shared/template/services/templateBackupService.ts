@@ -1,5 +1,5 @@
 import { Template, TemplateBackup, ImportOptions, ImportResult, TemplateType } from '../types';
-import { templateRegistry } from './templateRegistry.service';
+import { templateRegistry } from './templateRegistryService';
 import { CURRENT_SCHEMA_VERSION } from '../../../TemplateEditor/data/defaultTemplates';
 
 /**

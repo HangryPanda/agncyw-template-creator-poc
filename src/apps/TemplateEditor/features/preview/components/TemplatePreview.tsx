@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { TemplateVariable, EditorState, Template } from '@/types';
 import React from 'react';
 import { useTemplateValues } from '@/hooks/templateValues';
-import { ComposePreview } from './ComposePreview.view';
+import { ComposePreview } from './ComposePreview';
 import { AccordionItem } from '@/components/ui/accordian';
 
 interface TemplatePreviewProps {
