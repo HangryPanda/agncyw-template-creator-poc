@@ -26,7 +26,7 @@ import ToolbarPlugin from '@/plugins/ToolbarPlugin';
 import FloatingLinkEditorPlugin from '@/plugins/FloatingLinkEditorPlugin';
 import TableActionMenuPlugin from '@/plugins/TableActionMenuPlugin';
 import DraggableBlockPlugin from '@/plugins/DraggableBlockPlugin';
-import { DirtyStatePlugin } from '@/lib/tabs/integrations/lexical';
+import { DirtyStatePlugin } from '@/lib/canvasTabs/integrations/lexical';
 import { VariableValuesProvider } from '@/context/VariableValuesContext';
 
 interface TemplateEditorProps {

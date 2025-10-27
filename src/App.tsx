@@ -8,7 +8,7 @@ import InlineTagEditor from './apps/TemplateEditor/features/metadata/components/
 import InlineVariableEditor from './apps/TemplateEditor/features/metadata/components/InlineVariableEditor';
 import { FormWrapper, ResponsiveDrawer } from '@/components/forms';
 import { VariableListDisplay } from '@/components/VariableListDisplay';
-import { TemplateEditorTabs, useTemplateEditorTabs } from '@/lib/tabs/integrations/lexical';
+import { TemplateCanvasTabsControl, useTemplateCanvasTabs } from '@/lib/canvasTabs/integrations/lexical';
 import { useTemplateValues } from '@/hooks/templateValues';
 import { useTemplateRegistry } from '@/hooks/templateRegistry';
 import { Toaster } from './components/ui/sonner';
@@ -90,7 +90,7 @@ function App() {
     closeAllTabs,
     dirtyTabs,
     markTabDirty,
-  } = useTemplateEditorTabs();
+  } = useTemplateCanvasTabs();
 
   // View state: 'overview' or 'github-editor'
   const [currentView, setCurrentView] = useState<'overview' | 'github-editor'>('overview');
@@ -557,7 +557,7 @@ function App() {
 
                         {/* Tab Bar */}
                         {openTabs.length > 0 && (
-                          <TemplateEditorTabs
+                          <TemplateCanvasTabsControl
                             tabs={openTabs}
                             activeTabId={activeTabId}
                             templates={templates}

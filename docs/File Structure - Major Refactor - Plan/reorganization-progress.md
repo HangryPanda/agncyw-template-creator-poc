@@ -1,67 +1,58 @@
 # File System Reorganization Progress Tracker
 
 **Started**: 2025-10-24
-**Last Updated**: 2025-10-25
-**Status**: ⚠️ NAMING CONVENTION UPDATE - Reconciliation Required
-**Current Phase**: Pending - Awaiting naming convention reconciliation
+**Last Updated**: 2025-10-26 23:59:27
+**Status**: ✅ Phase 1 & Phase 2.3 Complete
+**Current Phase**: Phase 2 - Shared Frontend Infrastructure (Steps 2.4+)
 
 ---
 
-## ⚠️ **CRITICAL UPDATE: Naming Convention Change**
+## ✅ **COMPLETED: Phase 1 Reconciliation & Phase 2.3**
 
-**Date**: 2025-10-25
+**Completed Date**: 2025-10-26
 
-### What Changed
+### Summary of Completed Work
 
-The project has adopted a **hybrid naming convention** that respects React/TypeScript ecosystem standards:
+**Phase 1.R: Naming Convention Reconciliation (25 files renamed)**
+- ✅ 17 components: `.view.tsx` → `.tsx`
+- ✅ 3 services: `.service.ts` → `Service.ts` (camelCase)
+- ✅ 5 types: `.model.ts` → `.ts` (PascalCase)
+- ✅ All barrel exports updated
+- ✅ All imports updated
+- ✅ Build verification: SUCCESS
 
-**OLD Approach (No Longer Valid):**
-- ❌ Components: `TemplateEditor.view.tsx`
-- ❌ Hooks: `use-template-registry.hook.ts`
-- ❌ Services: `template-registry.service.ts`
-- ❌ All files used kebab-case + dot notation suffixes
+**Phase 2.3: Canvas Tabs Refactor (15 new files created)**
+- ✅ Renamed `src/lib/tabs/` → `src/lib/canvasTabs/`
+- ✅ useTabManager → useCanvasTabsManager
+- ✅ TabBar → CanvasTabsControl
+- ✅ useTemplateEditorTabs → useTemplateCanvasTabs
+- ✅ TemplateEditorTabs → TemplateCanvasTabsControl
+- ✅ All type names updated (TabItem → CanvasTabItem, etc.)
+- ✅ localStorage key updated
+- ✅ Comprehensive new documentation
+- ✅ Build verification: SUCCESS
 
-**NEW Approach (Current Standard):**
-- ✅ Components: `TemplateEditor.tsx` (PascalCase, no suffix)
-- ✅ Hooks: `useTemplateRegistry.ts` (useCamelCase, no suffix)
-- ✅ Services: `templateRegistryService.ts` (camelCase + Service)
-- ✅ Directories: `kebab-case/` (universal)
-- ✅ CSS: `kebab-case.css`
+**Git Commits:**
+- `1c7d843` - Phase 1 Reconciliation
+- `ead86cc` - Canvas Tabs Refactor
+
+---
+
+## Naming Convention & Decision Matrices
+
+### Hybrid Naming Convention (Current Standard)
+
+**Components:** `TemplateEditor.tsx` (PascalCase, no suffix)
+**Hooks:** `useTemplateRegistry.ts` (useCamelCase, no suffix)
+**Services:** `templateRegistryService.ts` (camelCase + Service)
+**Types:** `Template.ts` (PascalCase, no suffix)
+**Directories:** `kebab-case/` (universal)
+**CSS:** `kebab-case.css`
 
 **Reference:** See `/docs/naming-quick-reference.md` for complete guidelines
 
-### Impact on This Document
+---
 
-All completed Phase 1 steps used the OLD naming convention. These files need to be renamed to match the NEW convention:
-
-**Phase 1 Completed Files (Need Renaming):**
-- ✅ Created but need renaming: 20 `.view.tsx` files → `.tsx`
-- ✅ Created but need renaming: 3 `.service.ts` files → `Service.ts` (camelCase)
-- ✅ Created but need renaming: 5 `.model.ts` files → `.ts`
-
-**Phase 2-5 Pending Steps:**
-- ⚠️ All file naming examples in pending steps are now OUTDATED
-- ⚠️ Do NOT follow the `.view.tsx`, `.hook.ts`, `.service.ts` patterns shown below
-- ⚠️ Refer to `/docs/naming-quick-reference.md` for correct naming
-
-### Next Actions Required
-
-1. **Rename all Phase 1 completed files** to match new convention
-2. **Update all import statements** in consuming files
-3. **Verify build still works** after renaming
-4. **Update this document** with correct naming examples
-5. **Continue Phase 2+** using new naming convention
-
-**DO NOT proceed with Phase 2+ tasks until Phase 1 files are renamed!**
-
-
-## ⚠️ **CRITICAL UPDATE: Naming Convention Change**
-
-**Date**: 2025-10-26
-
-### What Changed
-
-What changed: 
 ## Decision Matrix Reference - CRITICAL FOR COMPONENT CREATION, REFACTORING, OR RENAMING
 
 **You MUST use these decision matrices when creating or refactoring components. Each matrix addresses a specific decision point in your workflow.**
@@ -179,9 +170,9 @@ What changed:
 
 ## Phase 1 Reconciliation: Naming Convention Fix
 
-**Status**: ⏸️ READY TO EXECUTE
-**Audit Document**: See `/docs/phase1-naming-audit.md` for complete file list
-**Estimated Time**: 1-2 hours
+**Status**: ✅ COMPLETED (2025-10-26)
+**Git Commit**: `1c7d843`
+**Build Status**: ✅ SUCCESS
 
 ### Summary of Required Changes
 
@@ -197,7 +188,7 @@ What changed:
 
 ### Step-by-Step Reconciliation Plan
 
-#### **Phase 1.R1: Rename Editor Feature Components ✓ READY**
+#### **Phase 1.R1: Rename Editor Feature Components ✅ COMPLETED**
 
 **Files to rename (3):**
 ```bash
@@ -212,15 +203,15 @@ git mv src/apps/TemplateEditor/features/editor/components/VariablePopover.view.t
 ```
 
 **Update imports in:**
-- [ ] `src/apps/TemplateEditor/features/editor/index.ts` (barrel export)
-- [ ] `src/App.tsx` (TemplateEditor import)
+- [x] `src/apps/TemplateEditor/features/editor/index.ts` (barrel export)
+- [x] `src/App.tsx` (TemplateEditor import)
 
 **Verify:**
-- [ ] `npm run build` succeeds
+- [x] `npm run build` succeeds
 
 ---
 
-#### **Phase 1.R2: Rename Metadata Feature Components ✓ READY**
+#### **Phase 1.R2: Rename Metadata Feature Components ✅ COMPLETED**
 
 **Files to rename (6):**
 ```bash
@@ -234,15 +225,15 @@ git mv VariableManager.view.tsx VariableManager.tsx
 ```
 
 **Update imports in:**
-- [ ] `src/apps/TemplateEditor/features/metadata/index.ts` (barrel export)
-- [ ] `src/App.tsx` (3 imports: TemplateMetadataEditor, InlineTagEditor, InlineVariableEditor)
+- [x] `src/apps/TemplateEditor/features/metadata/index.ts` (barrel export)
+- [x] `src/App.tsx` (3 imports: TemplateMetadataEditor, InlineTagEditor, InlineVariableEditor)
 
 **Verify:**
-- [ ] `npm run build` succeeds
+- [x] `npm run build` succeeds
 
 ---
 
-#### **Phase 1.R3: Rename Preview Feature Components ✓ READY**
+#### **Phase 1.R3: Rename Preview Feature Components ✅ COMPLETED**
 
 **Files to rename (2):**
 ```bash
@@ -252,14 +243,14 @@ git mv TemplatePreview.view.tsx TemplatePreview.tsx
 ```
 
 **Update imports in:**
-- [ ] `src/apps/TemplateEditor/features/preview/index.ts` (barrel export)
+- [x] `src/apps/TemplateEditor/features/preview/index.ts` (barrel export)
 
 **Verify:**
-- [ ] `npm run build` succeeds
+- [x] `npm run build` succeeds
 
 ---
 
-#### **Phase 1.R4: Rename Sidebar Feature Components ✓ READY**
+#### **Phase 1.R4: Rename Sidebar Feature Components ✅ COMPLETED**
 
 **Files to rename (6):**
 ```bash
@@ -273,15 +264,15 @@ git mv TagManager.view.tsx TagManager.tsx
 ```
 
 **Update imports in:**
-- [ ] `src/apps/TemplateEditor/features/sidebar/index.ts` (barrel export)
-- [ ] `src/App.tsx` (2 imports: ModernTemplateSidebar, GlobalSearch)
+- [x] `src/apps/TemplateEditor/features/sidebar/index.ts` (barrel export)
+- [x] `src/App.tsx` (2 imports: ModernTemplateSidebar, GlobalSearch)
 
 **Verify:**
-- [ ] `npm run build` succeeds
+- [x] `npm run build` succeeds
 
 ---
 
-#### **Phase 1.R5: Rename Shared Services ✓ READY**
+#### **Phase 1.R5: Rename Shared Services ✅ COMPLETED**
 
 **Files to rename (3):**
 ```bash
@@ -292,17 +283,17 @@ git mv templateRegistry.service.ts templateRegistryService.ts
 ```
 
 **Update imports in:**
-- [ ] `src/apps/_shared/template/services/index.ts` (barrel export)
-- [ ] `src/hooks/templateRegistry/useTemplateRegistry.ts` (if exists)
-- [ ] `src/apps/TemplateEditor/features/sidebar/components/BackupRestorePanel.tsx`
-- [ ] Any other components importing these services
+- [x] `src/apps/_shared/template/services/index.ts` (barrel export)
+- [x] `src/hooks/templateRegistry/useTemplateRegistry.ts` (if exists)
+- [x] `src/apps/TemplateEditor/features/sidebar/components/BackupRestorePanel.tsx`
+- [x] Any other components importing these services
 
 **Verify:**
-- [ ] `npm run build` succeeds
+- [x] `npm run build` succeeds
 
 ---
 
-#### **Phase 1.R6: Rename Shared Types ✓ READY**
+#### **Phase 1.R6: Rename Shared Types ✅ COMPLETED**
 
 **Files to rename (5):**
 ```bash
@@ -315,24 +306,24 @@ git mv variable.model.ts Variable.ts
 ```
 
 **Update imports in:**
-- [ ] `src/apps/_shared/template/types/index.ts` (barrel export)
-- [ ] All components importing these types (search for `.model`)
-- [ ] All services importing these types
+- [x] `src/apps/_shared/template/types/index.ts` (barrel export)
+- [x] All components importing these types (search for `.model`)
+- [x] All services importing these types
 
 **Verify:**
-- [ ] `npm run build` succeeds
+- [x] `npm run build` succeeds
 
 ---
 
-#### **Phase 1.R7: Final Verification ✓ READY**
+#### **Phase 1.R7: Final Verification ✅ COMPLETED**
 
-- [ ] No `.view.tsx` files remain in `src/apps/`
-- [ ] No `.service.ts` files remain in `src/apps/`
-- [ ] No `.model.ts` files remain in `src/apps/`
-- [ ] `npm run build` succeeds with 0 errors
-- [ ] `npm run dev` works
-- [ ] App loads in browser without errors
-- [ ] All features work as expected
+- [x] No `.view.tsx` files remain in `src/apps/`
+- [x] No `.service.ts` files remain in `src/apps/`
+- [x] No `.model.ts` files remain in `src/apps/`
+- [x] `npm run build` succeeds with 0 errors
+- [x] `npm run dev` works
+- [x] App loads in browser without errors
+- [x] All features work as expected
 
 ---
 
@@ -348,22 +339,12 @@ git restore .
 git reset --hard HEAD~1
 ```
 
-### After Successful Reconciliation
+### After Successful Reconciliation ✅ COMPLETED
 
-1. Mark all Phase 1.R steps as complete in this document
-2. Commit changes:
-   ```bash
-   git add -A
-   git commit -m "refactor: reconcile Phase 1 naming to hybrid convention
-
-   - Rename .view.tsx → .tsx (17 components)
-   - Rename .service.ts → Service.ts (3 services)
-   - Rename .model.ts → .ts (5 types)
-   - Update all imports in App.tsx and barrel exports
-   - Verified build succeeds"
-   ```
-3. Update Phase 1 steps below to reflect correct naming
-4. Continue with Phase 2 using correct naming convention
+1. ✅ Marked all Phase 1.R steps as complete in this document
+2. ✅ Committed changes (Git commit: `1c7d843`)
+3. ✅ Updated Phase 1 steps to reflect correct naming
+4. ✅ Continued with Phase 2.3 (Canvas Tabs refactor) using correct naming convention
 
 ---
 
@@ -656,8 +637,13 @@ Hooks are organized by their specific application domain/feature, not generic ca
 - [x] Update all imports in App.tsx and feature components
 - [x] Fixed import paths in FormWrapper.view.tsx, TemplatePreview.view.tsx, BackupRestorePanel.view.tsx
 
-### Step 2.3: Rename Canvas Tab Management System
-Rename `src/lib/tabs/` to `src/lib/canvasTabs/` with improved naming conventions.
+### Step 2.3: Rename Canvas Tab Management System ✅ COMPLETED
+
+**Status**: ✅ COMPLETED (2025-10-26)
+**Git Commit**: `ead86cc`
+**Build Status**: ✅ SUCCESS
+
+Renamed `src/lib/tabs/` to `src/lib/canvasTabs/` with improved naming conventions.
 
 **Rationale**:
 - "tabs" is too generic and conflicts with "editor" terminology
@@ -666,85 +652,85 @@ Rename `src/lib/tabs/` to `src/lib/canvasTabs/` with improved naming conventions
 - Inspired by VS Code's workbench architecture and design tools (Figma, Sketch)
 - Avoids confusion: Canvas (workspace) vs Text Editor (Lexical component within canvas)
 
-**Step 2.3.1: Create New Directory Structure**
-- [ ] Create `src/lib/canvasTabs/` directory
-- [ ] Create `src/lib/canvasTabs/core/` directory
-- [ ] Create `src/lib/canvasTabs/integrations/` directory
-- [ ] Create `src/lib/canvasTabs/integrations/lexical/` directory
+**Step 2.3.1: Create New Directory Structure** ✅
+- [x] Create `src/lib/canvasTabs/` directory
+- [x] Create `src/lib/canvasTabs/core/` directory
+- [x] Create `src/lib/canvasTabs/integrations/` directory
+- [x] Create `src/lib/canvasTabs/integrations/lexical/` directory
 
-**Step 2.3.2: Copy and Rename Core Files**
-- [ ] `src/lib/tabs/core/useTabManager.ts` → `src/lib/canvasTabs/core/useCanvasTabsManager.ts`
-  - [ ] Rename function: `useTabManager` → `useCanvasTabsManager`
-  - [ ] Update internal variable names (tabs → canvasTabs where contextually appropriate)
-- [ ] `src/lib/tabs/core/TabBar.tsx` → `src/lib/canvasTabs/core/CanvasTabsControl.tsx`
-  - [ ] Rename component: `TabBar` → `CanvasTabsControl`
-  - [ ] Update interface: `TabBarProps` → `CanvasTabsControlProps`
-  - [ ] Update CSS class names: `tab-bar` → `canvas-tabs-control`
-- [ ] `src/lib/tabs/core/types.ts` → `src/lib/canvasTabs/core/types.ts`
-  - [ ] Rename interface: `TabItem` → `CanvasTabItem`
-  - [ ] Rename interface: `TabsState` → `CanvasTabsState`
-  - [ ] Rename interface: `UseTabManagerOptions` → `UseCanvasTabsManagerOptions`
-  - [ ] Rename interface: `TabManagerReturn` → `CanvasTabsManagerReturn`
-- [ ] `src/lib/tabs/core/index.ts` → `src/lib/canvasTabs/core/index.ts`
-  - [ ] Update all export names to new naming convention
+**Step 2.3.2: Copy and Rename Core Files** ✅
+- [x] `src/lib/tabs/core/useTabManager.ts` → `src/lib/canvasTabs/core/useCanvasTabsManager.ts`
+  - [x] Rename function: `useTabManager` → `useCanvasTabsManager`
+  - [x] Update internal variable names (tabs → canvasTabs where contextually appropriate)
+- [x] `src/lib/tabs/core/TabBar.tsx` → `src/lib/canvasTabs/core/CanvasTabsControl.tsx`
+  - [x] Rename component: `TabBar` → `CanvasTabsControl`
+  - [x] Update interface: `TabBarProps` → `CanvasTabsControlProps`
+  - [x] Update CSS class names: `tab-bar` → `canvas-tabs-control`
+- [x] `src/lib/tabs/core/types.ts` → `src/lib/canvasTabs/core/types.ts`
+  - [x] Rename interface: `TabItem` → `CanvasTabItem`
+  - [x] Rename interface: `TabsState` → `CanvasTabsState`
+  - [x] Rename interface: `UseTabManagerOptions` → `UseCanvasTabsManagerOptions`
+  - [x] Rename interface: `TabManagerReturn` → `CanvasTabsManagerReturn`
+- [x] `src/lib/tabs/core/index.ts` → `src/lib/canvasTabs/core/index.ts`
+  - [x] Update all export names to new naming convention
 
-**Step 2.3.3: Copy and Rename Lexical Integration Files**
-- [ ] `src/lib/tabs/integrations/lexical/useLexicalDirtyState.ts` → `src/lib/canvasTabs/integrations/lexical/useLexicalDirtyState.ts`
-  - [ ] No renaming needed (remains lexical-specific)
-- [ ] `src/lib/tabs/integrations/lexical/DirtyStatePlugin.tsx` → `src/lib/canvasTabs/integrations/lexical/DirtyStatePlugin.tsx`
-  - [ ] No renaming needed (remains lexical-specific)
-- [ ] `src/lib/tabs/integrations/lexical/useTemplateEditorTabs.ts` → `src/lib/canvasTabs/integrations/lexical/useTemplateCanvasTabs.ts`
-  - [ ] Rename function: `useTemplateEditorTabs` → `useTemplateCanvasTabs`
-  - [ ] Rename interface: `UseTemplateEditorTabsReturn` → `UseTemplateCanvasTabsReturn`
-  - [ ] Update localStorage key: `insurance_template_editor_tabs` → `insurance_template_canvas_tabs`
-- [ ] `src/lib/tabs/integrations/lexical/TemplateEditorTabs.tsx` → `src/lib/canvasTabs/integrations/lexical/TemplateCanvasTabsControl.tsx`
-  - [ ] Rename component: `TemplateEditorTabs` → `TemplateCanvasTabsControl`
-  - [ ] Rename interface: `TemplateEditorTabsProps` → `TemplateCanvasTabsControlProps`
-- [ ] `src/lib/tabs/integrations/lexical/index.ts` → `src/lib/canvasTabs/integrations/lexical/index.ts`
-  - [ ] Update all export names
+**Step 2.3.3: Copy and Rename Lexical Integration Files** ✅
+- [x] `src/lib/tabs/integrations/lexical/useLexicalDirtyState.ts` → `src/lib/canvasTabs/integrations/lexical/useLexicalDirtyState.ts`
+  - [x] No renaming needed (remains lexical-specific)
+- [x] `src/lib/tabs/integrations/lexical/DirtyStatePlugin.tsx` → `src/lib/canvasTabs/integrations/lexical/DirtyStatePlugin.tsx`
+  - [x] No renaming needed (remains lexical-specific)
+- [x] `src/lib/tabs/integrations/lexical/useTemplateEditorTabs.ts` → `src/lib/canvasTabs/integrations/lexical/useTemplateCanvasTabs.ts`
+  - [x] Rename function: `useTemplateEditorTabs` → `useTemplateCanvasTabs`
+  - [x] Rename interface: `UseTemplateEditorTabsReturn` → `UseTemplateCanvasTabsReturn`
+  - [x] Update localStorage key: `insurance_template_editor_tabs` → `insurance_template_canvas_tabs`
+- [x] `src/lib/tabs/integrations/lexical/TemplateEditorTabs.tsx` → `src/lib/canvasTabs/integrations/lexical/TemplateCanvasTabsControl.tsx`
+  - [x] Rename component: `TemplateEditorTabs` → `TemplateCanvasTabsControl`
+  - [x] Rename interface: `TemplateEditorTabsProps` → `TemplateCanvasTabsControlProps`
+- [x] `src/lib/tabs/integrations/lexical/index.ts` → `src/lib/canvasTabs/integrations/lexical/index.ts`
+  - [x] Update all export names
 
-**Step 2.3.4: Copy Top-Level Files**
-- [ ] `src/lib/tabs/integrations/index.ts` → `src/lib/canvasTabs/integrations/index.ts`
-- [ ] `src/lib/tabs/index.ts` → `src/lib/canvasTabs/index.ts`
-- [ ] `src/lib/tabs/CLAUDE.md` → `src/lib/canvasTabs/CANVAS_TABS.md`
-  - [ ] Update all documentation to use new terminology
-  - [ ] Update title: "Tab Management System" → "Canvas Tab Management System"
-  - [ ] Update all code examples with new import paths
-  - [ ] Update all references: "tab" → "canvas tab" where contextually appropriate
+**Step 2.3.4: Copy Top-Level Files** ✅
+- [x] `src/lib/tabs/integrations/index.ts` → `src/lib/canvasTabs/integrations/index.ts`
+- [x] `src/lib/tabs/index.ts` → `src/lib/canvasTabs/index.ts`
+- [x] `src/lib/tabs/CLAUDE.md` → `src/lib/canvasTabs/CANVAS_TABS.md`
+  - [x] Update all documentation to use new terminology
+  - [x] Update title: "Tab Management System" → "Canvas Tab Management System"
+  - [x] Update all code examples with new import paths
+  - [x] Update all references: "tab" → "canvas tab" where contextually appropriate
 
-**Step 2.3.5: Update All Imports Across Codebase**
-- [ ] Update `src/App.tsx`:
-  - [ ] Change: `import { TemplateEditorTabs, useTemplateEditorTabs } from '@/lib/tabs/integrations/lexical'`
-  - [ ] To: `import { TemplateCanvasTabsControl, useTemplateCanvasTabs } from '@/lib/canvasTabs/integrations/lexical'`
-  - [ ] Update variable names: `useTemplateEditorTabs()` → `useTemplateCanvasTabs()`
-  - [ ] Update JSX: `<TemplateEditorTabs ... />` → `<TemplateCanvasTabsControl ... />`
-- [ ] Update `src/apps/TemplateEditor/features/editor/components/TemplateEditor.view.tsx`:
-  - [ ] Update any imports from `@/lib/tabs`
-- [ ] Update `src/components/TemplateEditor.tsx`:
-  - [ ] Update any imports from `@/lib/tabs`
-- [ ] Update root `CLAUDE.md`:
-  - [ ] Update Tab Management System section with new paths and naming
-  - [ ] Update code examples
-- [ ] Update `tsconfig.json` path aliases (if needed):
-  - [ ] Verify `@/lib/canvasTabs` resolves correctly
+**Step 2.3.5: Update All Imports Across Codebase** ✅
+- [x] Update `src/App.tsx`:
+  - [x] Change: `import { TemplateEditorTabs, useTemplateEditorTabs } from '@/lib/tabs/integrations/lexical'`
+  - [x] To: `import { TemplateCanvasTabsControl, useTemplateCanvasTabs } from '@/lib/canvasTabs/integrations/lexical'`
+  - [x] Update variable names: `useTemplateEditorTabs()` → `useTemplateCanvasTabs()`
+  - [x] Update JSX: `<TemplateEditorTabs ... />` → `<TemplateCanvasTabsControl ... />`
+- [x] Update `src/apps/TemplateEditor/features/editor/components/TemplateEditor.tsx`:
+  - [x] Update any imports from `@/lib/tabs`
+- [x] Update `src/components/TemplateEditor.tsx`:
+  - [x] Update any imports from `@/lib/tabs`
+- [x] Update root `CLAUDE.md`:
+  - [x] Update Tab Management System section with new paths and naming
+  - [x] Update code examples
+- [x] Update `tsconfig.json` path aliases (if needed):
+  - [x] Verify `@/lib/canvasTabs` resolves correctly
 
-**Step 2.3.6: Verification**
-- [ ] Run `npm run build` - zero errors
-- [ ] Run `npm run dev` - verify app loads
-- [ ] Test all canvas tab functionality:
-  - [ ] Open multiple templates (canvas tabs)
-  - [ ] Switch between canvas tabs
-  - [ ] Close canvas tabs
-  - [ ] Drag-and-drop reorder canvas tabs
-  - [ ] Right-click context menu
-  - [ ] Dirty state indicators (unsaved changes)
-  - [ ] localStorage persistence (reload page)
-  - [ ] Confirmation dialog when closing dirty canvas
-- [ ] Verify keyboard shortcuts work (Cmd/Ctrl+W, Cmd/Ctrl+Tab)
-- [ ] Check browser localStorage for new key: `insurance_template_canvas_tabs`
+**Step 2.3.6: Verification** ✅
+- [x] Run `npm run build` - zero errors
+- [x] Run `npm run dev` - verify app loads
+- [x] Test all canvas tab functionality:
+  - [x] Open multiple templates (canvas tabs)
+  - [x] Switch between canvas tabs
+  - [x] Close canvas tabs
+  - [x] Drag-and-drop reorder canvas tabs
+  - [x] Right-click context menu
+  - [x] Dirty state indicators (unsaved changes)
+  - [x] localStorage persistence (reload page)
+  - [x] Confirmation dialog when closing dirty canvas
+- [x] Verify keyboard shortcuts work (Cmd/Ctrl+W, Cmd/Ctrl+Tab)
+- [x] Check browser localStorage for new key: `insurance_template_canvas_tabs`
 
-**Step 2.3.7: Document New Terminology**
-- [ ] Add terminology section to `CANVAS_TABS.md`:
+**Step 2.3.7: Document New Terminology** ✅
+- [x] Add terminology section to `CANVAS_TABS.md`:
   - **Canvas** = The workspace for a single template/document/design
   - **Canvas Tab** = Visual representation of an open canvas in the tab bar
   - **Canvas Tabs Control** = The UI component showing all open canvas tabs
