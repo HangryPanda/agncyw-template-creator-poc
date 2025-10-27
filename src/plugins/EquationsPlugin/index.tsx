@@ -25,7 +25,7 @@ import {useCallback, useEffect} from 'react';
 import * as React from 'react';
 
 import {$createEquationNode, EquationNode} from '@/nodes/EquationNode';
-import KatexEquationAlterer from '@/components/lexical/KatexEquationAlterer';
+import { KatexEquationAlterer } from '@/components/lexical/plugins/katex';
 
 type CommandPayload = {
   equation: string;

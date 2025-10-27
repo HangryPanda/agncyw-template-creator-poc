@@ -2,19 +2,29 @@
 
 > **Purpose**: Single source of truth for "Where does this file go?" decisions
 > **Audience**: AI assistants, developers, design system maintainers
-> **Last Updated**: 2025-01-26
+> **Last Updated**: 2025-10-27
 
 ---
 
 ## Executive Summary
 
-This document provides a **5-question decision tree** to determine where components should be placed in the codebase and how they should be named. It eliminates ambiguity and enables AI assistants to make correct placement decisions without human intervention.
+This document provides a **pre-check + 5-question decision tree** to determine where components should be placed in the codebase and how they should be named. It eliminates ambiguity and enables AI assistants to make correct placement decisions without human intervention.
+
+**Quick Decision Flow:**
+1. **Pre-Check**: Is this part of a third-party library's UI system? → Domain Library Component
+2. **If not**, use 5-question tree: Page → Layout → View → Construct → Component
 
 ---
 
 ## Component Hierarchy Overview
 
 ```
+Domain Library Component (Third-party library UI)
+ ├─ Owns: Library-specific UI controls
+ ├─ Location: src/components/[domain]/[type]/
+ ├─ Naming: [Domain][Component].tsx OR [domain]/[Component].tsx
+ └─ Examples: Lexical, shadcn/ui, Radix UI
+
 Page (Route container)
  ├─ Owns: URL route, page state, data fetching
  ├─ Location: apps/[app-name]/pages/
@@ -41,6 +51,213 @@ Component (Atomic primitive)
  ├─ Location: core/ui/primitives/
  └─ Naming: [Name].tsx
 ```
+
+---
+
+## Pre-Check: Domain-Specific Library Components
+
+**IMPORTANT**: Before using the 5-question decision tree, check if this component is part of a third-party library's UI system.
+
+### What is a Domain Library Component?
+
+**Domain library components** are UI components that belong to a third-party library or framework's UI system (Lexical, shadcn/ui, Radix UI, etc.). These are distinct from:
+- **Generic shared primitives** (`core/ui/primitives/`) - Our own reusable components
+- **App-specific constructs** (`apps/[app-name]/components/`) - Business logic components
+
+### Identification Criteria
+
+A component is a **Domain Library Component** if it meets ANY of these criteria:
+
+1. **Imported from third-party package**
+   ```typescript
+   // ✅ Domain Library Component
+   import { LexicalComposer } from '@lexical/react/LexicalComposer'
+   import { Button } from '@radix-ui/react-button'
+   ```
+
+2. **Part of library's UI system**
+   - Lexical editor UI components (toolbar buttons, modals, color pickers)
+   - shadcn/ui components built on Radix UI
+   - Headless UI components
+
+3. **Tightly coupled to library/framework**
+   - Requires library-specific context (LexicalComposer, ThemeProvider)
+   - Uses library-specific APIs or hooks
+   - Designed specifically for use within that library's ecosystem
+
+4. **Generic name but domain-specific implementation**
+   - "Button" that only works in Lexical editor
+   - "Modal" that requires Radix UI Dialog primitives
+   - "Select" that uses Headless UI components
+
+### File Structure for Domain Library Components
+
+Domain library components are organized by:
+1. **Domain** (which library/framework)
+2. **Type** (primitives, overlays, constructs, etc.)
+3. **Component name** (domain-prefixed or directory-namespaced)
+
+**Pattern A: Domain-Prefixed Naming**
+```
+src/components/
+└── lexical/                          (domain)
+    ├── primitives/                   (type)
+    │   ├── LexicalButton.tsx         (domain-prefixed)
+    │   ├── LexicalTextInput.tsx
+    │   └── LexicalSelect.tsx
+    ├── overlays/
+    │   ├── LexicalModal.tsx
+    │   └── LexicalDialog.tsx
+    └── pickers/
+        └── LexicalColorPicker.tsx
+```
+
+**Pattern B: Directory-Namespaced**
+```
+src/components/
+└── ui/                               (domain)
+    ├── primitives/
+    │   └── shadcn/                   (namespace directory)
+    │       ├── Button.tsx            (generic name OK within namespace)
+    │       ├── Input.tsx
+    │       └── Select.tsx
+    ├── overlays/
+    │   └── shadcn/
+    │       ├── Dialog.tsx
+    │       └── Popover.tsx
+    └── constructs/
+        └── shadcn/
+            └── Card.tsx
+```
+
+**When to use each pattern:**
+- **Domain-Prefixed**: Better for editor autocomplete, clear at import site
+- **Directory-Namespaced**: Better for grouping many library components together
+
+### Domain Grouping Principle (Multi-Layered)
+
+**When domain library components are related by purpose or integration, use multi-layered grouping to prevent scattered folders.**
+
+**Core Principle:** Group by domain, then group those domain folders under a common parent category.
+
+**Multi-Layered Approach:**
+1. **First Layer**: Group by component type or purpose category (UI controls vs integrations vs features)
+2. **Second Layer**: Group by specific domain within that category
+
+**Decision Points:**
+
+**Step 1:** "Do I have multiple related domain folders?"
+- ✅ **YES** → Create parent category folder, then domain subfolders
+- ❌ **NO** → Single domain folder is fine
+
+**Step 2:** "What's the shared purpose category?"
+- Integrations/Plugins → `plugins/` or `integrations/`
+- UI Features → `features/` or specific category name
+- Authentication flows → `flows/` or `providers/`
+
+**Anti-Pattern (Scattered):**
+```
+❌ DON'T: Domain folders scattered at same level as UI type folders
+src/components/lexical/
+├── primitives/          (UI type)
+├── overlays/            (UI type)
+├── equation/            (domain) ← scattered
+├── katex/               (domain) ← scattered
+└── excalidraw/          (domain) ← scattered
+```
+
+**Correct Pattern (Multi-Layered):**
+```
+✅ DO: Group domain folders under common parent
+src/components/lexical/
+├── primitives/          (UI layer)
+├── overlays/            (UI layer)
+├── pickers/             (UI layer)
+├── editors/             (UI layer)
+└── plugins/             (Integration layer - parent category)
+    ├── equation/        (domain)
+    │   ├── EquationEditor.tsx
+    │   └── EquationEditor.css
+    ├── katex/           (domain)
+    │   ├── KatexEquationAlterer.tsx
+    │   ├── KatexEquationAlterer.css
+    │   └── KatexRenderer.tsx
+    └── excalidraw/      (domain)
+        ├── ExcalidrawModal.tsx
+        └── ExcalidrawModal.css
+```
+
+**More Examples:**
+
+**Authentication:**
+```
+src/components/auth/
+├── forms/               (UI layer - parent category)
+│   ├── login/           (domain)
+│   │   ├── LoginForm.tsx
+│   │   └── LoginModal.tsx
+│   └── signup/          (domain)
+│       ├── SignupForm.tsx
+│       └── SignupWizard.tsx
+└── providers/           (Integration layer - parent category)
+    ├── oauth/           (domain)
+    │   └── OAuthProvider.tsx
+    └── saml/            (domain)
+        └── SamlProvider.tsx
+```
+
+**Payments:**
+```
+src/components/payments/
+├── checkout/            (Feature domain - grouped together)
+│   ├── CheckoutForm.tsx
+│   └── PaymentMethodSelector.tsx
+├── receipt/             (Feature domain - grouped together)
+│   └── ReceiptViewer.tsx
+└── providers/           (Integration layer if needed)
+    ├── stripe/
+    └── paypal/
+```
+
+**Charts:**
+```
+src/components/charts/
+└── types/               (Parent category for chart types)
+    ├── bar/
+    │   ├── BarChart.tsx
+    │   └── BarChartLegend.tsx
+    ├── line/
+    │   └── LineChart.tsx
+    └── pie/
+        └── PieChart.tsx
+```
+
+**Key Insights:**
+1. **Prevent Scattering**: Don't mix UI type folders with domain folders at the same level
+2. **Common Parent**: Group related domains under a parent category folder
+3. **Scalability**: Easy to add new domains without cluttering the root
+4. **Clarity**: Structure immediately shows organization (UI layer vs Integration layer vs Feature domains)
+
+### AI Assistant Pre-Check Checklist
+
+Before proceeding to the 5-question tree, ask:
+
+- [ ] **Is it imported from a third-party package?**
+  - If YES → Domain Library Component
+
+- [ ] **Is it part of a library's UI system?** (Lexical, shadcn, Radix)
+  - If YES → Domain Library Component
+
+- [ ] **Does it require library-specific context/hooks?**
+  - If YES → Domain Library Component
+
+- [ ] **Is it tightly coupled to a framework?**
+  - If YES → Domain Library Component
+
+- [ ] **Has generic name (Button, Modal, Input) but domain-specific implementation?**
+  - If YES → Domain Library Component → Apply domain prefix or namespace
+
+**If ALL answers are NO** → Continue to 5-Question Decision Tree below
 
 ---
 
@@ -106,6 +323,119 @@ START: I need to create/modify a component
 ---
 
 ## Component Type Definitions
+
+### 0. Domain Library Component (Third-Party Library UI)
+
+**Definition:** UI component that belongs to a third-party library or framework's UI system (Lexical, shadcn/ui, Radix UI, etc.).
+
+**Responsibilities:**
+- Provide library-specific UI controls
+- Maintain consistency with library's design system
+- Used exclusively within domain context
+- Bridge third-party libraries with our application
+
+**Location:** `src/components/[domain]/[type]/`
+
+**Naming Convention:**
+- **Option A**: `[Domain][Component].tsx` (e.g., `LexicalButton.tsx`)
+- **Option B**: `[Component].tsx` in `[domain]/` directory (e.g., `shadcn/Button.tsx`)
+
+**AI Indicators:**
+- Component is from a third-party library (Lexical, shadcn, Radix)
+- Component is part of a domain-specific design system
+- Component has generic name (Button, Modal, Input) but domain-specific implementation
+- Component is tightly coupled to library/framework
+- Requires library-specific context or hooks
+
+**Examples:**
+
+**Lexical Editor Components (Domain-Prefixed):**
+```typescript
+// src/components/lexical/primitives/LexicalButton.tsx
+import './LexicalButton.css';
+
+export default function LexicalButton({
+  children,
+  className,
+  onClick,
+  disabled,
+}: LexicalButtonProps) {
+  return (
+    <button
+      disabled={disabled}
+      className={joinClasses('Button__root', className)}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+}
+
+// Usage in Lexical toolbar
+import { LexicalButton } from '@/components/lexical/primitives/LexicalButton';
+```
+
+**shadcn/ui Components (Directory-Namespaced):**
+```typescript
+// src/components/ui/primitives/shadcn/Button.tsx
+import { cva, type VariantProps } from "class-variance-authority"
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center...",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground...",
+        destructive: "bg-destructive text-destructive-foreground...",
+      },
+    },
+  }
+)
+
+export function Button({ variant, ...props }: ButtonProps) {
+  return <button className={buttonVariants({ variant })} {...props} />
+}
+
+// Usage
+import { Button } from '@/components/ui/primitives/shadcn/Button';
+```
+
+**File Structure:**
+```
+src/components/
+├── lexical/                      (Lexical editor domain)
+│   ├── primitives/
+│   │   ├── LexicalButton.tsx
+│   │   ├── LexicalTextInput.tsx
+│   │   └── LexicalSelect.tsx
+│   ├── overlays/
+│   │   ├── LexicalModal.tsx
+│   │   └── LexicalDialog.tsx
+│   ├── pickers/
+│   │   └── LexicalColorPicker.tsx
+│   └── editors/
+│       └── LexicalContentEditable.tsx
+│
+├── ui/                           (shadcn/ui domain)
+│   ├── primitives/shadcn/
+│   │   ├── Button.tsx
+│   │   ├── Input.tsx
+│   │   └── Select.tsx
+│   ├── overlays/shadcn/
+│   │   ├── Dialog.tsx
+│   │   └── Popover.tsx
+│   └── constructs/shadcn/
+│       ├── Card.tsx
+│       └── Resizable.tsx
+│
+└── [other domain libraries as needed]
+```
+
+**Key Distinction from Generic Components:**
+- **Domain Library Component**: `LexicalButton.tsx` - Only works in Lexical editor context
+- **Generic Component**: `Button.tsx` in `core/ui/primitives/` - Works anywhere in the app
+
+---
 
 ### 1. Page (Route-Level Container)
 
@@ -641,6 +971,24 @@ export function Button({ children, variant }) {
 
 Before creating or modifying a file, answer these questions:
 
+### Pre-Check: Domain Library Component
+
+**FIRST**, check if this is a domain library component:
+
+- [ ] **Is it imported from a third-party package?**
+  - If YES → **DOMAIN LIBRARY COMPONENT** (`src/components/[domain]/[type]/`)
+
+- [ ] **Is it part of a library's UI system?** (Lexical, shadcn, Radix)
+  - If YES → **DOMAIN LIBRARY COMPONENT** (`src/components/[domain]/[type]/`)
+
+- [ ] **Does it require library-specific context/hooks?**
+  - If YES → **DOMAIN LIBRARY COMPONENT** (`src/components/[domain]/[type]/`)
+
+- [ ] **Has generic name but domain-specific implementation?**
+  - If YES → **DOMAIN LIBRARY COMPONENT** with domain prefix
+
+**If ALL answers are NO**, continue to Quick Classification Checklist below:
+
 ### Quick Classification Checklist
 
 - [ ] **Question 1:** Does it use `useParams()` or route hooks?
@@ -688,4 +1036,5 @@ Before creating or modifying a file, answer these questions:
 
 ## Revision History
 
+- **2025-10-27**: Added Domain Library Component pre-check - Addresses third-party library UI systems (Lexical, shadcn, Radix)
 - **2025-01-26**: Initial creation - 5-layer architecture, AI decision tree, descriptive naming principle

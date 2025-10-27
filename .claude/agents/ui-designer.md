@@ -391,16 +391,43 @@ Tiny: 12px/16px - Captions
 
 **Use this matrix to answer**: "Where does this file go?"
 
-**Decision Tree** (5 questions):
+**PRE-CHECK** (Domain Library Components):
+**FIRST**, check if this is part of a third-party library's UI system:
+- Is it imported from a third-party package? (Lexical, shadcn, Radix, etc.)
+- Is it part of a library's UI system?
+- Does it require library-specific context/hooks?
+- Has generic name but domain-specific implementation?
+
+**If YES** → **DOMAIN LIBRARY COMPONENT** → `src/components/[domain]/[type]/`
+- Examples: `src/components/lexical/primitives/LexicalButton.tsx`, `src/components/ui/primitives/shadcn/Button.tsx`
+- Apply domain prefix for generic names OR use directory namespace
+
+**Domain Grouping Principle (Multi-Layered):**
+Use multi-layered grouping to prevent scattered folders:
+1. **First Layer**: Group by category (UI controls vs integrations vs features)
+2. **Second Layer**: Group by specific domain within that category
+
+**Examples:**
+- Plugin integrations → `lexical/plugins/equation/`, `lexical/plugins/katex/`
+- Auth features → `auth/forms/login/`, `auth/providers/oauth/`
+- Chart types → `charts/types/bar/`, `charts/types/line/`
+
+**Key:** Don't scatter domain folders - group them under a common parent category
+
+**If NO**, continue to 5-Question Decision Tree:
 1. Is this tied to a URL route? → **PAGE** (`apps/[app-name]/pages/`)
 2. Does this define structural slots? → **LAYOUT** (`core/ui/layouts/` or `apps/[app-name]/layouts/`)
 3. Does this fill a layout slot with state-driven rendering? → **VIEW** (`core/ui/views/` or `apps/[app-name]/views/`)
 4. Does this assemble multiple components? → **CONSTRUCT** (`core/ui/constructs/` or `apps/[app-name]/components/`)
 5. Is this a single UI control? → **COMPONENT** (`core/ui/primitives/`)
 
-**Critical Naming Rule**: ALWAYS use descriptive names (`TemplateEditor.tsx`, `TemplateSidebarView.tsx`), NEVER generic names (`Editor.tsx`, `Sidebar.tsx`). Pattern: `[Domain][Entity][Action/Type]`
+**Critical Naming Rules**:
+- **Domain Library Components**: Generic names MUST include domain prefix (`LexicalButton.tsx`) OR be directory-namespaced (`shadcn/Button.tsx`)
+- **All Other Components**: ALWAYS use descriptive names (`TemplateEditor.tsx`, `TemplateSidebarView.tsx`), NEVER generic names (`Editor.tsx`, `Sidebar.tsx`). Pattern: `[Domain][Entity][Action/Type]`
 
-**Examples in Matrix**: TemplateEditorPage, ThreeColumnLayout, TemplateSidebarView, InlineTagEditor, Button
+**Examples in Matrix**:
+- Domain Library: LexicalButton, shadcn/Dialog, LexicalModal
+- Other: TemplateEditorPage, ThreeColumnLayout, TemplateSidebarView, InlineTagEditor, Button (generic primitive)
 
 ---
 
@@ -461,9 +488,10 @@ Tiny: 12px/16px - Captions
 ## How to Apply Decision Matrices in Your Workflow
 
 ### Step 1: Creating a New Component
-1. **FIRST**: Use **Component Placement Matrix** (#1) to determine component type and location
-2. **THEN**: Use **Cross-App Reuse Matrix** (#3) to decide if it should be shared or app-specific
-3. **IF component has variations**: Use **Variant Component Handling Matrix** (#2) to choose the right pattern
+1. **PRE-CHECK**: Use **Component Placement Matrix Pre-Check** (#1) to check if this is a domain library component
+2. **IF NOT domain library**: Use **Component Placement Matrix 5-Question Tree** (#1) to determine component type and location
+3. **THEN**: Use **Cross-App Reuse Matrix** (#3) to decide if it should be shared or app-specific
+4. **IF component has variations**: Use **Variant Component Handling Matrix** (#2) to choose the right pattern
 
 ### Step 2: Modifying Existing Component
 1. **FIRST**: Use **Component Placement Matrix** (#1) to verify correct location

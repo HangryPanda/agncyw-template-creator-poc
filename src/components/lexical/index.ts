@@ -16,9 +16,10 @@ export * from './pickers';
 // Editors
 export * from './editors';
 
-// Lexical-specific components
-export { default as ExcalidrawModal } from './ExcalidrawModal';
-export { default as EquationEditor } from './EquationEditor';
-export { default as KatexEquationAlterer } from './KatexEquationAlterer';
-export { default as KatexRenderer } from './KatexRenderer';
+// Plugin integrations (multi-layered: plugins/[domain])
+export * from './plugins/equation';
+export * from './plugins/katex';
+export * from './plugins/excalidraw';
+
+// Other Lexical-specific components
 export { default as ImageResizer } from './ImageResizer';
