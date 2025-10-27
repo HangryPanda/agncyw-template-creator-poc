@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/constructs/shadcn/Resizable';
 import ThemeToggle from '@/components/ThemeToggle';
-import ModernTemplateSidebarV1 from '@/components/ModernTemplateSidebar';
-import ModernTemplateSidebarV2 from '@/apps/TemplateEditor/features/sidebar/components/ModernTemplateSidebar';
-import EnhancedTemplateSidebarV1 from '@/components/EnhancedTemplateSidebar';
-import EnhancedTemplateSidebarV2 from '@/apps/TemplateEditor/features/sidebar/components/EnhancedTemplateSidebar';
-import TemplateSidebar from '@/components/TemplateSidebar';
+import ModernTemplateSidebar from '@/apps/TemplateEditor/features/sidebar/components/ModernTemplateSidebar';
 import { Template, Tag } from '@/types';
 
 // Mock data for component previews
@@ -56,12 +52,7 @@ const MOCK_TAGS: Tag[] = [
   { id: 'tag-2', name: 'Follow-up', color: '#10b981' },
 ];
 
-type ComponentKey =
-  | 'ModernTemplateSidebarV1'
-  | 'ModernTemplateSidebarV2'
-  | 'EnhancedTemplateSidebarV1'
-  | 'EnhancedTemplateSidebarV2'
-  | 'TemplateSidebar';
+type ComponentKey = 'ModernTemplateSidebar';
 
 interface ComponentInfo {
   key: ComponentKey;
@@ -73,44 +64,16 @@ interface ComponentInfo {
 
 const COMPONENTS: ComponentInfo[] = [
   {
-    key: 'ModernTemplateSidebarV1',
-    name: 'ModernTemplateSidebar (V1)',
-    location: '/src/components/ModernTemplateSidebar.tsx',
-    description: 'Used in GitHubEditorPage - 272 lines',
-    status: 'active',
-  },
-  {
-    key: 'ModernTemplateSidebarV2',
-    name: 'ModernTemplateSidebar (V2)',
+    key: 'ModernTemplateSidebar',
+    name: 'ModernTemplateSidebar',
     location: '/src/apps/TemplateEditor/features/sidebar/components/ModernTemplateSidebar.tsx',
-    description: 'Used in App.tsx (main page) - 331 lines, more recent updates',
+    description: 'Primary sidebar component - 331 lines, actively maintained',
     status: 'active',
-  },
-  {
-    key: 'EnhancedTemplateSidebarV1',
-    name: 'EnhancedTemplateSidebar (V1)',
-    location: '/src/components/EnhancedTemplateSidebar.tsx',
-    description: 'No active usage found',
-    status: 'experimental',
-  },
-  {
-    key: 'EnhancedTemplateSidebarV2',
-    name: 'EnhancedTemplateSidebar (V2)',
-    location: '/src/apps/TemplateEditor/features/sidebar/components/EnhancedTemplateSidebar.tsx',
-    description: 'Only exported in barrel file',
-    status: 'experimental',
-  },
-  {
-    key: 'TemplateSidebar',
-    name: 'TemplateSidebar (Original)',
-    location: '/src/components/TemplateSidebar.tsx',
-    description: 'Original basic version, no active usage',
-    status: 'deprecated',
   },
 ];
 
 export default function DesignSandboxPage() {
-  const [selectedComponent, setSelectedComponent] = useState<ComponentKey>('ModernTemplateSidebarV1');
+  const [selectedComponent, setSelectedComponent] = useState<ComponentKey>('ModernTemplateSidebar');
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>('template-1');
 
   const renderComponent = (key: ComponentKey) => {
@@ -127,26 +90,8 @@ export default function DesignSandboxPage() {
     };
 
     switch (key) {
-      case 'ModernTemplateSidebarV1':
-        return <ModernTemplateSidebarV1 {...commonProps} />;
-      case 'ModernTemplateSidebarV2':
-        return <ModernTemplateSidebarV2 {...commonProps} />;
-      case 'EnhancedTemplateSidebarV1':
-        return <EnhancedTemplateSidebarV1 {...commonProps} />;
-      case 'EnhancedTemplateSidebarV2':
-        return <EnhancedTemplateSidebarV2 {...commonProps} />;
-      case 'TemplateSidebar':
-        return (
-          <TemplateSidebar
-            templates={MOCK_TEMPLATES}
-            tags={MOCK_TAGS}
-            selectedTemplateId={selectedTemplateId}
-            onSelectTemplate={setSelectedTemplateId}
-            onNewTemplate={() => console.log('New template')}
-            onDeleteTemplate={(id: string) => console.log('Delete:', id)}
-            onManageTags={() => console.log('Manage tags')}
-          />
-        );
+      case 'ModernTemplateSidebar':
+        return <ModernTemplateSidebar {...commonProps} />;
       default:
         return <div className="p-4 text-muted-foreground">Component not found</div>;
     }

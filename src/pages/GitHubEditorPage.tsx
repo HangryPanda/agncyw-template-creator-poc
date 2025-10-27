@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/constructs/shadcn/Resizable';
-import ModernTemplateSidebar from '@/components/ModernTemplateSidebar';
+import ModernTemplateSidebar from '@/apps/TemplateEditor/features/sidebar/components/ModernTemplateSidebar';
 import TemplateEditor from '@/components/TemplateEditor';
 import TemplateOutlinePanel from '@/components/TemplateOutlinePanel';
 import InlineTitleEditor from '@/components/InlineTitleEditor';
