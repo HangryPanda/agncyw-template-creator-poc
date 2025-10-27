@@ -15,7 +15,7 @@ import * as React from 'react';
 import {useCallback, useState} from 'react';
 import {ErrorBoundary} from 'react-error-boundary';
 
-import Button from '@/ui/Button';
+import Button from '@/components/primitives/Button';
 import KatexRenderer from './KatexRenderer';
 
 type Props = {

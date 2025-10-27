@@ -76,8 +76,8 @@ import {
 } from '@/commenting';
 import useModal from '@/hooks/useModal';
 import CommentEditorTheme from '@/themes/lexicalEditor/commentEditor.theme';
-import Button from '@/ui/Button';
-import ContentEditable from '@/ui/ContentEditable';
+import Button from '@/components/primitives/Button';
+import ContentEditable from '@/components/editors/ContentEditable';
 
 export const INSERT_INLINE_COMMAND: LexicalCommand<void> = createCommand(
   'INSERT_INLINE_COMMAND',

@@ -15,7 +15,7 @@ import {useMemo, useRef, useState} from 'react';
 import * as React from 'react';
 
 import {isKeyboardInput} from '@/utils/focusUtils';
-import TextInput from './TextInput';
+import TextInput from '@/components/primitives/TextInput';
 
 let skipAddingToHistoryStack = false;
 

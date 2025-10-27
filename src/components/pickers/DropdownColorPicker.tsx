@@ -9,7 +9,7 @@
 import * as React from 'react';
 
 import ColorPicker from './ColorPicker';
-import DropDown from './DropDown';
+import DropDown from '@/components/overlays/DropDown';
 
 type Props = {
   disabled?: boolean;

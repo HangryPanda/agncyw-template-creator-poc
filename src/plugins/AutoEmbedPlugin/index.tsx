@@ -22,8 +22,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import useModal from '@/hooks/useModal';
-import Button from '@/ui/Button';
-import {DialogActions} from '@/ui/Dialog';
+import Button from '@/components/primitives/Button';
+import {DialogActions} from '@/components/overlays/Dialog';
 import {INSERT_FIGMA_COMMAND} from '@/plugins/FigmaPlugin';
 import {INSERT_TWEET_COMMAND} from '@/plugins/TwitterPlugin';
 import {INSERT_YOUTUBE_COMMAND} from '@/plugins/YouTubePlugin';

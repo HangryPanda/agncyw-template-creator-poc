@@ -50,8 +50,8 @@ import {ReactPortal, useCallback, useEffect, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 
 import useModal from '@/hooks/useModal';
-import ColorPicker from '@/ui/ColorPicker';
-import DropDown, {DropDownItem} from '@/ui/DropDown';
+import ColorPicker from '@/components/pickers/ColorPicker';
+import DropDown, {DropDownItem} from '@/components/overlays/DropDown';
 
 function computeSelectionCount(selection: TableSelection): {
   columns: number;

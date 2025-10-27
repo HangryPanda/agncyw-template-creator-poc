@@ -26,7 +26,7 @@ import {useEffect, useLayoutEffect, useRef} from 'react';
 import {createWebsocketProvider} from '@/collaboration';
 import {useSharedHistoryContext} from '@/context/SharedHistoryContext';
 import StickyEditorTheme from '@/themes/lexicalEditor/stickyNote.theme';
-import ContentEditable from '@/ui/ContentEditable';
+import ContentEditable from '@/components/editors/ContentEditable';
 import {$isStickyNode} from './StickyNode';
 
 type Positioning = {
