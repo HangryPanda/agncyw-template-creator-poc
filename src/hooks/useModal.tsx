@@ -11,7 +11,7 @@ import type {JSX} from 'react';
 import {useCallback, useMemo, useState} from 'react';
 import * as React from 'react';
 
-import Modal from '@/components/overlays/Modal';
+import Modal from '@/components/lexical/overlays/LexicalModal';
 
 export default function useModal(): [
   JSX.Element | null,

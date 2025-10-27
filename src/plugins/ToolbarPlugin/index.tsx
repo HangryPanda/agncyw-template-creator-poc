@@ -76,8 +76,8 @@ import {
 import useModal from '@/hooks/useModal';
 import catTypingGif from '@/images/cat-typing.gif';
 import {$createStickyNode} from '@/nodes/StickyNode';
-import DropDown, {DropDownItem} from '@/components/overlays/DropDown';
-import DropdownColorPicker from '@/components/pickers/DropdownColorPicker';
+import DropDown, {DropDownItem} from '@/components/lexical/overlays/LexicalDropDown';
+import DropdownColorPicker from '@/components/lexical/pickers/LexicalDropdownColorPicker';
 import {isKeyboardInput} from '@/utils/focusUtils';
 import {getSelectedNode} from '@/utils/getSelectedNode';
 import {sanitizeUrl} from '@/utils/url';

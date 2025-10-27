@@ -26,7 +26,7 @@ import {
 } from 'lexical';
 import {useEffect, useMemo, useRef, useState} from 'react';
 
-import Button from '@/components/primitives/Button';
+import Button from '@/components/lexical/primitives/LexicalButton';
 import joinClasses from '@/utils/joinClasses';
 import {$isPollNode, createPollOption} from './PollNode';
 

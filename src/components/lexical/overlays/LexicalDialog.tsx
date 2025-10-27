@@ -8,7 +8,7 @@
 
 import type {JSX} from 'react';
 
-import './Dialog.css';
+import './LexicalDialog.css';
 
 import * as React from 'react';
 import {ReactNode} from 'react';

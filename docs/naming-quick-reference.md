@@ -17,13 +17,117 @@
 
 | Type | Pattern | Example | Export |
 |------|---------|---------|--------|
-| **Component** | `PascalCase.tsx` | `Button.tsx`<br>`InlineTagEditor.tsx` | `export function Button()` |
+| **Component** | `PascalCase.tsx` | `InlineTagEditor.tsx`<br>`LexicalButton.tsx`* | `export function InlineTagEditor()` |
 | **Hook** | `useCamelCase.ts` | `useTemplateRegistry.ts`<br>`useModal.ts` | `export function useTemplateRegistry()` |
 | **Service** | `camelCaseService.ts` | `localStorageService.ts`⚠️<br>`apiService.ts`🔐 | `export class LocalStorageService` |
 | **Type** | `types.ts` or `PascalCase.ts` | `types.ts`<br>`Template.ts` | `export interface Template` |
 | **Utility** | `camelCase.ts` | `formatDate.ts`<br>`colorSystem.ts` | `export function formatDate()` |
-| **CSS** | `kebab-case.css` | `button.css`<br>`inline-tag-editor.vars.css` | N/A |
+| **CSS** | `kebab-case.css` | `lexical-button.css`<br>`inline-tag-editor.vars.css` | N/A |
 | **Config** | `camelCase.ts` | `templateEditor.theme.ts` | `export const theme = {}` |
+
+**\*CRITICAL RULE - Domain-Specific Generic Names:**
+Generic component names (Button, Modal, Select, Input, etc.) in domain-specific folders **MUST** include domain prefix.
+
+---
+
+## CRITICAL: Domain-Specific Generic Names Rule
+
+### The Problem
+Generic component names like `Button`, `Modal`, `Select`, etc. don't convey ownership or purpose when placed in domain-specific folders.
+
+**Bad Example:**
+```
+src/components/lexical/primitives/Button.tsx       ← Which Button?
+src/components/ui/primitives/shadcn/Button.tsx     ← Naming conflict!
+```
+
+### The Solution: `[Domain][Component]` Pattern
+
+**Rule:** When a generic name exists in a domain-specific folder, **ALWAYS** prefix with domain name.
+
+✅ **Correct Pattern:**
+```typescript
+// Lexical editor components
+src/components/lexical/primitives/LexicalButton.tsx
+src/components/lexical/primitives/LexicalTextInput.tsx
+src/components/lexical/overlays/LexicalModal.tsx
+src/components/lexical/overlays/LexicalDialog.tsx
+
+// Usage
+import { LexicalButton } from '@/components/lexical/primitives/LexicalButton';
+```
+
+❌ **Anti-Pattern:**
+```typescript
+// ❌ TOO GENERIC - unclear ownership
+src/components/lexical/primitives/Button.tsx
+src/components/lexical/overlays/Modal.tsx
+
+// ❌ Causes confusion
+import { Button } from '@/components/lexical/primitives/Button';  // Which Button system?
+```
+
+### When to Apply This Rule
+
+**Apply domain prefix when:**
+- ✅ Component has a generic/common name (Button, Input, Modal, Select, Switch, Card, etc.)
+- ✅ Component lives in a domain-specific folder (`lexical/`, `payment/`, `auth/`, etc.)
+- ✅ Multiple versions of the same component type exist (Lexical Button vs shadcn Button)
+
+**Skip domain prefix when:**
+- ✅ Component name is already descriptive (`TemplateEditor`, `InlineTagEditor`)
+- ✅ Component name is inherently domain-specific (`ExcalidrawModal`, `KatexRenderer`)
+- ✅ Component uses compound descriptive name (`DropdownColorPicker`, `VariableInsertionPopover`)
+
+### Real-World Example: Lexical Components Rename
+
+**Before (Incorrect):**
+```
+src/components/lexical/
+├── primitives/
+│   ├── Button.tsx          ❌ Generic name
+│   ├── TextInput.tsx       ❌ Generic name
+│   └── Select.tsx          ❌ Generic name
+└── overlays/
+    ├── Modal.tsx           ❌ Generic name
+    └── Dialog.tsx          ❌ Generic name
+```
+
+**After (Correct):**
+```
+src/components/lexical/
+├── primitives/
+│   ├── LexicalButton.tsx        ✅ Domain-prefixed
+│   ├── LexicalTextInput.tsx     ✅ Domain-prefixed
+│   └── LexicalSelect.tsx        ✅ Domain-prefixed
+└── overlays/
+    ├── LexicalModal.tsx         ✅ Domain-prefixed
+    └── LexicalDialog.tsx        ✅ Domain-prefixed
+```
+
+### Namespace Alternative (shadcn/ui Example)
+
+Instead of prefixing every component, you can use directory-based namespacing:
+
+```
+src/components/ui/
+├── primitives/
+│   └── shadcn/              ← Namespace directory
+│       ├── Button.tsx       ✅ OK because namespaced
+│       └── Input.tsx        ✅ OK because namespaced
+└── overlays/
+    └── shadcn/              ← Namespace directory
+        └── Dialog.tsx       ✅ OK because namespaced
+```
+
+**Usage:**
+```typescript
+import { Button } from '@/components/ui/primitives/shadcn/Button';  // Clear path shows it's shadcn
+```
+
+Both approaches are valid. Choose based on:
+- **Prefix approach**: Better for editor autocomplete, clear at import site
+- **Namespace directory**: Better for grouping many library components together
 
 ---
 
@@ -92,9 +196,15 @@ Domains/coverage-snapshot/            # kebab-case dir
 ### ✅ Correct Examples
 
 ```typescript
-// Frontend
-import { Button } from '@/core/ui/primitives/button/Button'
+// Frontend - Domain-prefixed generic names
+import { LexicalButton } from '@/components/lexical/primitives/LexicalButton'
+import { LexicalModal } from '@/components/lexical/overlays/LexicalModal'
+
+// Frontend - Descriptive names (no prefix needed)
 import { InlineTagEditor } from '@/core/ui/constructs/inline-tag-editor/InlineTagEditor'
+import { TemplateEditor } from '@/apps/TemplateEditor/components/TemplateEditor'
+
+// Frontend - Hooks and services
 import { useTemplateRegistry } from '@/hooks/template-registry/useTemplateRegistry'
 import { localStorageService } from '@/features/coverage-snapshot/services/localStorageService'
 ```
@@ -109,6 +219,10 @@ use App\Shared\DbStorage\DbStorageService;
 ### ❌ Common Mistakes
 
 ```typescript
+// ❌ Wrong: Generic name without domain prefix
+import { Button } from '@/components/lexical/primitives/Button'
+import { Modal } from '@/components/lexical/overlays/Modal'
+
 // ❌ Wrong: kebab-case component
 import { button } from '@/core/ui/primitives/button/button.component'
 

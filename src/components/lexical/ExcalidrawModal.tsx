@@ -22,8 +22,8 @@ import * as React from 'react';
 import {ReactPortal, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {createPortal} from 'react-dom';
 
-import Button from '@/components/primitives/Button';
-import Modal from '@/components/overlays/Modal';
+import Button from '@/components/lexical/primitives/LexicalButton';
+import Modal from '@/components/lexical/overlays/LexicalModal';
 
 export type ExcalidrawInitialElements = ExcalidrawInitialDataState['elements'];
 

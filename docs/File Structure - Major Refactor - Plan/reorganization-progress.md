@@ -1,8 +1,8 @@
 # File System Reorganization Progress Tracker
 
 **Started**: 2025-10-24
-**Last Updated**: 2025-10-27 00:32:14
-**Status**: ✅ Phase 1, Phase 2.3, Phase 2.5.2, Phase 2.6, Phase 2.7 Complete
+**Last Updated**: 2025-10-27 01:08:45
+**Status**: ✅ Phase 1, Phase 2.3, Phase 2.5.2, Phase 2.6 (fully corrected), Phase 2.7 Complete
 **Current Phase**: Phase 2 - Shared Frontend Infrastructure (Final Verification)
 
 ---
@@ -44,17 +44,37 @@
 - ✅ Created barrel export (index.ts)
 - ✅ Build verification: SUCCESS
 
-**Phase 2.6: UI Components Reorganization (17 components + 12 CSS files)**
-- ✅ Created domain-specific directories: primitives/, overlays/, pickers/, editors/, lexical/
-- ✅ Moved 5 primitive components (Button, TextInput, Select, Switch, FileInput)
-- ✅ Moved 4 overlay components (Modal, Dialog, DropDown, FlashMessage)
-- ✅ Moved 2 picker components (ColorPicker, DropdownColorPicker)
-- ✅ Moved 1 editor component (ContentEditable)
-- ✅ Moved 5 Lexical components (ExcalidrawModal, EquationEditor, KatexEquationAlterer, KatexRenderer, ImageResizer)
-- ✅ Created 5 barrel exports (one per domain)
-- ✅ Updated 22 files with new import paths (batch updated with sed)
-- ✅ Fixed cross-domain imports (ColorPicker, DropdownColorPicker, ExcalidrawModal)
+**Phase 2.6: Lexical UI Components Reorganization (17 components + 12 CSS files) - CORRECTED**
+- ✅ Created domain-specific directories under src/components/lexical/: primitives/, overlays/, pickers/, editors/
+- ✅ Moved 5 primitive components to lexical/primitives/ (Button, TextInput, Select, Switch, FileInput)
+- ✅ Moved 4 overlay components to lexical/overlays/ (Modal, Dialog, DropDown, FlashMessage)
+- ✅ Moved 2 picker components to lexical/pickers/ (ColorPicker, DropdownColorPicker)
+- ✅ Moved 1 editor component to lexical/editors/ (ContentEditable)
+- ✅ Existing Lexical components remain in lexical/ root (ExcalidrawModal, EquationEditor, KatexEquationAlterer, KatexRenderer, ImageResizer)
+- ✅ Updated lexical barrel export to include all subdirectories
+- ✅ Updated all import paths across codebase (from @/components/primitives → @/components/lexical/primitives)
+- ✅ Fixed naming conflict: shadcn/ui components NOT re-exported in main components barrel
 - ✅ Build verification: SUCCESS
+
+**Correction Notes**:
+1. **Directory Structure**: Initially placed Lexical components at wrong level (src/components/primitives, etc.). Corrected to place ALL Lexical UI components under src/components/lexical/ to make it clear they're Lexical-specific, not general primitives. This avoids confusion with shadcn/ui components which live in src/components/ui/.
+
+2. **Naming Convention**: Applied descriptive naming guideline - generic names in domain-specific folders must include domain prefix. All Lexical components renamed with "Lexical" prefix to avoid ambiguity:
+   - Button.tsx → LexicalButton.tsx
+   - TextInput.tsx → LexicalTextInput.tsx
+   - Select.tsx → LexicalSelect.tsx
+   - Switch.tsx → LexicalSwitch.tsx
+   - FileInput.tsx → LexicalFileInput.tsx
+   - Modal.tsx → LexicalModal.tsx
+   - Dialog.tsx → LexicalDialog.tsx
+   - DropDown.tsx → LexicalDropDown.tsx
+   - FlashMessage.tsx → LexicalFlashMessage.tsx
+   - ColorPicker.tsx → LexicalColorPicker.tsx
+   - DropdownColorPicker.tsx → LexicalDropdownColorPicker.tsx
+   - ContentEditable.tsx → LexicalContentEditable.tsx
+   - All corresponding CSS files renamed (e.g., Button.css → LexicalButton.css)
+
+   **Rationale**: Generic names like "Button" don't convey domain ownership. Pattern: `[Domain][Component]` (e.g., LexicalButton, LexicalModal). This makes it immediately clear which components belong to which system and prevents naming conflicts.
 
 **Phase 2.7: shadcn/ui Components Reorganization (14 components)**
 - ✅ Created shadcn/ subdirectories under primitives/, overlays/, and constructs/
@@ -73,8 +93,9 @@
 - `1c7d843` - Phase 1 Reconciliation
 - `ead86cc` - Canvas Tabs Refactor
 - `3e05328` - Lexical Editor Themes Reorganization
-- `fd247b1` - UI Components Reorganization
-- [pending] - shadcn/ui Components Reorganization
+- `fd247b1` - Lexical UI Components Reorganization (initial - incorrect placement)
+- `4223f98` - shadcn/ui Components Reorganization
+- [pending] - Lexical UI Components Correction (move all under lexical/)
 
 ---
 
@@ -88,6 +109,23 @@
 **Types:** `Template.ts` (PascalCase, no suffix)
 **Directories:** `kebab-case/` (universal)
 **CSS:** `kebab-case.css`
+
+**CRITICAL RULE - Domain-Specific Generic Names:**
+When a generic name (Button, Modal, Select, etc.) exists within a domain-specific folder, it MUST include the domain prefix to avoid ambiguity and naming conflicts.
+
+✅ **Pattern**: `[Domain][Component].tsx`
+- `LexicalButton.tsx` (not `Button.tsx` in lexical folder)
+- `LexicalModal.tsx` (not `Modal.tsx` in lexical folder)
+- `ShadcnButton.tsx` would be used if shadcn components weren't namespaced by directory
+
+❌ **Anti-Pattern**: Generic names in domain folders
+- `Button.tsx` in `lexical/primitives/` ← TOO GENERIC
+- `Modal.tsx` in `lexical/overlays/` ← UNCLEAR OWNERSHIP
+
+**Exception**: Components with inherently unique/descriptive names don't need domain prefix:
+- `TemplateEditor.tsx` ← Already descriptive
+- `ExcalidrawModal.tsx` ← Already domain-specific
+- `DropdownColorPicker.tsx` ← Already descriptive compound name
 
 **Reference:** See `/docs/naming-quick-reference.md` for complete guidelines
 

@@ -40,7 +40,7 @@ import {useCallback, useEffect, useState} from 'react';
 import {INITIAL_SETTINGS} from '@/appSettings';
 import useFlashMessage from '@/hooks/useFlashMessage';
 import useModal from '@/hooks/useModal';
-import Button from '@/components/primitives/Button';
+import Button from '@/components/lexical/primitives/LexicalButton';
 import {docFromHash, docToHash} from '@/utils/docSerialization';
 import {PLAYGROUND_TRANSFORMERS} from '@/plugins/MarkdownTransformers';
 import {

@@ -8,8 +8,8 @@
 
 import * as React from 'react';
 
-import ColorPicker from './ColorPicker';
-import DropDown from '@/components/overlays/DropDown';
+import ColorPicker from './LexicalColorPicker';
+import DropDown from '@/components/lexical/overlays/LexicalDropDown';
 
 type Props = {
   disabled?: boolean;

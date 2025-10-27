@@ -51,10 +51,10 @@ import {
   ImageNode,
   ImagePayload,
 } from '@/nodes/ImageNode';
-import Button from '@/components/primitives/Button';
-import {DialogActions, DialogButtonsList} from '@/components/overlays/Dialog';
-import FileInput from '@/components/primitives/FileInput';
-import TextInput from '@/components/primitives/TextInput';
+import Button from '@/components/lexical/primitives/LexicalButton';
+import {DialogActions, DialogButtonsList} from '@/components/lexical/overlays/LexicalDialog';
+import FileInput from '@/components/lexical/primitives/LexicalFileInput';
+import TextInput from '@/components/lexical/primitives/LexicalTextInput';
 
 export type InsertImagePayload = Readonly<ImagePayload>;
 

@@ -17,7 +17,7 @@ import {
   useState,
 } from 'react';
 
-import FlashMessage from '@/components/overlays/FlashMessage';
+import FlashMessage from '@/components/lexical/overlays/LexicalFlashMessage';
 
 export type ShowFlashMessage = (
   message?: React.ReactNode,
