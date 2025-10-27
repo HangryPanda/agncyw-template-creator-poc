@@ -4,15 +4,6 @@
 
 A comprehensive OKLCH-based color palette system has been implemented to replace hardcoded hex values with a programmatic, designer-friendly approach.
 
-## What Changed
-
-### Before
-- 40 hardcoded hex colors in a 4x10 array
-- Manual calculation required for color variations
-- No relationship between color families and shades
-- Difficult to adjust saturation or lightness globally
-
-### After
 - 10 base color families with programmatic variations
 - OKLCH color space for perceptual uniformity
 - Design tokens for easy global adjustments

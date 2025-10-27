@@ -4,6 +4,7 @@ import ModernTemplateSidebar from '@/components/ModernTemplateSidebar';
 import TemplateEditor from '@/components/TemplateEditor';
 import TemplateOutlinePanel from '@/components/TemplateOutlinePanel';
 import InlineTitleEditor from '@/components/InlineTitleEditor';
+import ThemeToggle from '@/components/ThemeToggle';
 import { Template, Tag, TemplateVariable } from '@/types';
 
 interface GitHubEditorPageProps {
@@ -101,6 +102,9 @@ export default function GitHubEditorPage({
         <div className="flex items-center justify-between">
           {/* Left section */}
           <div className="flex items-center gap-4">
+            {/* Theme Toggle - MOVED TO LEFT */}
+            <ThemeToggle />
+
             {/* Sidebar Toggle */}
             <button
               onClick={toggleLeftSidebar}

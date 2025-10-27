@@ -7,13 +7,15 @@ import GlobalSearch from './apps/TemplateEditor/features/sidebar/components/Glob
 import InlineTagEditor from './apps/TemplateEditor/features/metadata/components/InlineTagEditor.view';
 import InlineVariableEditor from './apps/TemplateEditor/features/metadata/components/InlineVariableEditor.view';
 import { FormWrapper, ResponsiveDrawer } from '@/components/forms';
+import { VariableListDisplay } from '@/components/VariableListDisplay';
 import { TemplateEditorTabs, useTemplateEditorTabs } from '@/lib/tabs/integrations/lexical';
 import { useTemplateValues } from '@/hooks/templateValues';
 import { useTemplateRegistry } from '@/hooks/templateRegistry';
 import { Toaster } from './components/ui/sonner';
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from './components/ui/resizable';
+import { ResizablePanelGroup, ResizablePanel } from './components/ui/resizable';
 import { TemplateVariable, EditorState, Template, Tag } from '@/apps/_shared/template/types';
 import GitHubEditorPage from './pages/GitHubEditorPage';
+import ThemeToggle from './components/ThemeToggle';
 // Removed App.css - using Tailwind and shadcn styles instead
 
 // Insurance-specific variables for Quote Not Written campaign
@@ -51,9 +53,8 @@ function App() {
   const [showTagEditor, setShowTagEditor] = useState(false);
   const [showVariableEditor, setShowVariableEditor] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isSidebarDrawerOpen, setIsSidebarDrawerOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [variableToInsert, setVariableToInsert] = useState<string | null>(null);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   // Load saved data
@@ -87,7 +88,6 @@ function App() {
     closeOtherTabs,
     closeTabsToRight,
     closeAllTabs,
-    isTabOpen,
     dirtyTabs,
     markTabDirty,
   } = useTemplateEditorTabs();
@@ -175,7 +175,7 @@ function App() {
   const handleNewTemplate = (): void => {
     const now = Date.now();
     const newTemplate: Template = {
-      id: `template_${now}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `template_${now}_${Math.random().toString(36).substring(2, 11)}`,
       name: 'Untitled Template',
       type: 'email',
       content: EMPTY_TEMPLATE,
@@ -278,22 +278,18 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Responsive sidebar collapse logic
-  useEffect(() => {
-    // Breakpoints:
-    // < 768px: Mobile - sidebar hidden via CSS (existing drawer pattern)
-    // 768px - 1024px: Tablet - can be collapsed or expanded
-    // >= 1024px: Desktop - expanded by default
+  // Auto-close sidebar on mobile when selecting template
+  const handleSidebarTemplateSelect = useCallback((templateId: string) => {
+    handleSelectTemplate(templateId);
+    if (windowWidth < 1024) {
+      setIsSidebarOpen(false);
+    }
+  }, [windowWidth]);
 
-    if (windowWidth < 768) {
-      // Mobile: sidebar handled by drawer, keep collapsed state
-      setIsSidebarCollapsed(true);
-    } else if (windowWidth >= 768 && windowWidth < 1024) {
-      // Tablet: allow user control, but start collapsed for narrow viewports
-      // User can expand manually via toggle
-    } else {
-      // Desktop: expanded by default
-      setIsSidebarCollapsed(false);
+  const handleSidebarNewTemplate = useCallback(() => {
+    handleNewTemplate();
+    if (windowWidth < 1024) {
+      setIsSidebarOpen(false);
     }
   }, [windowWidth]);
 
@@ -315,9 +311,7 @@ function App() {
       // Cmd/Ctrl + B for toggle sidebar
       if (isMod && e.key === 'b') {
         e.preventDefault();
-        if (windowWidth >= 768) {
-          setIsSidebarCollapsed(!isSidebarCollapsed);
-        }
+        setIsSidebarOpen(!isSidebarOpen);
       }
 
       // Tab navigation shortcuts
@@ -348,11 +342,16 @@ function App() {
           setActiveTab(openTabs[prevIndex]);
         }
       }
+
+      // Escape to close sidebar
+      if (e.key === 'Escape' && isSidebarOpen) {
+        setIsSidebarOpen(false);
+      }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isSidebarCollapsed, windowWidth, openTabs, activeTabId, closeTab, setActiveTab]);
+  }, [isSidebarOpen, openTabs, activeTabId, closeTab, setActiveTab]);
 
   // If GitHub editor view is active, render that page
   if (currentView === 'github-editor') {
@@ -405,22 +404,18 @@ function App() {
     <>
       <div className="h-screen bg-background font-sans flex flex-col">
         {/* Header - Full viewport width, not constrained */}
-        <header className="bg-muted/30 border-b border-border px-6 py-3 flex-shrink-0">
+        <header className="bg-muted/30 border-b border-border px-6 py-3 flex-shrink-0 relative z-30">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
+              {/* Theme Toggle - MOVED TO LEFT */}
+              <ThemeToggle />
+
               {/* Sidebar Toggle Button */}
               <button
-                onClick={() => {
-                  if (windowWidth < 768) {
-                    // Mobile: Open drawer with sidebar
-                    setIsSidebarDrawerOpen(true);
-                  } else {
-                    // Desktop: Toggle sidebar collapse
-                    setIsSidebarCollapsed(!isSidebarCollapsed);
-                  }
-                }}
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                 className="p-2 hover:bg-muted rounded-md transition-colors"
-                title={windowWidth < 768 ? 'Open templates' : (isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar')}
+                title={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+                aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
               >
                 <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -484,433 +479,430 @@ function App() {
           </div>
         </header>
 
-        {/* Main Content Area - Three Column Layout - Centered with max-width */}
-        <div className="flex-1 overflow-hidden flex justify-center bg-background">
-          <div className="w-full max-w-[2400px]">
-            <ResizablePanelGroup direction="horizontal" className="h-full">
-            {/* Sidebar - Hidden on mobile (< 768px), resizable on desktop */}
-            {windowWidth >= 768 && (
-              <>
-                <ResizablePanel
-                  defaultSize={25}
-                  minSize={20}
-                  maxSize={35}
-                  collapsible={true}
-                  collapsedSize={0}
-                  onCollapse={() => setIsSidebarCollapsed(true)}
-                  onExpand={() => setIsSidebarCollapsed(false)}
-                  className={isSidebarCollapsed ? 'min-w-0' : 'min-w-[296px]'}
-                >
-                  <ModernTemplateSidebar
-                    templates={templates}
-                    tags={tags}
-                    selectedTemplateId={activeTabId}
-                    onSelectTemplate={handleSelectTemplate}
-                    onNewTemplate={handleNewTemplate}
-                    onDeleteTemplate={handleDeleteTemplate}
-                    onToggleStar={handleToggleStar}
-                    onManageTags={() => setShowTagEditor(true)}
-                    openTabIds={openTabs}
-                  />
-                </ResizablePanel>
-                <ResizableHandle className="w-px bg-border hover:bg-primary/30 transition-colors" />
-              </>
-            )}
+        {/* Main Content Area - Full width */}
+        <div className="flex-1 overflow-hidden flex relative">
+          {/* Overlay Sidebar - Slides in from left */}
+          <div
+            className={`
+              fixed top-0 left-0 h-full bg-background border-r border-border
+              transition-transform duration-300 ease-in-out
+              z-40 w-[280px] md:w-[320px]
+              ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+              shadow-2xl
+            `}
+            style={{ paddingTop: '60px' }} // Account for header height
+          >
+            <ModernTemplateSidebar
+              templates={templates}
+              tags={tags}
+              selectedTemplateId={activeTabId}
+              onSelectTemplate={handleSidebarTemplateSelect}
+              onNewTemplate={handleSidebarNewTemplate}
+              onDeleteTemplate={handleDeleteTemplate}
+              onToggleStar={handleToggleStar}
+              onManageTags={() => {
+                setShowTagEditor(true);
+                if (windowWidth < 1024) {
+                  setIsSidebarOpen(false);
+                }
+              }}
+              openTabIds={openTabs}
+            />
+          </div>
 
-            {/* Main Content */}
-            <ResizablePanel defaultSize={windowWidth >= 768 ? 55 : 100} minSize={45}>
-              <div className="h-full flex flex-col overflow-hidden">
-                {/* Content Area */}
-                {selectedTemplate ? (
-                  <>
-                    {/* Editor Header */}
-                    <div className="bg-background border-b border-border px-6 py-3 flex-shrink-0">
-                      <div className="flex items-center justify-between">
-                        <TemplateMetadataEditor
-                          template={selectedTemplate}
-                          tags={tags}
-                          onUpdateName={handleUpdateTemplateName}
-                          onUpdateType={handleUpdateTemplateType}
-                          onUpdateTags={handleUpdateTemplateTags}
-                          onManageTags={() => setShowTagEditor(true)}
-                        />
+          {/* Backdrop - Only visible when sidebar is open */}
+          {isSidebarOpen && (
+            <div
+              className="fixed inset-0 bg-black/50 transition-opacity duration-300 z-30"
+              style={{ top: '60px' }} // Account for header height
+              onClick={() => setIsSidebarOpen(false)}
+              aria-hidden="true"
+            />
+          )}
 
-                        {/* Mobile Placeholders Button */}
-                        <button
-                          onClick={() => setIsDrawerOpen(true)}
-                          className="flex md:hidden items-center gap-2 px-3 py-1.5 text-sm bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-                          </svg>
-                          {mode === 'create' ? 'Variables' : 'Fill Details'}
-                        </button>
-                      </div>
-                    </div>
+          {/* Main Content - Full width, no resizable panel for sidebar */}
+          <div className="flex-1 flex justify-center bg-background overflow-hidden">
+            <div className="w-full max-w-[2400px]">
+              <ResizablePanelGroup direction="horizontal" className="h-full">
+                {/* Main Content */}
+                <ResizablePanel defaultSize={100} minSize={45}>
+                  <div className="h-full flex flex-col overflow-hidden">
+                    {/* Content Area */}
+                    {selectedTemplate ? (
+                      <>
+                        {/* Editor Header */}
+                        <div className="bg-background border-b border-border px-6 py-3 flex-shrink-0">
+                          <div className="flex items-center justify-between">
+                            <TemplateMetadataEditor
+                              template={selectedTemplate}
+                              tags={tags}
+                              onUpdateName={handleUpdateTemplateName}
+                              onUpdateType={handleUpdateTemplateType}
+                              onUpdateTags={handleUpdateTemplateTags}
+                              onManageTags={() => setShowTagEditor(true)}
+                            />
 
-                    {/* Tab Bar */}
-                    {openTabs.length > 0 && (
-                      <TemplateEditorTabs
-                        tabs={openTabs}
-                        activeTabId={activeTabId}
-                        templates={templates}
-                        modifiedTabs={dirtyTabs}
-                        onTabClick={setActiveTab}
-                        onTabClose={closeTab}
-                        onTabReorder={reorderTabs}
-                        onCloseOtherTabs={closeOtherTabs}
-                        onCloseTabsToRight={closeTabsToRight}
-                        onCloseAllTabs={closeAllTabs}
-                      />
-                    )}
-
-                    {/* Unified Split-Column Layout */}
-                    <div className="flex-1 flex overflow-hidden">
-                      {/* Left + Center Panels Wrapper */}
-                      <div className="flex-1 flex flex-col overflow-hidden">
-                        {/* GitHub-style Toolbar */}
-                        <div className="border-b border-border bg-background px-4 py-2 flex-shrink-0">
-                          <div className="flex items-center gap-2">
-                            {/* Branch/Version Selector */}
+                            {/* Mobile Placeholders Button */}
                             <button
-                              onClick={() => {
-                                // TODO: Open version selector dropdown
-                                console.log('Open version selector');
-                              }}
-                              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-muted-foreground bg-muted/50 border border-border rounded-md hover:bg-muted hover:border-muted-foreground transition-colors"
-                              title="Switch version"
+                              onClick={() => setIsDrawerOpen(true)}
+                              className="flex md:hidden items-center gap-2 px-3 py-1.5 text-sm bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
                             >
-                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
-                                <path fillRule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"></path>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
                               </svg>
-                              <span>main</span>
-                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M4.427 7.427l3.396 3.396a.25.25 0 00.354 0l3.396-3.396A.25.25 0 0011.396 7H4.604a.25.25 0 00-.177.427z"></path>
-                              </svg>
-                            </button>
-
-                            {/* Versions Badge Button (like "6 Branches") */}
-                            <button
-                              onClick={() => {
-                                // TODO: Navigate to versions page
-                                console.log('Navigate to versions page');
-                              }}
-                              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary hover:underline transition-colors"
-                              title="View all versions"
-                            >
-                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
-                                <path fillRule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"></path>
-                              </svg>
-                              <span>Versions</span>
-                            </button>
-
-                            {/* Mode Toggle (Editor/Compose) - like "Go to file" */}
-                            <div className="flex items-center gap-1 px-1 py-1 bg-muted/50 border border-border rounded-md">
-                              <button
-                                onClick={() => setMode('create')}
-                                className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
-                                  mode === 'create'
-                                    ? 'bg-[#1f6feb] text-white'
-                                    : 'text-muted-foreground hover:bg-muted/80'
-                                }`}
-                              >
-                                Editor
-                              </button>
-                              <button
-                                onClick={() => setMode('use')}
-                                className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
-                                  mode === 'use'
-                                    ? 'bg-[#1f6feb] text-white'
-                                    : 'text-muted-foreground hover:bg-muted/80'
-                                }`}
-                              >
-                                Compose
-                              </button>
-                            </div>
-
-                            <div className="flex-1"></div>
-
-                            {/* Add Placeholder Button (like + button) */}
-                            <button
-                              onClick={() => setShowVariableEditor(true)}
-                              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-muted-foreground bg-muted/50 border border-border rounded-md hover:bg-muted hover:border-muted-foreground transition-colors"
-                              title="Add variable"
-                            >
-                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z"></path>
-                              </svg>
-                            </button>
-
-                            {/* Copy to Clipboard Button (like Code button) */}
-                            <button
-                              onClick={() => {
-                                // TODO: Implement copy functionality
-                                console.log('Copy template');
-                              }}
-                              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-[#238636] border border-[#2ea043] rounded-md hover:bg-[#2ea043] transition-colors"
-                              title="Copy to clipboard"
-                            >
-                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path>
-                                <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
-                              </svg>
-                              <span>Copy</span>
+                              {mode === 'create' ? 'Variables' : 'Fill Details'}
                             </button>
                           </div>
                         </div>
 
-                        {/* Left + Center Content Row */}
+                        {/* Tab Bar */}
+                        {openTabs.length > 0 && (
+                          <TemplateEditorTabs
+                            tabs={openTabs}
+                            activeTabId={activeTabId}
+                            templates={templates}
+                            modifiedTabs={dirtyTabs}
+                            onTabClick={setActiveTab}
+                            onTabClose={closeTab}
+                            onTabReorder={reorderTabs}
+                            onCloseOtherTabs={closeOtherTabs}
+                            onCloseTabsToRight={closeTabsToRight}
+                            onCloseAllTabs={closeAllTabs}
+                          />
+                        )}
+
+                        {/* Unified Split-Column Layout */}
                         <div className="flex-1 flex overflow-hidden">
-                          {/* Desktop: Left Panel - FormWrapper - DARKEST background */}
-                          <div className="hidden md:block w-[320px] overflow-hidden bg-background">
-                            <FormWrapper
-                              mode={mode}
-                              template={selectedTemplate}
-                              availableVariables={allVariables}
-                              onInsertVariable={handleInsertVariable}
-                              onCopyMessage={() => {
-                                // TODO: Implement copy message functionality
-                              }}
-                            />
-                          </div>
+                          {/* Left + Center Panels Wrapper */}
+                          <div className="flex-1 flex flex-col overflow-hidden">
+                            {/* GitHub-style Toolbar */}
+                            <div className="border-b border-border bg-background px-4 py-2 flex-shrink-0">
+                              <div className="flex items-center gap-2">
+                                {/* Branch/Version Selector */}
+                                <button
+                                  onClick={() => {
+                                    // TODO: Open version selector dropdown
+                                    console.log('Open version selector');
+                                  }}
+                                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-muted-foreground bg-muted/50 border border-border rounded-md hover:bg-muted hover:border-muted-foreground transition-colors"
+                                  title="Switch version"
+                                >
+                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+                                    <path fillRule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"></path>
+                                  </svg>
+                                  <span>main</span>
+                                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M4.427 7.427l3.396 3.396a.25.25 0 00.354 0l3.396-3.396A.25.25 0 0011.396 7H4.604a.25.25 0 00-.177.427z"></path>
+                                  </svg>
+                                </button>
 
-                          {/* Center Panel - Editor - LIGHTER to be focal point */}
-                          <div className="flex-1 overflow-y-auto p-6 bg-muted/50">
-                            <div className="max-w-4xl mx-auto">
-                              <TemplateEditor
-                                key={selectedTemplate.id}
-                                templateId={selectedTemplate.id}
-                                initialState={selectedTemplate.content}
-                                availableVariables={allVariables}
-                                onStateChange={handleUpdateTemplateContent}
-                                onManageVariables={() => setShowVariableEditor(true)}
-                                mode={mode}
-                                values={templateValues.values}
-                                setValue={templateValues.updateValue}
-                                variableToInsert={variableToInsert}
-                                onVariableInserted={handleVariableInserted}
-                                onDirtyChange={(isDirty) => {
-                                  if (activeTabId) {
-                                    markTabDirty(activeTabId, isDirty);
-                                  }
-                                }}
-                              />
+                                {/* Versions Badge Button (like "6 Branches") */}
+                                <button
+                                  onClick={() => {
+                                    // TODO: Navigate to versions page
+                                    console.log('Navigate to versions page');
+                                  }}
+                                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary hover:underline transition-colors"
+                                  title="View all versions"
+                                >
+                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+                                    <path fillRule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"></path>
+                                  </svg>
+                                  <span>Versions</span>
+                                </button>
 
-                              {/* Character Counter for SMS */}
-                              {selectedTemplate.type === 'sms' && (
-                                <div className="mt-4">
-                                  <CharacterCounter
-                                    editorState={selectedTemplate.content}
-                                    type={selectedTemplate.type}
+                                {/* Mode Toggle (Editor/Compose) - like "Go to file" */}
+                                <div className="flex items-center gap-1 px-1 py-1 bg-muted/50 border border-border rounded-md">
+                                  <button
+                                    onClick={() => setMode('create')}
+                                    className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
+                                      mode === 'create'
+                                        ? 'bg-[#1f6feb] text-white'
+                                        : 'text-muted-foreground hover:bg-muted/80'
+                                    }`}
+                                  >
+                                    Editor
+                                  </button>
+                                  <button
+                                    onClick={() => setMode('use')}
+                                    className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
+                                      mode === 'use'
+                                        ? 'bg-[#1f6feb] text-white'
+                                        : 'text-muted-foreground hover:bg-muted/80'
+                                    }`}
+                                  >
+                                    Compose
+                                  </button>
+                                </div>
+
+                                <div className="flex-1"></div>
+
+                                {/* Add Placeholder Button (like + button) */}
+                                <button
+                                  onClick={() => setShowVariableEditor(false)}
+                                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-muted-foreground bg-muted/50 border border-border rounded-md hover:bg-muted hover:border-muted-foreground transition-colors"
+                                  title="Add variable"
+                                >
+                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z"></path>
+                                  </svg>
+                                </button>
+
+                                {/* Copy to Clipboard Button (like Code button) */}
+                                <button
+                                  onClick={() => {
+                                    // TODO: Implement copy functionality
+                                    console.log('Copy template');
+                                  }}
+                                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-[#238636] border border-[#2ea043] rounded-md hover:bg-[#2ea043] transition-colors"
+                                  title="Copy to clipboard"
+                                >
+                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path>
+                                    <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+                                  </svg>
+                                  <span>Copy</span>
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Left + Center Content Row */}
+                            <div className="flex-1 flex overflow-hidden">
+                              {/* Desktop: Left Panel - FormWrapper - REMOVED VARIABLE LIST FROM HERE */}
+                              {mode === 'use' && (
+                                <div className="hidden md:block w-[320px] overflow-hidden bg-background">
+                                  <FormWrapper
+                                    mode={mode}
+                                    template={selectedTemplate}
+                                    availableVariables={allVariables}
+                                    onInsertVariable={handleInsertVariable}
+                                    onCopyMessage={() => {
+                                      // TODO: Implement copy message functionality
+                                    }}
                                   />
                                 </div>
                               )}
+
+                              {/* Center Panel - Editor - LIGHTER to be focal point */}
+                              <div className="flex-1 overflow-y-auto p-6 bg-muted/50">
+                                <div className="max-w-4xl mx-auto">
+                                  <TemplateEditor
+                                    key={selectedTemplate.id}
+                                    templateId={selectedTemplate.id}
+                                    initialState={selectedTemplate.content}
+                                    availableVariables={allVariables}
+                                    onStateChange={handleUpdateTemplateContent}
+                                    onManageVariables={() => setShowVariableEditor(true)}
+                                    mode={mode}
+                                    values={templateValues.values}
+                                    setValue={templateValues.updateValue}
+                                    variableToInsert={variableToInsert}
+                                    onVariableInserted={handleVariableInserted}
+                                    onDirtyChange={(isDirty) => {
+                                      if (activeTabId) {
+                                        markTabDirty(activeTabId, isDirty);
+                                      }
+                                    }}
+                                  />
+
+                                  {/* Character Counter for SMS */}
+                                  {selectedTemplate.type === 'sms' && (
+                                    <div className="mt-4">
+                                      <CharacterCounter
+                                        editorState={selectedTemplate.content}
+                                        type={selectedTemplate.type}
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
 
-                      {/* Right Panel - Template Details - DARKEST background */}
-                      <div className="hidden lg:block w-[356px] bg-background overflow-y-auto">
-                        <div className="p-4 space-y-4">
-                          {/* About Section */}
-                          <div>
-                            <h3 className="text-sm font-semibold text-foreground mb-3">About</h3>
-                            <div className="space-y-2">
-                              {/* Type Badge */}
-                              <div className="flex items-center gap-2">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                  selectedTemplate.type === 'email'
-                                    ? 'bg-primary/20 text-primary'
-                                    : 'bg-accent/30 text-accent-foreground'
-                                }`}>
-                                  {selectedTemplate.type === 'email' ? '✉️ Email' : '💬 SMS'}
-                                </span>
+                          {/* Right Panel - Template Details + Variable List - DARKEST background */}
+                          <div className="hidden lg:block w-[356px] bg-background overflow-y-auto">
+                            <div className="p-4 space-y-4">
+                              {/* About Section */}
+                              <div>
+                                <h3 className="text-sm font-semibold text-foreground mb-3">About</h3>
+                                <div className="space-y-2">
+                                  {/* Type Badge */}
+                                  <div className="flex items-center gap-2">
+                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                      selectedTemplate.type === 'email'
+                                        ? 'bg-primary/20 text-primary'
+                                        : 'bg-accent/30 text-accent-foreground'
+                                    }`}>
+                                      {selectedTemplate.type === 'email' ? '✉️ Email' : '💬 SMS'}
+                                    </span>
+                                  </div>
+
+                                  {/* Stats */}
+                                  <div className="space-y-2 text-sm">
+                                    <div className="flex items-center gap-2 text-foreground/80">
+                                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                      </svg>
+                                      <span className="font-medium">{selectedTemplate.isStarred ? 'Favorited' : 'Not favorited'}</span>
+                                    </div>
+
+                                    {selectedTemplate.useCount !== undefined && selectedTemplate.useCount > 0 && (
+                                      <div className="flex items-center gap-2 text-foreground/80">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span>Used {selectedTemplate.useCount} {selectedTemplate.useCount === 1 ? 'time' : 'times'}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
 
-                              {/* Stats */}
-                              <div className="space-y-2 text-sm">
-                                <div className="flex items-center gap-2 text-foreground/80">
-                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                  </svg>
-                                  <span className="font-medium">{selectedTemplate.isStarred ? 'Favorited' : 'Not favorited'}</span>
-                                </div>
-
-                                {selectedTemplate.useCount !== undefined && selectedTemplate.useCount > 0 && (
-                                  <div className="flex items-center gap-2 text-foreground/80">
+                              {/* Tags Section */}
+                              <div>
+                                <div className="flex items-center justify-between mb-2">
+                                  <h3 className="text-sm font-semibold text-foreground">Tags</h3>
+                                  <button
+                                    onClick={() => setShowTagEditor(true)}
+                                    className="p-1 text-muted-foreground hover:text-foreground/80 hover:bg-muted rounded transition-colors"
+                                    title="Manage tags"
+                                  >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                                     </svg>
-                                    <span>Used {selectedTemplate.useCount} {selectedTemplate.useCount === 1 ? 'time' : 'times'}</span>
+                                  </button>
+                                </div>
+                                {selectedTemplate.tags.length > 0 ? (
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {selectedTemplate.tags.map((tagId) => {
+                                      const tag = tags.find((t) => t.id === tagId);
+                                      return tag ? (
+                                        <span
+                                          key={tag.id}
+                                          className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
+                                          style={{
+                                            backgroundColor: `${tag.color}20`,
+                                            color: tag.color,
+                                          }}
+                                        >
+                                          {tag.name}
+                                        </span>
+                                      ) : null;
+                                    })}
                                   </div>
+                                ) : (
+                                  <p className="text-xs text-muted-foreground italic">No tags assigned</p>
                                 )}
                               </div>
-                            </div>
-                          </div>
 
-                          {/* Tags Section */}
-                          <div>
-                            <div className="flex items-center justify-between mb-2">
-                              <h3 className="text-sm font-semibold text-foreground">Tags</h3>
-                              <button
-                                onClick={() => setShowTagEditor(true)}
-                                className="p-1 text-muted-foreground hover:text-foreground/80 hover:bg-muted rounded transition-colors"
-                                title="Manage tags"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                </svg>
-                              </button>
-                            </div>
-                            {selectedTemplate.tags.length > 0 ? (
-                              <div className="flex flex-wrap gap-1.5">
-                                {selectedTemplate.tags.map((tagId) => {
-                                  const tag = tags.find((t) => t.id === tagId);
-                                  return tag ? (
-                                    <span
-                                      key={tag.id}
-                                      className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
-                                      style={{
-                                        backgroundColor: `${tag.color}20`,
-                                        color: tag.color,
-                                      }}
-                                    >
-                                      {tag.name}
+                              {/* Metadata Section */}
+                              <div className="pt-3 border-t border-border">
+                                <h3 className="text-sm font-semibold text-foreground mb-3">Details</h3>
+                                <div className="space-y-2 text-xs text-muted-foreground">
+                                  <div className="flex justify-between">
+                                    <span>Created</span>
+                                    <span className="text-foreground font-medium">
+                                      {new Date(selectedTemplate.createdAt).toLocaleDateString()}
                                     </span>
-                                  ) : null;
-                                })}
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>Updated</span>
+                                    <span className="text-foreground font-medium">
+                                      {new Date(selectedTemplate.updatedAt).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                  {selectedTemplate.lastUsedAt && (
+                                    <div className="flex justify-between">
+                                      <span>Last used</span>
+                                      <span className="text-foreground font-medium">
+                                        {new Date(selectedTemplate.lastUsedAt).toLocaleDateString()}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            ) : (
-                              <p className="text-xs text-muted-foreground italic">No tags assigned</p>
-                            )}
-                          </div>
 
-                          {/* Metadata Section */}
-                          <div className="pt-3 border-t border-border">
-                            <h3 className="text-sm font-semibold text-foreground mb-3">Details</h3>
-                            <div className="space-y-2 text-xs text-muted-foreground">
-                              <div className="flex justify-between">
-                                <span>Created</span>
-                                <span className="text-foreground font-medium">
-                                  {new Date(selectedTemplate.createdAt).toLocaleDateString()}
-                                </span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span>Updated</span>
-                                <span className="text-foreground font-medium">
-                                  {new Date(selectedTemplate.updatedAt).toLocaleDateString()}
-                                </span>
-                              </div>
-                              {selectedTemplate.lastUsedAt && (
-                                <div className="flex justify-between">
-                                  <span>Last used</span>
-                                  <span className="text-foreground font-medium">
-                                    {new Date(selectedTemplate.lastUsedAt).toLocaleDateString()}
+                              {/* Variable Count */}
+                              <div className="pt-3 border-t border-border">
+                                <div className="flex items-center justify-between text-sm mb-3">
+                                  <span className="text-foreground/80">Variables</span>
+                                  <span className="font-semibold text-foreground">
+                                    {(() => {
+                                      const countVariables = (node: unknown): number => {
+                                        if (!node || typeof node !== 'object') return 0;
+                                        const obj = node as Record<string, unknown>;
+
+                                        let count = 0;
+                                        if (obj.type === 'template-variable') count = 1;
+
+                                        if (Array.isArray(obj.children)) {
+                                          count += obj.children.reduce((sum, child) => sum + countVariables(child), 0);
+                                        }
+
+                                        return count;
+                                      };
+
+                                      return countVariables(selectedTemplate.content.root);
+                                    })()}
                                   </span>
                                 </div>
-                              )}
-                            </div>
-                          </div>
 
-                          {/* Variable Count */}
-                          <div className="pt-3 border-t border-border">
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-foreground/80">Variables</span>
-                              <span className="font-semibold text-foreground">
-                                {(() => {
-                                  const countVariables = (node: unknown): number => {
-                                    if (!node || typeof node !== 'object') return 0;
-                                    const obj = node as Record<string, unknown>;
-
-                                    let count = 0;
-                                    if (obj.type === 'template-variable') count = 1;
-
-                                    if (Array.isArray(obj.children)) {
-                                      count += obj.children.reduce((sum, child) => sum + countVariables(child), 0);
-                                    }
-
-                                    return count;
-                                  };
-
-                                  return countVariables(selectedTemplate.content.root);
-                                })()}
-                              </span>
+                                {/* Variable List Display */}
+                                <div className="max-h-[400px] overflow-y-auto">
+                                  <VariableListDisplay
+                                    variables={allVariables}
+                                    mode={mode}
+                                    values={templateValues.values}
+                                  />
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
+
+                        {/* Mobile: Bottom Drawer for FormWrapper */}
+                        <ResponsiveDrawer
+                          isOpen={isDrawerOpen}
+                          onClose={() => setIsDrawerOpen(false)}
+                        >
+                          <FormWrapper
+                            mode={mode}
+                            template={selectedTemplate}
+                            availableVariables={allVariables}
+                            onInsertVariable={handleInsertVariable}
+                            onCopyMessage={() => {
+                              // TODO: Implement copy message functionality
+                            }}
+                          />
+                        </ResponsiveDrawer>
+                      </>
+                    ) : (
+                      /* Empty State */
+                      <div className="flex-1 flex items-center justify-center bg-muted/30">
+                        <div className="text-center max-w-md">
+                          <svg className="w-16 h-16 mx-auto text-muted-foreground/60 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <h2 className="text-xl font-semibold text-foreground mb-2">No template selected</h2>
+                          <p className="text-muted-foreground mb-6">
+                            Create a new template or select one from the sidebar to get started
+                          </p>
+                          <button
+                            onClick={handleNewTemplate}
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Create New Template
+                          </button>
+                        </div>
                       </div>
-                    </div>
-
-                    {/* Mobile: Bottom Drawer for FormWrapper */}
-                    <ResponsiveDrawer
-                      isOpen={isDrawerOpen}
-                      onClose={() => setIsDrawerOpen(false)}
-                    >
-                      <FormWrapper
-                        mode={mode}
-                        template={selectedTemplate}
-                        availableVariables={allVariables}
-                        onInsertVariable={handleInsertVariable}
-                        onCopyMessage={() => {
-                          // TODO: Implement copy message functionality
-                        }}
-                      />
-                    </ResponsiveDrawer>
-
-                    {/* Mobile: Sidebar Drawer */}
-                    <ResponsiveDrawer
-                      isOpen={isSidebarDrawerOpen}
-                      onClose={() => setIsSidebarDrawerOpen(false)}
-                    >
-                      <ModernTemplateSidebar
-                        templates={templates}
-                        tags={tags}
-                        selectedTemplateId={activeTabId}
-                        onSelectTemplate={(id) => {
-                          handleSelectTemplate(id);
-                          setIsSidebarDrawerOpen(false);
-                        }}
-                        onNewTemplate={() => {
-                          handleNewTemplate();
-                          setIsSidebarDrawerOpen(false);
-                        }}
-                        onDeleteTemplate={handleDeleteTemplate}
-                        onToggleStar={handleToggleStar}
-                        onManageTags={() => {
-                          setShowTagEditor(true);
-                          setIsSidebarDrawerOpen(false);
-                        }}
-                        openTabIds={openTabs}
-                      />
-                    </ResponsiveDrawer>
-                  </>
-                ) : (
-                  /* Empty State */
-                  <div className="flex-1 flex items-center justify-center bg-muted/30">
-                    <div className="text-center max-w-md">
-                      <svg className="w-16 h-16 mx-auto text-muted-foreground/60 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      <h2 className="text-xl font-semibold text-foreground mb-2">No template selected</h2>
-                      <p className="text-muted-foreground mb-6">
-                        Create a new template or select one from the sidebar to get started
-                      </p>
-                      <button
-                        onClick={handleNewTemplate}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                        Create New Template
-                      </button>
-                    </div>
+                    )}
                   </div>
-                )}
-              </div>
-            </ResizablePanel>
-            </ResizablePanelGroup>
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </div>
           </div>
         </div>
       </div>

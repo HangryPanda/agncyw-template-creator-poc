@@ -40,6 +40,18 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+  /* Semantic color mappings for Tailwind utilities */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-success-bg: var(--success-bg);
+  --color-warning-bg: var(--warning-bg);
+  --color-error-bg: var(--error-bg);
+  --color-info-bg: var(--info-bg);
+
   /* Brand color mappings for Tailwind utilities */
   --color-brand-blue: var(--brand-blue);
   --color-brand-purple: var(--brand-purple);
@@ -47,6 +59,24 @@
   --color-brand-pink: var(--brand-pink);
   --color-brand-orange: var(--brand-orange);
   --color-brand-red: var(--brand-red);
+
+  /* ==========================================================================
+     APP-SPECIFIC & BRAND COLORS
+     ==========================================================================
+
+     Usage: Add when existing brand colors or custom colors are needed (e.g.,
+     insurance red replacing default blue primary) or additional color
+     primitives (purple, teal, etc.) for use cases existing tokens don't fulfill.
+
+     CAUTION: Must also add theme-aware versions if tokens should respond to
+     theme. Do not add variations to keep colors consistent across all applications.
+
+     Examples:
+     --brand-insurance-red: oklch(0.6 0.25 15);
+     --brand-teal-accent: oklch(0.7 0.15 180);
+     --color-brand-insurance-red: var(--brand-insurance-red);
+     --color-brand-teal-accent: var(--brand-teal-accent);
+     ========================================================================== */
 
   /* Animations */
   --animate-border-beam: border-beam 15s linear infinite;
@@ -111,6 +141,24 @@
   --sidebar-border: var(--border-color);
   --sidebar-ring: var(--brand-blue);
 
+  /* Semantic color tokens - Essential */
+  --success: var(--brand-green);
+  --success-foreground: oklch(0.985 0 0);
+  --warning: var(--brand-orange);
+  --warning-foreground: oklch(0.985 0 0);
+
+  /* Semantic color tokens - Optional */
+  --info: var(--brand-blue);
+  --info-foreground: oklch(0.985 0 0);
+  --text-tertiary: oklch(0.6 0 0);        /* Less prominent than muted */
+  --text-placeholder: oklch(0.5 0 0);     /* Placeholder text */
+
+  /* Semantic background variants (10% opacity overlays) */
+  --success-bg: color-mix(in oklch, var(--brand-green) 10%, transparent);
+  --warning-bg: color-mix(in oklch, var(--brand-orange) 10%, transparent);
+  --error-bg: color-mix(in oklch, var(--brand-red) 10%, transparent);
+  --info-bg: color-mix(in oklch, var(--brand-blue) 10%, transparent);
+
   /* Window & animation tokens */
   --window-titlebar-height: 1.75rem;
   --taskbar-height: 3rem;
@@ -160,6 +208,24 @@
   --sidebar-accent-foreground: var(--fg-default);
   --sidebar-border: var(--border-color);
   --sidebar-ring: var(--brand-blue);
+
+  /* Semantic color tokens - Essential */
+  --success: var(--brand-green);
+  --success-foreground: oklch(0.985 0 0);
+  --warning: var(--brand-orange);
+  --warning-foreground: oklch(0.985 0 0);
+
+  /* Semantic color tokens - Optional */
+  --info: var(--brand-blue);
+  --info-foreground: oklch(0.985 0 0);
+  --text-tertiary: oklch(0.55 0 0);       /* Lighter than muted for light theme */
+  --text-placeholder: oklch(0.65 0 0);    /* Placeholder text */
+
+  /* Semantic background variants (10% opacity overlays) */
+  --success-bg: color-mix(in oklch, var(--brand-green) 10%, transparent);
+  --warning-bg: color-mix(in oklch, var(--brand-orange) 10%, transparent);
+  --error-bg: color-mix(in oklch, var(--brand-red) 10%, transparent);
+  --info-bg: color-mix(in oklch, var(--brand-blue) 10%, transparent);
 }
 
 /* Dark Theme */
@@ -199,6 +265,24 @@
   --sidebar-accent-foreground: var(--fg-default);
   --sidebar-border: var(--border-color);
   --sidebar-ring: var(--brand-blue);
+
+  /* Semantic color tokens - Essential */
+  --success: var(--brand-green);
+  --success-foreground: oklch(0.985 0 0);
+  --warning: var(--brand-orange);
+  --warning-foreground: oklch(0.985 0 0);
+
+  /* Semantic color tokens - Optional */
+  --info: var(--brand-blue);
+  --info-foreground: oklch(0.985 0 0);
+  --text-tertiary: oklch(0.6 0 0);        /* Less prominent than muted */
+  --text-placeholder: oklch(0.5 0 0);     /* Placeholder text */
+
+  /* Semantic background variants (10% opacity overlays) */
+  --success-bg: color-mix(in oklch, var(--brand-green) 10%, transparent);
+  --warning-bg: color-mix(in oklch, var(--brand-orange) 10%, transparent);
+  --error-bg: color-mix(in oklch, var(--brand-red) 10%, transparent);
+  --info-bg: color-mix(in oklch, var(--brand-blue) 10%, transparent);
 }
 
 /* Calm Theme - softer blues & greens for reduced cognitive load */
@@ -839,15 +923,85 @@
   --sidebar-ring: var(--brand-blue);
 }
 
+/* ==========================================================================
+   DESIGN TOKENS - Side Panel-First System
+   ========================================================================== */
+
+:root {
+  /* ============================================
+     SPACING SCALE (4px base unit)
+     ============================================ */
+  --spacing-2xs: 2px;   /* Hairline spacing, ultra-tight table cells */
+  --spacing-xs: 4px;    /* Tight spacing for compact data, badges */
+  --spacing-sm: 6px;    /* Compact button padding, tight form elements */
+  --spacing-md: 8px;    /* Default spacing between related elements */
+  --spacing-lg: 12px;   /* Comfortable spacing, form field gaps */
+  --spacing-xl: 16px;   /* Card padding, section spacing */
+  --spacing-2xl: 24px;  /* Major section breaks */
+  --spacing-3xl: 32px;  /* Page-level spacing */
+  --spacing-4xl: 48px;  /* Marketing sections (rarely used) */
+
+  /* ============================================
+     TYPOGRAPHY - FONT SIZE (13px base)
+     ============================================ */
+  --fontSize-2xs: 10px;   /* Ultra-compact metadata, timestamps */
+  --fontSize-xs: 11px;    /* Secondary labels, table headers, badges */
+  --fontSize-sm: 12px;    /* Tertiary text, helper text */
+  --fontSize-base: 13px;  /* Primary UI text, form inputs, buttons */
+  --fontSize-md: 14px;    /* Emphasized body text, card descriptions */
+  --fontSize-lg: 16px;    /* Card titles, section labels */
+  --fontSize-xl: 18px;    /* Panel headers, modal titles */
+  --fontSize-2xl: 20px;   /* Page titles */
+  --fontSize-3xl: 24px;   /* Primary headings */
+  --fontSize-4xl: 30px;   /* Dashboard headers (rarely used) */
+
+  /* ============================================
+     TYPOGRAPHY - LINE HEIGHT
+     ============================================ */
+  --lineHeight-tight: 1.25;     /* Headings, titles, compact displays */
+  --lineHeight-normal: 1.5;     /* Body text, forms, general UI */
+  --lineHeight-relaxed: 1.75;   /* Long-form content, documentation */
+
+  /* ============================================
+     TYPOGRAPHY - FONT WEIGHT
+     ============================================ */
+  --fontWeight-regular: 400;   /* Body text, descriptions */
+  --fontWeight-medium: 500;    /* Labels, emphasized text, button text */
+  --fontWeight-semibold: 600;  /* Headings, active states, key metrics */
+  --fontWeight-bold: 700;      /* Major headings, critical alerts */
+
+  /* ============================================
+     TYPOGRAPHY - FONT FAMILY
+     ============================================ */
+  --fontFamily-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  --fontFamily-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', 'Monaco', monospace;
+
+  /* ============================================
+     PANEL BREAKPOINTS (for reference in JS)
+     Side panel-first: 360px - 800px optimized
+     Primary target: 480px
+     ============================================ */
+  --breakpoint-panel-xs: 360px;
+  --breakpoint-panel-sm: 420px;
+  --breakpoint-panel-md: 480px;  /* PRIMARY TARGET */
+  --breakpoint-panel-lg: 600px;
+  --breakpoint-panel-xl: 720px;
+  --breakpoint-panel-full: 1024px;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   html {
-    font-size: 13px;
+    font-size: 13px; /* Side panel-first base size */
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--fontFamily-base);
+    font-size: var(--fontSize-base);
+    line-height: var(--lineHeight-normal);
+    font-weight: var(--fontWeight-regular);
   }
 }
 
@@ -1053,6 +1207,16 @@
 
 .animate-border-beam {
   animation: border-beam var(--duration, 15s) linear infinite;
+}
+
+/* Shimmer animation for ThemeToggle */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 /* Print Styles */

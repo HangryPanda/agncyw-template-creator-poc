@@ -347,7 +347,7 @@ export default function TemplateEditor({
           }`}
         >
           <div
-            className={`rounded-lg overflow-hidden border-2 transition-all duration-300 ${
+            className={`rounded-lg border-2 transition-all duration-300 ${
               mode === 'create'
                 ? 'border-brand-blue/30 bg-card shadow-md hover:border-brand-blue/50 hover:shadow-lg'
                 : 'border-brand-green/30 bg-card shadow-md hover:border-brand-green/50 hover:shadow-lg'
@@ -364,7 +364,7 @@ export default function TemplateEditor({
             />
 
             {/* Clean, distraction-free editor */}
-            <div className="relative bg-background">
+            <div className="relative bg-background rounded-b-lg overflow-hidden">
             <RichTextPlugin
               contentEditable={
                 <ContentEditable

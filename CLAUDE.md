@@ -169,6 +169,98 @@ EditorState {
 }
 ```
 
+## 🤖 AI Assistant Component Classification System
+
+**CRITICAL FOR AI ASSISTANTS:** This section provides explicit rules for determining where components should be placed and how they should be named. Follow these rules to avoid incorrect file placement.
+
+### Quick Reference: 5-Question Decision Tree
+
+```
+START: I need to create/modify a component
+  |
+  ├─ Q1: Tied to URL route? → PAGE (apps/[app-name]/pages/[Name]Page.tsx)
+  ├─ Q2: Defines structural slots? → LAYOUT (core/ui/layouts/[Name]Layout.tsx)
+  ├─ Q3: Fills slot + state-driven? → VIEW (apps/[app-name]/views/[Name]View.tsx)
+  ├─ Q4: Assembles multiple components? → CONSTRUCT (apps/[app-name]/components/[Name].tsx)
+  └─ Q5: Single UI control? → COMPONENT (core/ui/primitives/[name]/[Name].tsx)
+```
+
+### Component Hierarchy
+
+```
+Page → Layout → View → Construct → Component
+```
+
+1. **Page** - Route-level container
+   - **Location:** `apps/[app-name]/pages/`
+   - **Naming:** `[DescriptiveName]Page.tsx`
+   - **Indicators:** Uses `useParams()`, `useNavigate()`, data fetching, orchestrates layouts
+   - **Example:** `TemplateEditorPage.tsx`
+
+2. **Layout** - Structural skeleton (content-agnostic)
+   - **Location:** `core/ui/layouts/` OR `apps/[app-name]/layouts/`
+   - **Naming:** `[DescriptiveName]Layout.tsx`
+   - **Indicators:** Accepts slot props (header, left, center, right), uses ResizablePanel/Grid
+   - **Example:** `ThreeColumnEditorLayout.tsx`
+
+3. **View** - Composed section with state-driven rendering
+   - **Location:** `core/ui/views/` OR `apps/[app-name]/views/`
+   - **Naming:** `[DescriptiveName]View.tsx`
+   - **Indicators:** Conditionally renders Constructs based on state prop
+   - **Example:** `TemplateSidebarView.tsx`, `EditorWorkspaceView.tsx`
+
+4. **Construct** - Multi-component assembly
+   - **Location:** `core/ui/constructs/` (shared) OR `apps/[app-name]/components/` (app-specific)
+   - **Naming:** `[Descriptive][Purpose].tsx`
+   - **Indicators:** Assembles multiple components, contains business logic
+   - **Example:** `InlineTagEditor.tsx`, `TemplateMetadataEditor.tsx`
+   - **Promotion:** See `/docs/decision-roadmaps/cross-app-reuse.md`
+
+5. **Component** - Atomic primitive
+   - **Location:** `core/ui/primitives/`
+   - **Naming:** `[Name].tsx` (generic OK for universally understood primitives)
+   - **Indicators:** Single UI control, no business logic
+   - **Example:** `Button.tsx`, `Input.tsx`, `Badge.tsx`
+
+### Descriptive Naming Principle (AI-Critical)
+
+**Rule:** Always use descriptive names. Generic names require extra file reads for verification.
+
+**Pattern:** `[Domain][Entity][Action/Type]`
+
+```typescript
+// ✅ GOOD: Descriptive, clear intent
+TemplateEditor.tsx               // Clear: edits templates
+TemplateSidebarView.tsx          // Clear: sidebar view for templates
+InlineTagEditor.tsx              // Clear: inline editor for tags
+TemplateMetadataForm.tsx         // Clear: form for template metadata
+VariableInsertionPopover.tsx     // Clear: popover for inserting variables
+
+// ❌ BAD: Generic, ambiguous (requires extra verification)
+Editor.tsx                       // Ambiguous: which editor?
+Sidebar.tsx                      // Ambiguous: what's in it?
+Panel.tsx                        // Ambiguous: which panel?
+Form.tsx                         // Ambiguous: what form?
+Manager.tsx                      // Ambiguous: managing what?
+```
+
+**Exception:** Atomic primitives can use generic names (`Button.tsx`, `Input.tsx`) because they're universally understood.
+
+### File Naming Patterns (AI Pattern Matching)
+
+Use these suffixes for instant classification:
+
+- `[Name]Page.tsx` → Route container
+- `[Name]Layout.tsx` → Structural skeleton
+- `[Name]View.tsx` → Composed section
+- `[Name].tsx` → Construct or Component (check location)
+
+### Complete Documentation
+
+For full decision tree, examples, and file structure, see:
+- **Primary Reference:** `/docs/decision-roadmaps/component-placement.md`
+- **Construct Promotion Rules:** `/docs/decision-roadmaps/cross-app-reuse.md`
+
 ## Working with Lexical
 
 **Important Lexical Concepts:**
@@ -464,6 +556,102 @@ To add bold, italic, lists, etc.:
 2. Register them in `initialConfig.nodes` array in TemplateEditor
 3. Add corresponding buttons/controls in ToolbarPlugin
 4. Use Lexical's `$` commands (e.g., `$setBlocksType()`)
+
+## Design Tokens
+
+This project uses a **side panel-first design system** optimized for Microsoft Edge Side Panel (360px - 800px widths).
+
+### Key Principles
+
+- **Base Typography:** 13px (optimized for dense information)
+- **Spacing Unit:** 4px base scale
+- **Target Width:** 480px (primary design target)
+- **Font Family:** Inter (base), JetBrains Mono (monospace)
+
+### Token System
+
+Design tokens are defined in `/docs/typography-spacing-scale/` and include:
+
+**Spacing Scale (4px base):**
+```typescript
+'2xs': '2px'   // Hairline spacing
+'xs': '4px'    // Tight spacing
+'sm': '6px'    // Compact padding
+'md': '8px'    // Default spacing
+'lg': '12px'   // Comfortable spacing
+'xl': '16px'   // Card padding
+'2xl': '24px'  // Section breaks
+'3xl': '32px'  // Page-level spacing
+'4xl': '48px'  // Rarely used
+```
+
+**Font Sizes (13px base):**
+```typescript
+'2xs': '10px'  // Ultra-compact metadata
+'xs': '11px'   // Secondary labels
+'sm': '12px'   // Tertiary text
+'base': '13px' // Primary UI text (DEFAULT)
+'md': '14px'   // Emphasized body
+'lg': '16px'   // Card titles
+'xl': '18px'   // Panel headers
+'2xl': '20px'  // Page titles
+'3xl': '24px'  // Primary headings
+'4xl': '30px'  // Dashboard headers
+```
+
+**Line Heights:**
+```typescript
+tight: 1.25    // Headings, compact displays
+normal: 1.5    // Body text, forms (DEFAULT)
+relaxed: 1.75  // Long-form content
+```
+
+**Font Weights:**
+```typescript
+regular: 400   // Body text
+medium: 500    // Labels, buttons (DEFAULT for UI)
+semibold: 600  // Headings, active states
+bold: 700      // Major headings, alerts
+```
+
+**Panel Breakpoints:**
+```typescript
+'panel-xs': '360px'    // Minimum functional
+'panel-sm': '420px'    // Narrow panel
+'panel-md': '480px'    // Default/optimal (PRIMARY TARGET)
+'panel-lg': '600px'    // Comfortable width
+'panel-xl': '720px'    // Wide panel
+'panel-full': '1024px' // Full-width fallback
+```
+
+### Usage
+
+**In CSS (Custom Properties):**
+```css
+.my-component {
+  padding: var(--spacing-md);
+  font-size: var(--fontSize-base);
+  font-weight: var(--fontWeight-medium);
+  line-height: var(--lineHeight-normal);
+}
+```
+
+**In TypeScript:**
+```typescript
+import { tokens } from '@/docs/typography-spacing-scale/tokens';
+
+const padding = tokens.spacing.md; // '8px'
+const fontSize = tokens.fontSize.base; // '13px'
+```
+
+**In Tailwind (via utility classes):**
+```jsx
+<div className="text-base font-medium leading-normal p-md">
+  Optimized for side panel
+</div>
+```
+
+See [side-panel-first.guide.md](docs/side-panel-first.guide.md) for complete design strategy and [typography-spacing-scale/](docs/typography-spacing-scale/) for token definitions.
 
 ## Inline Styles
 

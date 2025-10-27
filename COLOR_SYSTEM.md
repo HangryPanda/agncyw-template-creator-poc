@@ -408,5 +408,5 @@ Potential additions to the system:
 ## Support
 
 For questions or issues with the color system, see:
-- `/Users/jasonvongsay/Downloads/insurance-template-poc-ts/src/utils/colorSystem.ts` - Source code
-- `/Users/jasonvongsay/Downloads/insurance-template-poc-ts/src/components/SelectFieldConfig.tsx` - Usage example
+- `/src/utils/colorSystem.ts` - Source code
+- `/src/components/SelectFieldConfig.tsx` - Usage example
