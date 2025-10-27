@@ -75,7 +75,7 @@ import {
   useCommentStore,
 } from '@/commenting';
 import useModal from '@/hooks/useModal';
-import CommentEditorTheme from '@/themes/CommentEditorTheme';
+import CommentEditorTheme from '@/themes/lexicalEditor/commentEditor.theme';
 import Button from '@/ui/Button';
 import ContentEditable from '@/ui/ContentEditable';
 

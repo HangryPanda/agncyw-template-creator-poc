@@ -8,9 +8,9 @@
 
 import type {EditorThemeClasses} from 'lexical';
 
-import './CommentEditorTheme.css';
+import './commentEditor.theme.css';
 
-import baseTheme from './PlaygroundEditorTheme';
+import baseTheme from './templateEditor.theme';
 
 const theme: EditorThemeClasses = {
   ...baseTheme,

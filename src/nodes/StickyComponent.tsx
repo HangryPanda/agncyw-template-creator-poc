@@ -25,7 +25,7 @@ import {useEffect, useLayoutEffect, useRef} from 'react';
 
 import {createWebsocketProvider} from '@/collaboration';
 import {useSharedHistoryContext} from '@/context/SharedHistoryContext';
-import StickyEditorTheme from '@/themes/StickyEditorTheme';
+import StickyEditorTheme from '@/themes/lexicalEditor/stickyNote.theme';
 import ContentEditable from '@/ui/ContentEditable';
 import {$isStickyNode} from './StickyNode';
 

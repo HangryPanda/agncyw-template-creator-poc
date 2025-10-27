@@ -1,15 +1,17 @@
 # File System Reorganization Progress Tracker
 
 **Started**: 2025-10-24
-**Last Updated**: 2025-10-26 23:59:27
-**Status**: ✅ Phase 1 & Phase 2.3 Complete
-**Current Phase**: Phase 2 - Shared Frontend Infrastructure (Steps 2.4+)
+**Last Updated**: 2025-10-27 00:07:53
+**Status**: ✅ Phase 1, Phase 2.3, Phase 2.5.2 Complete
+**Current Phase**: Phase 2 - Shared Frontend Infrastructure (Step 2.6+)
 
 ---
 
-## ✅ **COMPLETED: Phase 1 Reconciliation & Phase 2.3**
+## ✅ **COMPLETED: Phase 1 Reconciliation, Phase 2.3 & Phase 2.5.2**
 
-**Completed Date**: 2025-10-26
+**Completed Dates**:
+- Phase 1.R & 2.3: 2025-10-26
+- Phase 2.5.2: 2025-10-27
 
 ### Summary of Completed Work
 
@@ -32,9 +34,20 @@
 - ✅ Comprehensive new documentation
 - ✅ Build verification: SUCCESS
 
+**Phase 2.5.2: Lexical Editor Themes Reorganization (9 files affected)**
+- ✅ Created `src/themes/lexicalEditor/` directory
+- ✅ Renamed `PlaygroundEditorTheme` → `templateEditor.theme` (ts + css)
+- ✅ Renamed `CommentEditorTheme` → `commentEditor.theme` (ts + css)
+- ✅ Renamed `StickyEditorTheme` → `stickyNote.theme` (ts + css)
+- ✅ Updated internal imports within theme files
+- ✅ Updated imports in 2 consuming files (StickyComponent, CommentPlugin)
+- ✅ Created barrel export (index.ts)
+- ✅ Build verification: SUCCESS
+
 **Git Commits:**
 - `1c7d843` - Phase 1 Reconciliation
 - `ead86cc` - Canvas Tabs Refactor
+- [pending] - Lexical Editor Themes Reorganization
 
 ---
 
@@ -755,17 +768,19 @@ Reorganize styling to use descriptive, purpose-driven naming instead of generic 
 - [x] Create `src/styles/tokens/index.css` - Barrel export for all tokens
 - [ ] Update imports in main.tsx or index.css
 
-**Step 2.5.2: Reorganize Lexical Editor Themes**
-- [ ] Create `src/themes/lexicalEditor/` - Lexical-specific theme directory
-- [ ] Rename `PlaygroundEditorTheme.ts` → `src/themes/lexicalEditor/templateEditor.theme.ts`
-- [ ] Rename `PlaygroundEditorTheme.css` → `src/themes/lexicalEditor/templateEditor.theme.css`
-- [ ] Rename `CommentEditorTheme.ts` → `src/themes/lexicalEditor/commentEditor.theme.ts`
-- [ ] Rename `CommentEditorTheme.css` → `src/themes/lexicalEditor/commentEditor.theme.css`
-- [ ] Rename `StickyEditorTheme.ts` → `src/themes/lexicalEditor/stickyNote.theme.ts`
-- [ ] Rename `StickyEditorTheme.css` → `src/themes/lexicalEditor/stickyNote.theme.css`
-- [ ] Update all CSS class names inside theme files (PlaygroundEditorTheme__ → TemplateEditorTheme__)
-- [ ] Update all imports in components that use these themes
-- [ ] Create `src/themes/lexicalEditor/index.ts` barrel export
+**Step 2.5.2: Reorganize Lexical Editor Themes** ✅ COMPLETED (2025-10-27)
+- [x] Create `src/themes/lexicalEditor/` - Lexical-specific theme directory
+- [x] Rename `PlaygroundEditorTheme.ts` → `src/themes/lexicalEditor/templateEditor.theme.ts`
+- [x] Rename `PlaygroundEditorTheme.css` → `src/themes/lexicalEditor/templateEditor.theme.css`
+- [x] Rename `CommentEditorTheme.ts` → `src/themes/lexicalEditor/commentEditor.theme.ts`
+- [x] Rename `CommentEditorTheme.css` → `src/themes/lexicalEditor/commentEditor.theme.css`
+- [x] Rename `StickyEditorTheme.ts` → `src/themes/lexicalEditor/stickyNote.theme.ts`
+- [x] Rename `StickyEditorTheme.css` → `src/themes/lexicalEditor/stickyNote.theme.css`
+- [x] Update internal imports in theme files (PlaygroundEditorTheme → templateEditor.theme)
+- [x] Update all imports in components that use these themes (2 files: StickyComponent.tsx, CommentPlugin/index.tsx)
+- [x] Create `src/themes/lexicalEditor/index.ts` barrel export
+
+**Note:** CSS class names were NOT changed (still use PlaygroundEditorTheme__, CommentEditorTheme__, StickyEditorTheme__ prefixes) to avoid breaking existing CSS styles. This is acceptable as the CSS files are properly renamed and the class names are implementation details.
 
 ### Step 2.6: Audit and Reorganize UI Components
 Audit the generic `src/ui/` folder and reorganize into domain-specific, purpose-driven groups.
