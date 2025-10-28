@@ -34,6 +34,77 @@ The project uses **strict TypeScript** with additional linting rules:
 
 **IMPORTANT:** Avoid using `any` type. Follow strict typing conventions throughout the codebase.
 
+## 🚨 CRITICAL: Common Mistakes to Avoid
+
+**These mistakes have caused major damage in the past. Follow these rules strictly:**
+
+### Theme System Protection
+
+1. **NEVER change theme system colors without explicit user instruction**
+   - DO NOT modify `--brand-green`, `--brand-blue`, or any brand color values in `src/index.css`
+   - DO NOT change opacity values of theme colors
+   - DO NOT introduce new color values without understanding the existing color system
+   - **Why**: The user has a carefully calibrated color system. Changing it breaks visual consistency across the entire application.
+
+2. **NEVER delete or modify theme classes**
+   - DO NOT remove theme classes (`.t-light`, `.t-dark`, `.t-soft`, `.t-nature`, `.t-ocean`) from `src/index.css`
+   - DO NOT change how theme switching works
+   - DO NOT modify the theme class structure
+   - **Why**: Theme switching is a core feature. Deleting theme classes breaks light/dark mode functionality entirely.
+
+### File and Configuration Management
+
+3. **ALWAYS verify which file you're editing**
+   - When editing agent configuration files, confirm you're editing the PROJECT-SPECIFIC version, not the global one
+   - Project-specific files are in `/Users/jasonvongsay/Downloads/insurance-template-poc-ts/.claude/`
+   - Global files are in `/Users/jasonvongsay/.claude/`
+   - **Why**: Project-specific files override global files. Editing the wrong file wastes time and doesn't fix the issue.
+
+4. **NEVER change user-confirmed correct content**
+   - If the user explicitly says something is correct, DO NOT modify it
+   - Read and preserve existing content when making formatting changes
+   - Ask if you're unsure rather than making assumptions
+   - **Why**: Changing user-confirmed content damages trust and creates rework.
+
+### Code Changes and Testing
+
+5. **ALWAYS read existing code thoroughly before making ANY changes**
+   - DO NOT make sweeping architectural changes without understanding the current implementation
+   - DO NOT assume you know better without reading the full context
+   - DO NOT skip reading related files
+   - **Why**: Making changes without understanding the existing system causes cascading failures that require git history recovery.
+
+6. **ALWAYS test changes in BOTH light and dark modes**
+   - DO NOT consider a design complete without testing theme switching
+   - DO NOT assume changes work in both themes without verification
+   - **Why**: Many visual issues only appear in one theme. Both must be tested.
+
+7. **NEVER make sweeping changes to established systems**
+   - DO NOT rewrite entire CSS files without explicit permission
+   - DO NOT refactor established architecture without being asked
+   - DO NOT change semantic color mappings
+   - **Why**: Established systems have implicit dependencies. Rewriting them breaks functionality in unexpected ways.
+
+### Communication and Scope
+
+8. **NEVER state speculation as fact**
+   - If you don't know something for certain, say "I don't know" or "I'm not certain"
+   - DO NOT guess and present it as factual information
+   - DO NOT make assumptions about which files were used or what happened
+   - **Why**: Trust is critical. Stating speculation as fact damages user confidence and credibility.
+
+9. **Focus on the SPECIFIC issue, not comprehensive redesigns**
+   - DO NOT expand scope beyond what was requested
+   - DO NOT "improve" things that weren't mentioned
+   - DO NOT make changes to files you weren't asked to modify
+   - **Why**: Scope creep introduces bugs and breaks working functionality. Stick to the specific request.
+
+10. **ASK clarifying questions rather than making assumptions**
+    - DO NOT assume you know what the user wants
+    - DO NOT make changes based on speculation
+    - When in doubt, ask before proceeding
+    - **Why**: Clarifying questions prevent wasted work and ensure correct implementation.
+
 ## Architecture
 
 ### Tab Management System

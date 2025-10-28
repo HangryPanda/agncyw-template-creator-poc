@@ -11,11 +11,11 @@ import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
 import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { TemplateVariableNode, $createTemplateVariableNode } from '@/nodes/TemplateVariableNode';
+import { TemplateVariableNode, $createTemplateVariableNode } from '@/nodes/TemplateVariable';
 import { TemplateVariable, EditorState } from '@/types';
 import { EditorState as LexicalEditorState } from 'lexical';
 import { TemplateVariablePopover } from './TemplateVariablePopover';
-import { EditorCommandMenu } from './EditorCommandMenu';
+import { EditorCommandMenu } from '@/core/ui/constructs/EditorCommandMenu';
 import PlaygroundNodes from '@/nodes/PlaygroundNodes';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/primitives/shadcn/Button';
@@ -235,7 +235,7 @@ function MenuControlPlugin({
       />
       <EditorCommandMenu
         open={commandMenuState.open}
-        onOpenChange={(open) => setCommandMenuState({ ...commandMenuState, open })}
+        onOpenChange={(open: boolean) => setCommandMenuState({ ...commandMenuState, open })}
         position={commandMenuState.position}
       />
     </>

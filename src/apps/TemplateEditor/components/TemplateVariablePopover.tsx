@@ -4,7 +4,7 @@ import { Popover, PopoverContent } from '@/components/ui/overlays/shadcn/Popover
 import { TemplateVariable } from '@/types';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $getSelection, $isRangeSelection } from 'lexical';
-import { $createTemplateVariableNode } from '@/nodes/TemplateVariableNode';
+import { $createTemplateVariableNode } from '@/nodes/TemplateVariable';
 
 interface VariablePopoverProps {
   open: boolean;

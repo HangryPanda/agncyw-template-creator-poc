@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/constructs/shadcn/Resizable';
-import ThemeToggle from '@/components/ThemeToggle';
+import ThemeToggle from '@/core/ui/primitives/ThemeToggle';
 import ModernTemplateSidebar from '@/apps/TemplateEditor/features/sidebar/components/ModernTemplateSidebar';
 import { Template, Tag } from '@/types';
 
@@ -91,7 +91,7 @@ export default function DesignSandboxPage() {
 
     switch (key) {
       case 'ModernTemplateSidebar':
-        return <ModernTemplateSidebar {...commonProps} />;
+        return <ModernTemplateSidebar {...commonProps} onClose={() => console.log('Close sidebar')} />;
       default:
         return <div className="p-4 text-muted-foreground">Component not found</div>;
     }

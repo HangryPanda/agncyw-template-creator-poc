@@ -1,6 +1,6 @@
 import React from 'react';
 import { Template, TemplateVariable } from '@/types';
-import { TemplateVariableList } from '@/components/TemplateVariableList';
+import { TemplateVariableList } from '@/apps/TemplateEditor/components/variables/TemplateVariableList';
 import { AccordionItem } from '@/components/ui/primitives/shadcn/Accordion';
 import { useTemplateValues } from '@/hooks/templateValues';
 import { Save, Copy } from 'lucide-react';

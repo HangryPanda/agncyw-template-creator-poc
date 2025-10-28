@@ -632,8 +632,8 @@ apps/template-editor/views/
 - Reusable across Views
 
 **Location:**
-- Shared: `core/ui/constructs/` (when promoted via Rules 1-3)
-- App-specific: `apps/[app-name]/components/` (default starting location)
+- Shared: `core/ui/_shared/` (when promoted via Rules 1-3)
+- App-specific: `apps/[app-name]/components/` (default starting location as an example, but we apply our classification rules )
 
 **Naming Convention:** `[Descriptive][Purpose].tsx`
 

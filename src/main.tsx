@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import SelectFieldDemo from './pages/SelectFieldDemo'
 import DesignSandboxPage from './pages/DesignSandboxPage'
-import PageSwitcher from './components/PageSwitcher'
+import PageSwitcher from '@/apps/TemplateEditor/layouts/PageSwitcher'
 import './index.css'
 
 function Root() {

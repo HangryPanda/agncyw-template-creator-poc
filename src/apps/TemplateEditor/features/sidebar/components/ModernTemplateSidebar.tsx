@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Template, Tag } from '@/types';
+import { X, Layers } from 'lucide-react';
 
 interface ModernTemplateSidebarProps {
   templates: Template[];
@@ -11,6 +12,7 @@ interface ModernTemplateSidebarProps {
   onToggleStar: (templateId: string) => void;
   onManageTags: () => void;
   openTabIds?: string[];
+  onClose?: () => void;
 }
 
 export default function ModernTemplateSidebar({
@@ -23,6 +25,7 @@ export default function ModernTemplateSidebar({
   onToggleStar,
   onManageTags,
   openTabIds = [],
+  onClose,
 }: ModernTemplateSidebarProps) {
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(['starred', 'recent', 'untagged'])
@@ -254,8 +257,38 @@ export default function ModernTemplateSidebar({
 
   return (
     <div className="w-full h-full bg-background flex flex-col">
-      {/* Header - Ultra compact */}
-      <div className="px-3 py-2 bg-background border-b border-border">
+      {/* Brand Header - POSITIONED AT THE VERY TOP (First Child Element) */}
+      <div className="h-12 px-4 border-b border-border flex items-center justify-between flex-shrink-0 bg-background">
+        {/* Logo + Brand Name - Left Side */}
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center justify-center w-6 h-6 rounded bg-primary/10">
+            <Layers className="w-4 h-4 text-primary" />
+          </div>
+          <h1 className="text-base font-semibold text-foreground tracking-tight">
+            Messages <span className="text-muted-foreground font-normal">| AgncyKit</span>
+          </h1>
+        </div>
+
+        {/* Close Button - Right Side */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="
+              flex items-center justify-center w-7 h-7 rounded
+              hover:bg-muted transition-colors duration-150
+              text-muted-foreground hover:text-foreground
+              active:scale-95
+            "
+            title="Close sidebar"
+            aria-label="Close sidebar"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Templates Header Section - Second Element */}
+      <div className="px-3 py-2 bg-background border-b border-border flex-shrink-0">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-sm font-semibold text-foreground">Templates</h2>
           <button
@@ -313,7 +346,7 @@ export default function ModernTemplateSidebar({
       </div>
 
       {/* Footer - compact */}
-      <div className="px-3 py-2 border-t border-border bg-background">
+      <div className="px-3 py-2 border-t border-border bg-background flex-shrink-0">
         <button
           onClick={onManageTags}
           className="

@@ -3,11 +3,11 @@ import TemplateEditor from './apps/TemplateEditor/features/editor/components/Tem
 import ModernTemplateSidebar from './apps/TemplateEditor/features/sidebar/components/ModernTemplateSidebar';
 import TemplateMetadataEditor from './apps/TemplateEditor/features/metadata/components/TemplateMetadataEditor';
 import { CharacterCounter } from '@/components/indicators';
-import TemplateGlobalSearch from './components/TemplateGlobalSearch';
+import TemplateGlobalSearch from '@/apps/TemplateEditor/components/TemplateGlobalSearch';
 import InlineTagEditor from './apps/TemplateEditor/features/metadata/components/InlineTagEditor';
 import InlineVariableEditor from './apps/TemplateEditor/features/metadata/components/InlineVariableEditor';
 import { FormWrapper, ResponsiveDrawer } from '@/components/forms';
-import { TemplateVariableListDisplay } from '@/components/TemplateVariableListDisplay';
+import { TemplateVariableListDisplay } from '@/apps/TemplateEditor/components/variables/TemplateVariableListDisplay';
 import { TemplateCanvasTabsControl, useTemplateCanvasTabs } from '@/lib/canvasTabs/integrations/lexical';
 import { useTemplateValues } from '@/hooks/templateValues';
 import { useTemplateRegistry } from '@/hooks/templateRegistry';
@@ -15,7 +15,7 @@ import { Toaster } from '@/components/ui/overlays/shadcn/Sonner';
 import { ResizablePanelGroup, ResizablePanel } from '@/components/ui/constructs/shadcn/Resizable';
 import { TemplateVariable, EditorState, Template, Tag } from '@/apps/_shared/template/types';
 import GitHubEditorPage from './pages/GitHubEditorPage';
-import ThemeToggle from './components/ThemeToggle';
+import ThemeToggle from '@/core/ui/primitives/ThemeToggle';
 // Removed App.css - using Tailwind and shadcn styles instead
 
 // Insurance-specific variables for Quote Not Written campaign
@@ -490,7 +490,6 @@ function App() {
               ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
               shadow-2xl
             `}
-            style={{ paddingTop: '60px' }} // Account for header height
           >
             <ModernTemplateSidebar
               templates={templates}
@@ -507,6 +506,7 @@ function App() {
                 }
               }}
               openTabIds={openTabs}
+              onClose={() => setIsSidebarOpen(false)}
             />
           </div>
 

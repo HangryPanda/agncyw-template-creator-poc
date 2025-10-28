@@ -27,7 +27,7 @@ import {
 import { $createCodeNode, $isCodeNode } from '@lexical/code';
 import { $getNearestNodeOfType, mergeRegister } from '@lexical/utils';
 import { $createParagraphNode, $isParagraphNode } from 'lexical';
-import { $createTemplateVariableNode } from '@/nodes/TemplateVariableNode';
+import { $createTemplateVariableNode } from '@/nodes/TemplateVariable';
 import { TemplateVariable } from '@/types';
 import React, { useCallback, useEffect, useState } from 'react';
 

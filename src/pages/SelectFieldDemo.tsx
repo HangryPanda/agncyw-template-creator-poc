@@ -1,4 +1,4 @@
-import TemplateSelectFieldConfig from '@/components/TemplateSelectFieldConfig';
+import TemplateSelectFieldConfig from '@/apps/TemplateEditor/components/TemplateSelectFieldConfig';
 
 export default function SelectFieldDemo(): JSX.Element {
   const handleSave = (config: any) => {

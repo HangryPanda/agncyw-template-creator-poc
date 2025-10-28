@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/constructs/shadcn/Resizable';
 import ModernTemplateSidebar from '@/apps/TemplateEditor/features/sidebar/components/ModernTemplateSidebar';
-import TemplateEditor from '@/components/TemplateEditor';
-import TemplateOutlinePanel from '@/components/TemplateOutlinePanel';
-import InlineTitleEditor from '@/components/InlineTitleEditor';
-import ThemeToggle from '@/components/ThemeToggle';
+import TemplateEditor from '@/apps/TemplateEditor/components/TemplateEditor';
+import TemplateOutlinePanel from '@/apps/TemplateEditor/views/TemplateOutlinePanel';
+import InlineTitleEditor from '@/core/ui/constructs/inline-editors/InlineTitleEditor';
+import ThemeToggle from '@/core/ui/primitives/ThemeToggle';
 import { Template, Tag, TemplateVariable } from '@/types';
 
 interface GitHubEditorPageProps {
@@ -231,6 +231,7 @@ export default function GitHubEditorPage({
                   onDeleteTemplate={onDeleteTemplate}
                   onToggleStar={onToggleStar}
                   onManageTags={onManageTags}
+                  onClose={() => console.log('Close sidebar')}
                 />
               </ResizablePanel>
               <ResizableHandle withHandle />

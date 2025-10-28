@@ -1,79 +1,16 @@
-import { DecoratorNode, LexicalNode, NodeKey } from 'lexical';
-import { SerializedTemplateVariableNode } from '@/types';
-import { useVariableValues } from '@/context/VariableValuesContext';
 import { useState, useRef, useEffect } from 'react';
-
-export class TemplateVariableNode extends DecoratorNode<JSX.Element> {
-  __variableName: string;
-
-  static getType(): string {
-    return 'template-variable';
-  }
-
-  static clone(node: TemplateVariableNode): TemplateVariableNode {
-    return new TemplateVariableNode(node.__variableName, node.__key);
-  }
-
-  constructor(variableName: string, key?: NodeKey) {
-    super(key);
-    this.__variableName = variableName;
-  }
-
-  createDOM(): HTMLElement {
-    const span = document.createElement('span');
-    // Minimal wrapper - all styling handled by the React component
-    span.className = 'inline';
-    span.setAttribute('data-variable-name', this.__variableName);
-    return span;
-  }
-
-  updateDOM(): false {
-    return false;
-  }
-
-  decorate(): JSX.Element {
-    return <TemplateVariableComponent variableName={this.__variableName} />;
-  }
-
-  getVariableName(): string {
-    return this.__variableName;
-  }
-
-  exportJSON(): SerializedTemplateVariableNode {
-    return {
-      variableName: this.__variableName,
-      type: 'template-variable',
-      version: 1,
-    };
-  }
-
-  static importJSON(serializedNode: SerializedTemplateVariableNode): TemplateVariableNode {
-    return $createTemplateVariableNode(serializedNode.variableName);
-  }
-
-  isInline(): true {
-    return true;
-  }
-
-  canBeEmpty(): false {
-    return false;
-  }
-
-  isIsolated(): false {
-    return false;
-  }
-}
+import { useVariableValues } from '@/context/VariableValuesContext';
+import styles from './TemplateVariable.module.css';
 
 interface TemplateVariableComponentProps {
   variableName: string;
 }
 
-function TemplateVariableComponent({ variableName }: TemplateVariableComponentProps): JSX.Element {
+export function TemplateVariableComponent({ variableName }: TemplateVariableComponentProps): JSX.Element {
   const { values, mode, setValue, isVariableFilled, getFirstUnfilledVariable } = useVariableValues();
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState('');
   const [inputWidth, setInputWidth] = useState<number | undefined>(undefined);
-  const [minWidth, setMinWidth] = useState<number | undefined>(undefined);
   const editableRef = useRef<HTMLSpanElement>(null);
   const measureRef = useRef<HTMLSpanElement>(null);
   const wrapperRef = useRef<HTMLSpanElement>(null);
@@ -90,32 +27,35 @@ function TemplateVariableComponent({ variableName }: TemplateVariableComponentPr
   // Measure text width for smooth transitions
   useEffect(() => {
     if (measureRef.current) {
-      const width = measureRef.current.offsetWidth;
-      setInputWidth(width || undefined);
+      // Use requestAnimationFrame to ensure measurement happens in sync with DOM paint
+      requestAnimationFrame(() => {
+        if (measureRef.current) {
+          const width = measureRef.current.offsetWidth;
+          setInputWidth(width || undefined);
+        }
+      });
     }
   }, [editValue, displayValue]);
 
-  // Auto-focus when editing starts
+  // Auto-focus when editing starts and set initial value
   useEffect(() => {
     if (isEditing && editableRef.current) {
+      // Set the text content directly (not via React)
+      editableRef.current.textContent = editValue;
       editableRef.current.focus();
-      // Select all text in contenteditable
+      // Move cursor to end of text
       const range = document.createRange();
-      range.selectNodeContents(editableRef.current);
       const selection = window.getSelection();
+      range.selectNodeContents(editableRef.current);
+      range.collapse(false); // Collapse to end
       selection?.removeAllRanges();
       selection?.addRange(range);
     }
-  }, [isEditing]);
+  }, [isEditing, editValue]);
 
   // Handle click to start editing (only in Compose mode)
   const handleClick = () => {
     if (mode === 'use' && !isEditing) {
-      // Measure the full display width WITH brackets before entering edit mode
-      if (wrapperRef.current) {
-        const fullWidth = wrapperRef.current.offsetWidth;
-        setMinWidth(fullWidth);
-      }
       setEditValue(values[variableName] || '');
       setIsEditing(true);
     }
@@ -127,14 +67,12 @@ function TemplateVariableComponent({ variableName }: TemplateVariableComponentPr
     const value = editableRef.current?.textContent || '';
     setValue(variableName, value);
     setIsEditing(false);
-    setMinWidth(undefined); // Clear minimum width
   };
 
   // Cancel editing
   const handleCancel = () => {
     setIsEditing(false);
     setEditValue('');
-    setMinWidth(undefined); // Clear minimum width
   };
 
   // Handle keyboard events
@@ -157,22 +95,31 @@ function TemplateVariableComponent({ variableName }: TemplateVariableComponentPr
 
   // Determine CSS classes based on state
   const getWrapperClassName = () => {
-    const classes = ['template-variable-wrapper'];
+    const classes = [styles.wrapper];
 
     if (isEditing) {
-      classes.push('editing');
+      classes.push(styles.editing);
+      if (mode === 'use') {
+        classes.push(styles.useModeEditing);
+      }
     }
 
     if (mode === 'use') {
-      classes.push('template-variable-editable');
+      classes.push(styles.useMode);
+      classes.push(styles.editable);
 
       if (isVariableFilled(variableName)) {
-        classes.push('template-variable-filled');
+        classes.push(styles.filled);
       } else if (isFirstUnfilled) {
-        classes.push('template-variable-unfilled-first');
+        classes.push(styles.unfilledFirst);
+        classes.push(styles.unfilledFirstUseMode);
       } else {
-        classes.push('template-variable-unfilled');
+        classes.push(styles.unfilled);
+        classes.push(styles.unfilledUseMode);
       }
+
+      // Add hover state for use mode
+      classes.push(styles.editableUseMode);
     }
 
     return classes.join(' ');
@@ -191,15 +138,14 @@ function TemplateVariableComponent({ variableName }: TemplateVariableComponentPr
     >
       {!isEditing && (
         <>
-          <span className="template-variable-bracket">{'{'}</span>
-          <span className="template-variable-bracket">{'{'}</span>
+          <span className={styles.bracket}>{'{'}</span>
+          <span className={styles.bracket}>{'{'}</span>
         </>
       )}
       <span
-        className="template-variable-content"
+        className={styles.content}
         style={{
           width: inputWidth ? `${inputWidth}px` : undefined,
-          minWidth: isEditing && minWidth ? `${minWidth}px` : undefined
         }}
       >
         {isEditing ? (
@@ -222,39 +168,32 @@ function TemplateVariableComponent({ variableName }: TemplateVariableComponentPr
             onInput={handleInput}
             onBlur={handleSave}
             onKeyDown={handleKeyDown}
-            className="template-variable-input"
+            className={styles.input}
             data-variable-name={variableName}
             suppressContentEditableWarning={true}
+            style={{ direction: 'ltr', unicodeBidi: 'normal' }}
           >
             {editValue}
           </span>
         ) : (
-          <span className="template-variable-display">{displayValue}</span>
+          <span className={styles.display}>{displayValue}</span>
         )}
       </span>
       {!isEditing && (
         <>
-          <span className="template-variable-bracket">{'}'}</span>
-          <span className="template-variable-bracket">{'}'}</span>
+          <span className={styles.bracket}>{'}'}</span>
+          <span className={styles.bracket}>{'}'}</span>
         </>
       )}
 
       {/* Hidden measurement element */}
       <span
         ref={measureRef}
-        className="template-variable-measure"
+        className={styles.measure}
         aria-hidden="true"
       >
         {isEditing ? editValue || '\u00A0' : displayValue}
       </span>
     </span>
   );
-}
-
-export function $createTemplateVariableNode(variableName: string): TemplateVariableNode {
-  return new TemplateVariableNode(variableName);
-}
-
-export function $isTemplateVariableNode(node: LexicalNode | null | undefined): node is TemplateVariableNode {
-  return node instanceof TemplateVariableNode;
 }
