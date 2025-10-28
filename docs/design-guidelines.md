@@ -17,7 +17,7 @@
 - Need to decide on component variants (props vs compound)? → See [Decision #9: Variant API Patterns](#9-variant-api-pattern-selection)
 - Need to promote a construct to shared? → See [Decision #11: Cross-App Reuse](#11-cross-app-reuse-decision-matrix)
 
-**Navigation**: Each decision is self-contained with rationale, examples, and references to detailed decision roadmaps in `/docs/decision-roadmaps/`.
+**Navigation**: Each decision is self-contained with rationale, examples, and references to detailed decision roadmaps in `/docs/decision-matrix/`.
 
 ### For AI Assistants
 
@@ -60,7 +60,7 @@
 ### Quick References
 - [Component Hierarchy Summary](#component-hierarchy-summary)
 - [File Structure Patterns](#file-structure-patterns)
-- [Decision Roadmaps](#decision-roadmaps)
+- [Decision Matrix](#decision-matrix)
 
 ---
 
@@ -196,7 +196,7 @@ Tier 3: Construct Variables (construct/[name].vars.css)
 
 User will explicitly instruct promotion or ask Claude to identify reusable constructs from other apps.
 
-**Detailed Documentation**: See `/docs/decision-roadmaps/cross-app-reuse.md` for complete decision matrix, flowcharts, and practical examples.
+**Detailed Documentation**: See `/docs/decision-matrix/cross-app-reuse.md` for complete decision matrix, flowcharts, and practical examples.
 
 ---
 
@@ -278,7 +278,7 @@ Use `index.ts` to control exports (don't export internal implementation details)
    - Marks as "ready for deletion" or "needs further review"
    - Includes completed checklist and review details
 
-**Detailed Documentation**: See `/docs/decision-roadmaps/construct-archive-review.md` for complete subagent checklist and review process.
+**Detailed Documentation**: See `/docs/decision-matrix/construct-archive-review.md` for complete subagent checklist and review process.
 
 ---
 
@@ -361,7 +361,7 @@ When building components with variations, Claude Code will evaluate using the de
 3. Recommends pattern with reasoning
 4. User/designer approves or adjusts
 
-**Detailed Documentation**: See `/docs/decision-roadmaps/variant-component-handling.md` for complete framework, decision trees, and examples.
+**Detailed Documentation**: See `/docs/decision-matrix/variant-component-handling.md` for complete framework, decision trees, and examples.
 
 ---
 
@@ -411,7 +411,7 @@ Approved decision matrix incorporating governance Rules 1, 2, and 3 for construc
 - Demotion process with FORK_REASON.md template
 - Auto-promote lists for different component types
 
-**Detailed Documentation**: See `/docs/decision-roadmaps/cross-app-reuse.md` for complete decision matrix, flowcharts, practical examples (InlineTagEditor, QuoteCalculator, Modal, FormDrawer, TagEditor).
+**Detailed Documentation**: See `/docs/decision-matrix/cross-app-reuse.md` for complete decision matrix, flowcharts, practical examples (InlineTagEditor, QuoteCalculator, Modal, FormDrawer, TagEditor).
 
 ---
 
@@ -504,7 +504,7 @@ START: I need to create/modify a component
 - Prevents incorrect component placement
 - Reduces need for human verification
 
-**Implementation**: See CLAUDE.md for AI assistant instructions and `/docs/decision-roadmaps/component-placement.md` for complete decision roadmap.
+**Implementation**: See CLAUDE.md for AI assistant instructions and `/docs/decision-matrix/component-placement.md` for complete decision roadmap.
 
 ---
 
@@ -574,29 +574,29 @@ construct/[name]/
 
 ---
 
-## Decision Roadmaps
+## Decision Matrix
 
 For detailed frameworks, flowcharts, and practical examples, see:
 
-- **Component Placement**: `/docs/decision-roadmaps/component-placement.md`
+- **Component Placement**: `/docs/decision-matrix/component-placement.md`
   - Complete 5-question decision tree
   - File structure reference
   - Descriptive naming anti-patterns
   - Practical examples for each component type
 
-- **Variant Component Handling**: `/docs/decision-roadmaps/variant-component-handling.md`
+- **Variant Component Handling**: `/docs/decision-matrix/variant-component-handling.md`
   - Props vs Compound vs Presets framework
   - Decision tree flowchart
   - Trade-offs comparison
   - Real-world examples (Button, Modal, TagEditor)
 
-- **Cross-App Reuse**: `/docs/decision-roadmaps/cross-app-reuse.md`
+- **Cross-App Reuse**: `/docs/decision-matrix/cross-app-reuse.md`
   - Governance Rules 1-3 detailed
   - Promotion/demotion flowcharts
   - 5 practical examples with rules applied
   - Auto-promote lists by component type
 
-- **Construct Archive Review**: `/docs/decision-roadmaps/construct-archive-review.md`
+- **Construct Archive Review**: `/docs/decision-matrix/construct-archive-review.md`
   - 20-question subagent checklist
   - Disposition decision matrix
   - JIRA task template

@@ -17,24 +17,24 @@
 - [X] ~~Finalize Component Organization Strategies (Page/Layout/View/Construct/Component)~~ (COMPLETED - Decision #1 revised, Decision #13 added)
 
 **Priority 2 - Documentation Updates**:
-- [X] ~~Create `/docs/decision-roadmaps/` folder for decision framework documents~~ (COMPLETED)
-- [X] ~~Create `/docs/decision-roadmaps/component-placement.md` - AI Assistant Decision Roadmap~~ (COMPLETED)
+- [X] ~~Create `/docs/decision-matrix/` folder for decision framework documents~~ (COMPLETED)
+- [X] ~~Create `/docs/decision-matrix/component-placement.md` - AI Assistant Decision Roadmap~~ (COMPLETED)
   - Include 5-question decision tree from Decision #13
   - Include complete file structure (Page/Layout/View/Construct/Component locations)
   - Include descriptive naming conventions and anti-patterns
   - Include file naming patterns for AI pattern matching
   - Include practical examples for each component type
   - **Purpose**: Single source of truth for "Where does this file go?" decisions
-- [X] ~~Extract Variant Component Handling decision roadmap to `/docs/decision-roadmaps/variant-api-patterns.md`~~ (COMPLETED)
-- [X] ~~Extract Cross-App Reuse Decision Matrix to `/docs/decision-roadmaps/cross-app-reuse.md`~~ (COMPLETED)
+- [X] ~~Extract Variant Component Handling decision roadmap to `/docs/decision-matrix/variant-api-patterns.md`~~ (COMPLETED)
+- [X] ~~Extract Cross-App Reuse Decision Matrix to `/docs/decision-matrix/cross-app-reuse.md`~~ (COMPLETED)
   - **IMPORTANT**: Include all practical examples from the guidelines (InlineTagEditor, QuoteCalculator, Modal, FormDrawer, etc.) for developer context
 - [X] ~~**NEW**: Update ui-designer subagent instructions to reference decision roadmaps (variant API, cross-app reuse, component placement)~~ (COMPLETED)
 - [X] ~~Update CLAUDE.md with AI Assistant Component Classification System~~ (COMPLETED)
-  - Add reference to `/docs/decision-roadmaps/component-placement.md` as primary source
+  - Add reference to `/docs/decision-matrix/component-placement.md` as primary source
   - Add quick-reference summary of 5-question decision tree
   - Add file naming pattern rules (Page.tsx, Layout.tsx, View.tsx suffixes)
   - Add descriptive naming principle and anti-patterns
-  - Add reference to `/docs/decision-roadmaps/cross-app-reuse.md` for construct promotion rules
+  - Add reference to `/docs/decision-matrix/cross-app-reuse.md` for construct promotion rules
   - Include key examples from decision matrices for developer context
 - [X] ~~**NEW**: Add theme-aware semantic color tokens to `src/index.css`:~~ (COMPLETED)
   - ~~**Essential**: `--success`, `--success-foreground`, `--warning`, `--warning-foreground`~~
@@ -68,7 +68,7 @@
   - **Exclude**: Original draft discussion materials (lines 2496+)
   - **Verification**: Read lines 64-2495 completely before extraction to ensure no content is missed
 - [X] **DEPRECATED**: Rewrite Component Organization Strategies section (keeping as draft discussion - not deleting content)
-- [X] ~~Create subagent checklist for construct archive review~~ (COMPLETED - `/docs/decision-roadmaps/construct-archive-review.md`)
+- [X] ~~Create subagent checklist for construct archive review~~ (COMPLETED - `/docs/decision-matrix/construct-archive-review.md`)
 - [ ] Document Phase 3 migration guidance (what comes after Phase 2?)
 
 **Priority 3 - Migration Execution**:
@@ -343,7 +343,7 @@ construct/[name]/
 3. Recommends pattern with reasoning
 4. User/designer approves or adjusts
 
-**Documentation**: Complete framework will be extracted to `/docs/decision-roadmaps/variant-api-patterns.md` as single source of truth for this and future decision roadmaps.
+**Documentation**: Complete framework will be extracted to `/docs/decision-matrix/variant-api-patterns.md` as single source of truth for this and future decision roadmaps.
 
 ---
 
@@ -383,7 +383,7 @@ construct/[name]/
 - Demotion process with FORK_REASON.md template
 - Auto-promote lists for different component types
 
-**Documentation**: Will be extracted to `/docs/decision-roadmaps/cross-app-reuse.md`
+**Documentation**: Will be extracted to `/docs/decision-matrix/cross-app-reuse.md`
 
 **Action Items**:
 - Extract decision matrix to decision roadmaps folder
@@ -525,9 +525,9 @@ START: I need to create/modify a component
 
 **Approval**: Roadmap approved. Claude Code will perform evaluations to help decide which pattern to use when building components with variations.
 
-**Documentation**: Complete decision roadmap in [PENDING DECISION 2] below. Will be extracted to `/docs/decision-roadmaps/` folder as single source of truth.
+**Documentation**: Complete decision roadmap in [PENDING DECISION 2] below. Will be extracted to `/docs/decision-matrix/` folder as single source of truth.
 
-**Action Item**: Create `/docs/decision-roadmaps/variant-api-patterns.md` with the approved decision framework.
+**Action Item**: Create `/docs/decision-matrix/variant-api-patterns.md` with the approved decision framework.
 
 ---
 
@@ -536,7 +536,7 @@ START: I need to create/modify a component
 
 **User Decision**: Approved the updated decision matrix incorporating governance rules (Rule 1, 2, 3).
 
-**Documentation**: Will be extracted to `/docs/decision-roadmaps/cross-app-reuse.md` as single source of truth.
+**Documentation**: Will be extracted to `/docs/decision-matrix/cross-app-reuse.md` as single source of truth.
 
 **Action Items**:
 - Create decision matrix file in decision roadmaps folder
@@ -561,7 +561,7 @@ START: I need to create/modify a component
 - All questions resolved and incorporated into Decision #1
 
 **Action Items**:
-- Create `/docs/decision-roadmaps/component-placement.md` as single source of truth
+- Create `/docs/decision-matrix/component-placement.md` as single source of truth
 - Update CLAUDE.md with references to decision roadmap
 
 ---
@@ -576,24 +576,24 @@ START: I need to create/modify a component
 - [X] ~~Finalize Component Organization Strategies (Page/Layout/View/Construct/Component)~~ (COMPLETED - Decision #1 revised, Decision #13 added)
 
 **Priority 2 - Documentation Updates**:
-- [ ] **NEW**: Create `/docs/decision-roadmaps/` folder for decision framework documents
-- [ ] **NEW**: Create `/docs/decision-roadmaps/component-placement.md` - AI Assistant Decision Roadmap
+- [ ] **NEW**: Create `/docs/decision-matrix/` folder for decision framework documents
+- [ ] **NEW**: Create `/docs/decision-matrix/component-placement.md` - AI Assistant Decision Roadmap
   - Include 5-question decision tree from Decision #13
   - Include complete file structure (Page/Layout/View/Construct/Component locations)
   - Include descriptive naming conventions and anti-patterns
   - Include file naming patterns for AI pattern matching
   - Include practical examples for each component type
   - **Purpose**: Single source of truth for "Where does this file go?" decisions
-- [ ] **NEW**: Extract Variant Component Handling decision roadmap to `/docs/decision-roadmaps/variant-api-patterns.md`
-- [ ] **NEW**: Extract Cross-App Reuse Decision Matrix to `/docs/decision-roadmaps/cross-app-reuse.md`
+- [ ] **NEW**: Extract Variant Component Handling decision roadmap to `/docs/decision-matrix/variant-api-patterns.md`
+- [ ] **NEW**: Extract Cross-App Reuse Decision Matrix to `/docs/decision-matrix/cross-app-reuse.md`
   - **IMPORTANT**: Include all practical examples from the guidelines (InlineTagEditor, QuoteCalculator, Modal, FormDrawer, etc.) for developer context
 - [X] ~~**NEW**: Update ui-designer subagent instructions to reference decision roadmaps (variant API, cross-app reuse, component placement)~~ (COMPLETED)
 - [ ] **NEW**: Update CLAUDE.md with AI Assistant Component Classification System
-  - Add reference to `/docs/decision-roadmaps/component-placement.md` as primary source
+  - Add reference to `/docs/decision-matrix/component-placement.md` as primary source
   - Add quick-reference summary of 5-question decision tree
   - Add file naming pattern rules (Page.tsx, Layout.tsx, View.tsx suffixes)
   - Add descriptive naming principle and anti-patterns
-  - Add reference to `/docs/decision-roadmaps/cross-app-reuse.md` for construct promotion rules
+  - Add reference to `/docs/decision-matrix/cross-app-reuse.md` for construct promotion rules
   - Include key examples from decision matrices for developer context
 - [X] ~~**NEW**: Add theme-aware semantic color tokens to `src/index.css`:~~ (COMPLETED)
   - ~~**Essential**: `--success`, `--success-foreground`, `--warning`, `--warning-foreground`~~
@@ -627,7 +627,7 @@ START: I need to create/modify a component
   - **Exclude**: Original draft discussion materials (lines 2496+)
   - **Verification**: Read lines 64-2495 completely before extraction to ensure no content is missed
 - [ ] **DEPRECATED**: Rewrite Component Organization Strategies section (keeping as draft discussion - not deleting content)
-- [X] ~~Create subagent checklist for construct archive review~~ (COMPLETED - `/docs/decision-roadmaps/construct-archive-review.md`)
+- [X] ~~Create subagent checklist for construct archive review~~ (COMPLETED - `/docs/decision-matrix/construct-archive-review.md`)
 - [ ] Document Phase 3 migration guidance (what comes after Phase 2?)
 
 **Priority 3 - Migration Execution**:
@@ -1075,7 +1075,7 @@ Benefits:
 
 **User Decision**: Approved decision roadmap framework. Claude Code will evaluate and recommend variant patterns on a case-by-case basis using this framework.
 
-**Action**: Will be extracted to `/docs/decision-roadmaps/variant-api-patterns.md` as single source of truth.
+**Action**: Will be extracted to `/docs/decision-matrix/variant-api-patterns.md` as single source of truth.
 
 **Note**: This discussion section remains for reference and will be used as the basis for the standalone decision roadmap document.
 
@@ -1892,7 +1892,7 @@ Once colors are added, developers can use them consistently:
 
 **User Decision**: Approved decision matrix incorporating governance Rules 1, 2, and 3.
 
-**Action**: Will be extracted to `/docs/decision-roadmaps/cross-app-reuse.md` as single source of truth. ui-designer and CLAUDE.md will reference this matrix with examples.
+**Action**: Will be extracted to `/docs/decision-matrix/cross-app-reuse.md` as single source of truth. ui-designer and CLAUDE.md will reference this matrix with examples.
 
 **Note**: This section remains for reference and will be used as the basis for the standalone decision roadmap document.
 

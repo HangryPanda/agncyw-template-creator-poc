@@ -505,8 +505,8 @@ Rationale: Simple, 2 dimensions, all combinations valid
 
 ## Related Documentation
 
-- **Component Placement:** See `/docs/decision-roadmaps/component-placement.md`
-- **Construct Promotion:** See `/docs/decision-roadmaps/cross-app-reuse.md`
+- **Component Placement:** See `/docs/decision-matrix/component-placement.md`
+- **Construct Promotion:** See `/docs/decision-matrix/cross-app-reuse.md`
 - **Design Guidelines:** See `/docs/design-guidelines.draft.md`
 
 ---

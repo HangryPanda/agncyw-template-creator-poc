@@ -136,7 +136,7 @@ When a generic name (Button, Modal, Select, etc.) exists within a domain-specifi
 **You MUST use these decision matrices when creating or refactoring components. Each matrix addresses a specific decision point in your workflow.**
 
 ### 1. Component Placement Decision Matrix
-**File**: `/docs/decision-roadmaps/component-placement.md`
+**File**: `/docs/decision-matrix/component-placement.md`
 
 **When to Use**: Every time you need to create or modify a component
 
@@ -156,7 +156,7 @@ When a generic name (Button, Modal, Select, etc.) exists within a domain-specifi
 ---
 
 ### 2. Variant Component Handling Decision Matrix
-**File**: `/docs/decision-roadmaps/variant-component-handling.md`
+**File**: `/docs/decision-matrix/variant-component-handling.md`
 
 **When to Use**: When designing a component that needs variations (size, style, behavior)
 
@@ -177,7 +177,7 @@ When a generic name (Button, Modal, Select, etc.) exists within a domain-specifi
 ---
 
 ### 3. Cross-App Reuse Decision Matrix
-**File**: `/docs/decision-roadmaps/cross-app-reuse.md`
+**File**: `/docs/decision-matrix/cross-app-reuse.md`
 
 **When to Use**: When deciding if a construct should be promoted to shared or kept app-specific
 
@@ -199,7 +199,7 @@ When a generic name (Button, Modal, Select, etc.) exists within a domain-specifi
 ---
 
 ### 4. Construct Archive Review Matrix
-**File**: `/docs/decision-roadmaps/construct-archive-review.md`
+**File**: `/docs/decision-matrix/construct-archive-review.md`
 
 **When to Use**: When reviewing constructs in `xx-Archive-xx/` folder to determine deletion readiness (typically after 2 sprints/4 weeks)
 

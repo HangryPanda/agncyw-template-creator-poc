@@ -374,8 +374,8 @@ If disposition is **NOT READY**:
 ## Related Documentation
 
 - **Deprecation Strategy**: See Decision #6 in `/docs/design-guidelines.draft.md`
-- **Component Placement**: See `/docs/decision-roadmaps/component-placement.md`
-- **Cross-App Reuse**: See `/docs/decision-roadmaps/cross-app-reuse.md`
+- **Component Placement**: See `/docs/decision-matrix/component-placement.md`
+- **Cross-App Reuse**: See `/docs/decision-matrix/cross-app-reuse.md`
 
 ---
 

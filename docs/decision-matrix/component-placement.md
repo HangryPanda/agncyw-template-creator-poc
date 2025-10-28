@@ -637,7 +637,7 @@ apps/template-editor/views/
 
 **Naming Convention:** `[Descriptive][Purpose].tsx`
 
-**Promotion Rules:** See `/docs/decision-roadmaps/cross-app-reuse.md`
+**Promotion Rules:** See `/docs/decision-matrix/cross-app-reuse.md`
 
 **AI Indicators:**
 - Assembles multiple atomic Components
@@ -1027,8 +1027,8 @@ Before creating or modifying a file, answer these questions:
 
 ## Related Documentation
 
-- **Construct Promotion Rules:** See `/docs/decision-roadmaps/cross-app-reuse.md`
-- **Variant API Patterns:** See `/docs/decision-roadmaps/variant-api-patterns.md`
+- **Construct Promotion Rules:** See `/docs/decision-matrix/cross-app-reuse.md`
+- **Variant API Patterns:** See `/docs/decision-matrix/variant-api-patterns.md`
 - **Design Guidelines:** See `/docs/design-guidelines.draft.md`
 - **Developer Instructions:** See `/CLAUDE.md`
 

@@ -503,8 +503,8 @@ Use this checklist when deciding whether to promote a construct:
 
 ## Related Documentation
 
-- **Component Placement:** See `/docs/decision-roadmaps/component-placement.md`
-- **Variant Patterns:** See `/docs/decision-roadmaps/variant-api-patterns.md`
+- **Component Placement:** See `/docs/decision-matrix/component-placement.md`
+- **Variant Patterns:** See `/docs/decision-matrix/variant-api-patterns.md`
 - **Design Guidelines:** See `/docs/design-guidelines.draft.md`
 - **Developer Instructions:** See `/CLAUDE.md`
 

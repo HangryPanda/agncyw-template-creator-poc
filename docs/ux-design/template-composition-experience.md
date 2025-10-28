@@ -1305,7 +1305,7 @@ When updating this document:
 - `/docs/design-philosphy.md` - Core design principles
 - `/docs/side-panel-first.guide.md` - Side panel design strategy
 - `/docs/typography-spacing-scale/` - Design token system
-- `/docs/decision-roadmaps/component-placement.md` - Component architecture
+- `/docs/decision-matrix/component-placement.md` - Component architecture
 - `/src/lib/tabs/CLAUDE.md` - Tab system documentation
 - `CLAUDE.md` - Project overview and common mistakes
 

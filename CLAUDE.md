@@ -15,13 +15,13 @@ This is an insurance template creator POC for "Quote Not Written" campaigns. It 
 npm install
 
 # Run development server (default: http://localhost:5173)
-npm run dev
+bun run dev
 
 # Build for production (runs TypeScript compiler first, then Vite)
-npm run build
+bun run build
 
 # Preview production build
-npm run preview
+bun run preview
 ```
 
 ## TypeScript Configuration
@@ -104,6 +104,12 @@ The project uses **strict TypeScript** with additional linting rules:
     - DO NOT make changes based on speculation
     - When in doubt, ask before proceeding
     - **Why**: Clarifying questions prevent wasted work and ensure correct implementation.
+11. **Date References**
+  - Do NOT use the training data cutoff date (January 2025)
+    - When updating documentation, use the **actual date from 
+  `<env>` "Today's date"** field
+  - Format: Use ISO format (YYYY-MM-DD) or full format (Month DD,
+   YYYY) as appropriate
 
 ## Architecture
 
@@ -285,7 +291,7 @@ Page → Layout → View → Construct → Component
    - **Naming:** `[Descriptive][Purpose].tsx`
    - **Indicators:** Assembles multiple components, contains business logic
    - **Example:** `InlineTagEditor.tsx`, `TemplateMetadataEditor.tsx`
-   - **Promotion:** See `/docs/decision-roadmaps/cross-app-reuse.md`
+   - **Promotion:** See `/docs/decision-matrix/cross-app-reuse.md`
 
 5. **Component** - Atomic primitive
    - **Location:** `core/ui/primitives/`
@@ -329,8 +335,8 @@ Use these suffixes for instant classification:
 ### Complete Documentation
 
 For full decision tree, examples, and file structure, see:
-- **Primary Reference:** `/docs/decision-roadmaps/component-placement.md`
-- **Construct Promotion Rules:** `/docs/decision-roadmaps/cross-app-reuse.md`
+- **Primary Reference:** `/docs/decision-matrix/component-placement.md`
+- **Construct Promotion Rules:** `/docs/decision-matrix/cross-app-reuse.md`
 
 ## Working with Lexical
 
