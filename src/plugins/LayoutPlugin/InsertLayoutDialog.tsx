@@ -12,8 +12,8 @@ import {LexicalEditor} from 'lexical';
 import * as React from 'react';
 import {useState} from 'react';
 
-import Button from '@/ui/Button';
-import DropDown, {DropDownItem} from '@/ui/DropDown';
+import Button from '@/components/lexical/primitives/LexicalButton';
+import DropDown, {DropDownItem} from '@/components/lexical/overlays/LexicalDropDown';
 import {INSERT_LAYOUT_COMMAND} from './LayoutPlugin';
 
 const LAYOUTS = [

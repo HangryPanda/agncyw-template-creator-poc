@@ -13,7 +13,7 @@ import {useEffect, useMemo, useState} from 'react';
 
 import {INITIAL_SETTINGS, isDevPlayground} from './appSettings';
 import {useSettings} from './context/SettingsContext';
-import Switch from './ui/Switch';
+import Switch from '@/components/lexical/primitives/LexicalSwitch';
 
 export default function Settings(): JSX.Element {
   const windowLocation = window.location;

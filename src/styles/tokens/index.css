@@ -1,0 +1,6 @@
+/* Design Tokens - Template Editor Design System */
+
+/* Import all design token modules */
+@import './colorSystem.css';
+@import './typography.css';
+@import './effects.css';

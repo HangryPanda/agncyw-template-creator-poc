@@ -16,10 +16,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from '@/components/ui/overlays/shadcn/Dialog';
+import { Button } from '@/components/ui/primitives/shadcn/Button';
+import { Input } from '@/components/ui/primitives/shadcn/Input';
+import { Label } from '@/components/ui/primitives/shadcn/Label';
 
 export default function LinkEditingPlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext();

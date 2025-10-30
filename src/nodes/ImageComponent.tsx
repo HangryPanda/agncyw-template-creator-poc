@@ -58,8 +58,8 @@ import KeywordsPlugin from '@/plugins/KeywordsPlugin';
 import LinkPlugin from '@/plugins/LinkPlugin';
 import MentionsPlugin from '@/plugins/MentionsPlugin';
 import TreeViewPlugin from '@/plugins/TreeViewPlugin';
-import ContentEditable from '@/ui/ContentEditable';
-import ImageResizer from '@/ui/ImageResizer';
+import ContentEditable from '@/components/lexical/editors/LexicalContentEditable';
+import ImageResizer from '@/components/lexical/ImageResizer';
 import {$isCaptionEditorEmpty, $isImageNode} from './ImageNode';
 
 type ImageStatus =

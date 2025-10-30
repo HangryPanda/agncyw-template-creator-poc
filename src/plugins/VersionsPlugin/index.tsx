@@ -32,8 +32,8 @@ import {
   XmlElement,
 } from 'yjs';
 
-import Button from '@/ui/Button';
-import Modal from '@/ui/Modal';
+import Button from '@/components/lexical/primitives/LexicalButton';
+import Modal from '@/components/lexical/overlays/LexicalModal';
 
 interface Version {
   name: string;

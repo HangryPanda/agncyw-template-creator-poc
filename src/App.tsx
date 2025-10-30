@@ -1,14 +1,23 @@
-import { useState, useEffect } from 'react';
-import TemplateEditor from './components/TemplateEditor';
-import TemplatePreview from './components/TemplatePreview';
-import ModernTemplateSidebar from './components/ModernTemplateSidebar';
-import TemplateMetadataEditor from './components/TemplateMetadataEditor';
-import CharacterCounter from './components/CharacterCounter';
-import GlobalSearch from './components/GlobalSearch';
-import InlineTagEditor from './components/InlineTagEditor';
-import InlineVariableEditor from './components/InlineVariableEditor';
-import { Toaster } from './components/ui/sonner';
-import { TemplateVariable, EditorState, Template, Tag } from './types';
+import { useState, useEffect, useCallback } from 'react';
+import TemplateEditor from './apps/TemplateEditor/components/TemplateEditor';
+import ModernTemplateSidebar from './apps/TemplateEditor/features/sidebar/components/ModernTemplateSidebar';
+import TemplateMetadataEditor from './apps/TemplateEditor/features/metadata/components/TemplateMetadataEditor';
+import { CharacterCounter } from '@/components/indicators';
+import TemplateGlobalSearch from '@/apps/TemplateEditor/components/TemplateGlobalSearch';
+import InlineTagEditor from './apps/TemplateEditor/features/metadata/components/InlineTagEditor';
+import InlineVariableEditor from './apps/TemplateEditor/features/metadata/components/InlineVariableEditor';
+import { FormWrapper, ResponsiveDrawer } from '@/components/forms';
+import { TemplateVariableListDisplay } from '@/apps/TemplateEditor/components/variables/TemplateVariableListDisplay';
+import { TemplateCanvasTabsControl, useTemplateCanvasTabs } from '@/lib/canvasTabs/integrations/lexical';
+import { useTemplateValues } from '@/hooks/templateValues';
+import { useTemplateRegistry } from '@/hooks/templateRegistry';
+import { Toaster } from '@/components/ui/overlays/shadcn/Sonner';
+import { ResizablePanelGroup, ResizablePanel } from '@/components/ui/constructs/shadcn/Resizable';
+import { TemplateVariable, EditorState, Template, Tag } from '@/apps/_shared/template/types';
+import GitHubEditorPage from './pages/GitHubEditorPage';
+import ThemeToggle from '@/core/ui/primitives/ThemeToggle';
+import { useCheckpointManager } from '@/hooks/useCheckpointManager';
+import { CheckpointDropdown } from '@/components/CheckpointDropdown';
 // Removed App.css - using Tailwind and shadcn styles instead
 
 // Insurance-specific variables for Quote Not Written campaign
@@ -33,205 +42,11 @@ const INSURANCE_VARIABLES: TemplateVariable[] = [
   { name: 'phone_number', label: 'Agency Phone', description: 'Agency contact number', example: '(555) 123-4567', group: 'agency' },
 ];
 
-// Empty template
-const EMPTY_TEMPLATE: EditorState = {
-  root: {
-    children: [
-      {
-        children: [{ text: '', type: 'text' }],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-      },
-    ],
-    direction: 'ltr',
-    format: '',
-    indent: 0,
-    type: 'root',
-    version: 1,
-  },
-};
-
-// Pre-built Email Template
-const EMAIL_TEMPLATE: EditorState = {
-  root: {
-    children: [
-      {
-        children: [
-          { text: 'Hi ', type: 'text' },
-          { type: 'template-variable', variableName: 'first_name', version: 1 },
-          { text: ',', type: 'text' },
-        ],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-      },
-      {
-        children: [
-          { text: '', type: 'text' },
-        ],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-      },
-      {
-        children: [
-          { text: "I hope this email finds you well! I'm reaching out because I noticed we provided you with a ", type: 'text' },
-          { type: 'template-variable', variableName: 'policy_type', version: 1 },
-          { text: ' quote for ', type: 'text' },
-          { type: 'template-variable', variableName: 'quote_amount', version: 1 },
-          { text: ' back on ', type: 'text' },
-          { type: 'template-variable', variableName: 'quote_date', version: 1 },
-          { text: '.', type: 'text' },
-        ],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-      },
-      {
-        children: [
-          { text: '', type: 'text' },
-        ],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-      },
-      {
-        children: [
-          { text: "Insurance rates and coverage options change frequently, and I'd love the opportunity to review your needs again. We may be able to find you even better coverage or savings than before.", type: 'text' },
-        ],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-      },
-      {
-        children: [
-          { text: '', type: 'text' },
-        ],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-      },
-      {
-        children: [
-          { text: 'Would you have 10 minutes this week to discuss your current insurance needs? ', type: 'text' },
-          { text: "I'm available at your convenience.", format: 'bold', type: 'text' },
-        ],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-      },
-      {
-        children: [
-          { text: '', type: 'text' },
-        ],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-      },
-      {
-        children: [
-          { text: 'Best regards,', type: 'text' },
-        ],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-      },
-      {
-        children: [
-          { type: 'template-variable', variableName: 'agent_name', version: 1 },
-        ],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-      },
-      {
-        children: [
-          { type: 'template-variable', variableName: 'agency_name', version: 1 },
-        ],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-      },
-      {
-        children: [
-          { type: 'template-variable', variableName: 'phone_number', version: 1 },
-        ],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-      },
-    ],
-    direction: 'ltr',
-    format: '',
-    indent: 0,
-    type: 'root',
-    version: 1,
-  },
-};
-
-// Pre-built SMS Template
-const SMS_TEMPLATE: EditorState = {
-  root: {
-    children: [
-      {
-        children: [
-          { text: 'Hi ', type: 'text' },
-          { type: 'template-variable', variableName: 'first_name', version: 1 },
-          { text: ', this is ', type: 'text' },
-          { type: 'template-variable', variableName: 'agent_name', version: 1 },
-          { text: ' from ', type: 'text' },
-          { type: 'template-variable', variableName: 'agency_name', version: 1 },
-          { text: '. Your ', type: 'text' },
-          { type: 'template-variable', variableName: 'policy_type', version: 1 },
-          { text: ' quote from ', type: 'text' },
-          { type: 'template-variable', variableName: 'quote_date', version: 1 },
-          { text: ' may have expired. Would you like me to run new numbers for you? Reply YES for a quick review.', type: 'text' },
-        ],
-        direction: 'ltr',
-        format: '',
-        indent: 0,
-        type: 'paragraph',
-        version: 1,
-      },
-    ],
-    direction: 'ltr',
-    format: '',
-    indent: 0,
-    type: 'root',
-    version: 1,
-  },
-};
+// Import EMPTY_TEMPLATE from new location
+import { EMPTY_TEMPLATE } from './apps/TemplateEditor/data/defaultTemplates';
 
 const CUSTOM_VARIABLES_KEY = 'insurance_template_custom_variables';
 const TAGS_KEY = 'insurance_template_tags';
-const TEMPLATES_KEY = 'insurance_templates';
 
 function App() {
   const [mode, setMode] = useState<'create' | 'use'>('create');
@@ -239,6 +54,10 @@ function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [showTagEditor, setShowTagEditor] = useState(false);
   const [showVariableEditor, setShowVariableEditor] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [variableToInsert, setVariableToInsert] = useState<string | null>(null);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   // Load saved data
   const [customVariables, setCustomVariables] = useState<TemplateVariable[]>(() => {
@@ -251,38 +70,39 @@ function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [templates, setTemplates] = useState<Template[]>(() => {
-    const saved = localStorage.getItem(TEMPLATES_KEY);
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    // Initialize with example templates
-    const now = Date.now();
-    const emailTemplate: Template = {
-      id: 'email_template_1',
-      name: 'Follow-up Email',
-      type: 'email',
-      content: EMAIL_TEMPLATE,
-      tags: [],
-      createdAt: now,
-      updatedAt: now,
-      isStarred: true,
-    };
-    const smsTemplate: Template = {
-      id: 'sms_template_1',
-      name: 'Quick SMS Check-in',
-      type: 'sms',
-      content: SMS_TEMPLATE,
-      tags: [],
-      createdAt: now + 1,
-      updatedAt: now + 1,
-    };
-    return [emailTemplate, smsTemplate];
-  });
+  // Use the Template Registry hook instead of direct localStorage
+  const {
+    templates,
+    isInitialized,
+    createTemplate,
+    updateTemplate,
+    deleteTemplate,
+  } = useTemplateRegistry();
 
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(() => {
-    return templates.length > 0 ? templates[0].id : null;
-  });
+  // Use tab manager for multi-tab editing
+  const {
+    tabs: openTabs,
+    activeTabId,
+    openTab,
+    closeTab,
+    setActiveTab,
+    reorderTabs,
+    closeOtherTabs,
+    closeTabsToRight,
+    closeAllTabs,
+    dirtyTabs,
+    markTabDirty,
+  } = useTemplateCanvasTabs();
+
+  // View state: 'overview' or 'github-editor'
+  const [currentView, setCurrentView] = useState<'overview' | 'github-editor'>('overview');
+
+  // Open first template once templates are loaded (if no tabs are open)
+  useEffect(() => {
+    if (isInitialized && templates.length > 0 && openTabs.length === 0) {
+      openTab(templates[0].id);
+    }
+  }, [isInitialized, templates, openTabs.length, openTab]);
 
   // Save to localStorage
   useEffect(() => {
@@ -293,15 +113,47 @@ function App() {
     localStorage.setItem(TAGS_KEY, JSON.stringify(tags));
   }, [tags]);
 
-  useEffect(() => {
-    localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
-  }, [templates]);
+  // Get active template (from active tab)
+  const selectedTemplate = templates.find((t) => t.id === activeTabId) ?? null;
 
-  // Get selected template
-  const selectedTemplate = templates.find((t) => t.id === selectedTemplateId) ?? null;
+  // Initialize checkpoint manager for the active template
+  const checkpointManager = useCheckpointManager({
+    template: selectedTemplate ?? undefined,
+    onTemplateUpdate: updateTemplate,
+    onRestore: (restoredTemplate) => {
+      // The editor will automatically refresh when the template updates
+      // Mark tab as clean since we're restoring to a saved checkpoint
+      if (activeTabId) {
+        markTabDirty(activeTabId, false);
+      }
+    },
+    maxCheckpoints: 50,
+  });
 
   // Combine built-in and custom variables
   const allVariables = [...INSURANCE_VARIABLES, ...customVariables];
+
+  // Template values hook for Compose mode
+  const templateValues = useTemplateValues(
+    activeTabId || 'default',
+    allVariables
+  );
+
+  // Handle variable insertion from FormWrapper
+  const handleInsertVariable = useCallback((variableName: string): void => {
+    setVariableToInsert(variableName);
+  }, []);
+
+  const handleVariableInserted = useCallback((): void => {
+    setVariableToInsert(null);
+  }, []);
+
+  // Handle dirty state changes from editor
+  const handleDirtyChange = useCallback((isDirty: boolean) => {
+    if (activeTabId) {
+      markTabDirty(activeTabId, isDirty);
+    }
+  }, [activeTabId, markTabDirty]);
 
   // Variable handlers
   const handleAddVariable = (variable: TemplateVariable): void => {
@@ -331,88 +183,93 @@ function App() {
   const handleDeleteTag = (tagId: string): void => {
     setTags(tags.filter((tag) => tag.id !== tagId));
     // Remove tag from all templates
-    setTemplates(
-      templates.map((template) => ({
-        ...template,
-        tags: template.tags.filter((id) => id !== tagId),
-      }))
-    );
+    templates.forEach((template) => {
+      const updatedTags = template.tags.filter((id) => id !== tagId);
+      if (updatedTags.length !== template.tags.length) {
+        updateTemplate({
+          ...template,
+          tags: updatedTags,
+        });
+      }
+    });
   };
 
   // Template handlers
   const handleNewTemplate = (): void => {
+    const now = Date.now();
     const newTemplate: Template = {
-      id: `template_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `template_${now}_${Math.random().toString(36).substring(2, 11)}`,
       name: 'Untitled Template',
       type: 'email',
       content: EMPTY_TEMPLATE,
       tags: [],
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: now,
+      updatedAt: now,
+      templateType: 'user',
+      version: 1,
+      schemaVersion: 1,
     };
-    setTemplates([...templates, newTemplate]);
-    setSelectedTemplateId(newTemplate.id);
+    createTemplate(newTemplate);
+    openTab(newTemplate.id); // Open in new tab
     setMode('create');
     setView('editor');
   };
 
   const handleDeleteTemplate = (templateId: string): void => {
-    const updated = templates.filter((t) => t.id !== templateId);
-    setTemplates(updated);
-    // Select another template if we deleted the current one
-    if (selectedTemplateId === templateId) {
-      setSelectedTemplateId(updated.length > 0 ? updated[0].id : null);
-    }
+    deleteTemplate(templateId);
+    closeTab(templateId); // Close the tab if it's open
   };
 
   const handleSelectTemplate = (templateId: string): void => {
-    setSelectedTemplateId(templateId);
+    openTab(templateId); // Open or switch to tab
     setMode('create');
     setView('editor');
   };
 
   const handleUpdateTemplateName = (name: string): void => {
     if (!selectedTemplate) return;
-    setTemplates(
-      templates.map((t) =>
-        t.id === selectedTemplate.id ? { ...t, name, updatedAt: Date.now() } : t
-      )
-    );
+    updateTemplate({
+      ...selectedTemplate,
+      name,
+    });
   };
 
   const handleUpdateTemplateType = (type: 'email' | 'sms'): void => {
     if (!selectedTemplate) return;
-    setTemplates(
-      templates.map((t) =>
-        t.id === selectedTemplate.id ? { ...t, type, updatedAt: Date.now() } : t
-      )
-    );
+    updateTemplate({
+      ...selectedTemplate,
+      type,
+    });
   };
 
   const handleUpdateTemplateTags = (tagIds: string[]): void => {
     if (!selectedTemplate) return;
-    setTemplates(
-      templates.map((t) =>
-        t.id === selectedTemplate.id ? { ...t, tags: tagIds, updatedAt: Date.now() } : t
-      )
-    );
+    updateTemplate({
+      ...selectedTemplate,
+      tags: tagIds,
+    });
   };
 
   const handleUpdateTemplateContent = (content: EditorState): void => {
     if (!selectedTemplate) return;
-    setTemplates(
-      templates.map((t) =>
-        t.id === selectedTemplate.id ? { ...t, content, updatedAt: Date.now() } : t
-      )
-    );
+    updateTemplate({
+      ...selectedTemplate,
+      content,
+    });
   };
 
-  const handleToggleStar = (templateId: string): void => {
-    setTemplates(
-      templates.map((t) =>
-        t.id === templateId ? { ...t, isStarred: !t.isStarred } : t
-      )
-    );
+  const handleToggleFavorite = (templateId: string): void => {
+    const template = templates.find((t) => t.id === templateId);
+    if (template) {
+      updateTemplate({
+        ...template,
+        isFavorite: !template.isFavorite,
+      });
+    }
+  };
+
+  const handleTemplateChange = (updatedTemplate: Template): void => {
+    updateTemplate(updatedTemplate);
   };
 
   // Reserved for future "Use Template" functionality
@@ -434,55 +291,211 @@ function App() {
   //   setView('editor');
   // };
 
+  // Window resize handler for responsive sidebar
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Auto-close sidebar on mobile when selecting template
+  const handleSidebarTemplateSelect = useCallback((templateId: string) => {
+    handleSelectTemplate(templateId);
+    if (windowWidth < 1024) {
+      setIsSidebarOpen(false);
+    }
+  }, [windowWidth]);
+
+  const handleSidebarNewTemplate = useCallback(() => {
+    handleNewTemplate();
+    if (windowWidth < 1024) {
+      setIsSidebarOpen(false);
+    }
+  }, [windowWidth]);
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const isMod = e.metaKey || e.ctrlKey;
+
       // Cmd/Ctrl + K for search
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if (isMod && e.key === 'k') {
         e.preventDefault();
         setIsSearchOpen(true);
       }
       // Cmd/Ctrl + N for new template
-      if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
+      if (isMod && e.key === 'n') {
         e.preventDefault();
         handleNewTemplate();
+      }
+      // Cmd/Ctrl + B for toggle sidebar
+      if (isMod && e.key === 'b') {
+        e.preventDefault();
+        setIsSidebarOpen(!isSidebarOpen);
+      }
+
+      // Tab navigation shortcuts
+      // Cmd/Ctrl + W to close active tab
+      if (isMod && e.key === 'w') {
+        e.preventDefault();
+        if (activeTabId) {
+          closeTab(activeTabId);
+        }
+      }
+
+      // Cmd/Ctrl + Tab to switch to next tab
+      if (isMod && e.key === 'Tab' && !e.shiftKey) {
+        e.preventDefault();
+        if (openTabs.length > 0 && activeTabId) {
+          const currentIndex = openTabs.indexOf(activeTabId);
+          const nextIndex = (currentIndex + 1) % openTabs.length;
+          setActiveTab(openTabs[nextIndex]);
+        }
+      }
+
+      // Cmd/Ctrl + Shift + Tab to switch to previous tab
+      if (isMod && e.shiftKey && e.key === 'Tab') {
+        e.preventDefault();
+        if (openTabs.length > 0 && activeTabId) {
+          const currentIndex = openTabs.indexOf(activeTabId);
+          const prevIndex = (currentIndex - 1 + openTabs.length) % openTabs.length;
+          setActiveTab(openTabs[prevIndex]);
+        }
+      }
+
+      // Escape to close sidebar
+      if (e.key === 'Escape' && isSidebarOpen) {
+        setIsSidebarOpen(false);
+      }
+
+      // Cmd/Ctrl + Shift + R to discard changes
+      if (isMod && e.shiftKey && e.key === 'r') {
+        e.preventDefault();
+        if (activeTabId && dirtyTabs.has(activeTabId)) {
+          if (window.confirm('Discard all unsaved changes? This cannot be undone.')) {
+            // Restore to most recent checkpoint or original state
+            if (checkpointManager.hasAnyCheckpoints) {
+              checkpointManager.restoreCheckpoint(checkpointManager.checkpoints[0].id);
+            } else if (selectedTemplate) {
+              // Reset to current saved state by triggering a re-render
+              updateTemplate({ ...selectedTemplate });
+              markTabDirty(activeTabId, false);
+            }
+          }
+        }
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [
+    isSidebarOpen,
+    openTabs,
+    activeTabId,
+    closeTab,
+    setActiveTab,
+    dirtyTabs,
+    checkpointManager,
+    selectedTemplate,
+    updateTemplate,
+    markTabDirty,
+  ]);
 
+  // If GitHub editor view is active, render that page
+  if (currentView === 'github-editor') {
+    return (
+      <>
+        <GitHubEditorPage
+          templates={templates}
+          tags={tags}
+          selectedTemplateId={activeTabId}
+          onSelectTemplate={handleSelectTemplate}
+          onNewTemplate={handleNewTemplate}
+          onDeleteTemplate={handleDeleteTemplate}
+          onToggleFavorite={handleToggleFavorite}
+          onManageTags={() => setShowTagEditor(true)}
+          allVariables={allVariables}
+          onTemplateChange={handleTemplateChange}
+          onBackToOverview={() => setCurrentView('overview')}
+        />
+
+        {/* Modals (shared between views) */}
+        {showTagEditor && (
+          <InlineTagEditor
+            isOpen={showTagEditor}
+            tags={tags}
+            selectedTags={selectedTemplate?.tags || []}
+            onTagsChange={handleUpdateTemplateTags}
+            onClose={() => setShowTagEditor(false)}
+            onAddTag={handleAddTag}
+            onEditTag={handleEditTag}
+            onDeleteTag={handleDeleteTag}
+          />
+        )}
+        {showVariableEditor && (
+          <InlineVariableEditor
+            isOpen={showVariableEditor}
+            customVariables={customVariables}
+            onClose={() => setShowVariableEditor(false)}
+            onAddVariable={handleAddVariable}
+            onEditVariable={handleEditVariable}
+            onDeleteVariable={handleDeleteVariable}
+          />
+        )}
+        <Toaster />
+      </>
+    );
+  }
+
+  // Default: Overview page (current page)
   return (
-    <div className="flex h-screen bg-white font-sans">
-      {/* Sidebar */}
-      <ModernTemplateSidebar
-        templates={templates}
-        tags={tags}
-        selectedTemplateId={selectedTemplateId}
-        onSelectTemplate={handleSelectTemplate}
-        onNewTemplate={handleNewTemplate}
-        onDeleteTemplate={handleDeleteTemplate}
-        onToggleStar={handleToggleStar}
-        onManageTags={() => setShowTagEditor(true)}
-      />
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Compact Header */}
-        <header className="bg-white border-b border-gray-200 px-6 py-3">
+    <>
+      <div className="h-screen bg-background font-sans flex flex-col">
+        {/* Header - Full viewport width, not constrained */}
+        <header className="bg-muted/30 border-b border-border px-6 py-3 flex-shrink-0 relative z-30">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <h1 className="text-lg font-semibold text-gray-900">Messages</h1>
-              <span className="text-sm text-gray-500">Quote Not Written Campaign</span>
+              {/* Theme Toggle - MOVED TO LEFT */}
+              <ThemeToggle />
+
+              {/* Sidebar Toggle Button */}
+              <button
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className="p-2 hover:bg-muted rounded-md transition-colors"
+                title={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+                aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+              >
+                <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+              <h1 className="text-lg font-semibold text-foreground">Messages</h1>
+              <span className="hidden sm:inline text-sm text-muted-foreground">Quote Not Written Campaign</span>
             </div>
 
             <div className="flex items-center gap-2">
+              {/* GitHub Editor Button */}
+              <button
+                onClick={() => setCurrentView('github-editor')}
+                className="px-3 py-1.5 text-sm font-medium text-brand-blue bg-brand-blue/10 border border-brand-blue/30 rounded-md hover:bg-brand-blue/20 transition-all"
+                title="Open GitHub-style editor"
+              >
+                <span className="flex items-center gap-2">
+                  <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M11.013 1.427a1.75 1.75 0 0 1 2.474 0l1.086 1.086a1.75 1.75 0 0 1 0 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 0 1-.927-.928l.929-3.25c.081-.286.235-.547.445-.758l8.61-8.61Zm.176 4.823L9.75 4.81l-6.286 6.287a.253.253 0 0 0-.064.108l-.558 1.953 1.953-.558a.253.253 0 0 0 .108-.064Zm1.238-3.763a.25.25 0 0 0-.354 0L10.811 3.75l1.439 1.44 1.263-1.263a.25.25 0 0 0 0-.354Z" />
+                  </svg>
+                  Editor View
+                </span>
+              </button>
+
               {/* Global Search */}
-              <GlobalSearch
+              <TemplateGlobalSearch
                 templates={templates}
                 onSelectTemplate={(id) => {
-                  setSelectedTemplateId(id);
+                  openTab(id);
                   setIsSearchOpen(false);
                 }}
                 onClose={() => setIsSearchOpen(false)}
@@ -491,13 +504,13 @@ function App() {
               />
 
               {/* Mode Toggle */}
-              <div className="flex bg-gray-100 rounded-md p-0.5">
+              <div className="flex bg-muted rounded-md p-0.5">
                 <button
                   onClick={() => setMode('create')}
                   className={`px-3 py-1.5 text-sm font-medium rounded transition-all ${
                     mode === 'create'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   Editor
@@ -506,8 +519,8 @@ function App() {
                   onClick={() => setMode('use')}
                   className={`px-3 py-1.5 text-sm font-medium rounded transition-all ${
                     mode === 'use'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   Compose
@@ -517,95 +530,451 @@ function App() {
           </div>
         </header>
 
-        {/* Content Area */}
-        {selectedTemplate ? (
-          <div className="flex-1 flex overflow-hidden">
-            {/* Editor/Preview */}
-            <div className="flex-1 flex flex-col bg-white">
-              {mode === 'create' ? (
-                <>
-                  {/* Editor Header */}
-                  <div className="bg-gray-50 border-b border-gray-200 px-6 py-3">
-                    <div className="flex items-center justify-between">
-                      <TemplateMetadataEditor
-                        template={selectedTemplate}
-                        tags={tags}
-                        onUpdateName={handleUpdateTemplateName}
-                        onUpdateType={handleUpdateTemplateType}
-                        onUpdateTags={handleUpdateTemplateTags}
-                        onManageTags={() => setShowTagEditor(true)}
-                      />
+        {/* Main Content Area - Full width */}
+        <div className="flex-1 overflow-hidden flex relative">
+          {/* Overlay Sidebar - Slides in from left */}
+          <div
+            className={`
+              fixed top-0 left-0 h-full bg-background border-r border-border
+              transition-transform duration-300 ease-in-out
+              z-40 w-[280px] md:w-[320px]
+              ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+              shadow-2xl
+            `}
+          >
+            <ModernTemplateSidebar
+              templates={templates}
+              tags={tags}
+              selectedTemplateId={activeTabId}
+              onSelectTemplate={handleSidebarTemplateSelect}
+              onNewTemplate={handleSidebarNewTemplate}
+              onDeleteTemplate={handleDeleteTemplate}
+              onToggleFavorite={handleToggleFavorite}
+              onManageTags={() => {
+                setShowTagEditor(true);
+                if (windowWidth < 1024) {
+                  setIsSidebarOpen(false);
+                }
+              }}
+              openTabIds={openTabs}
+              onClose={() => setIsSidebarOpen(false)}
+            />
+          </div>
 
-                      <button
-                        onClick={() => setShowVariableEditor(true)}
-                        className="flex items-center gap-2 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-                        </svg>
-                        Placeholders
-                      </button>
-                    </div>
-                  </div>
+          {/* Backdrop - Only visible when sidebar is open */}
+          {isSidebarOpen && (
+            <div
+              className="fixed inset-0 bg-black/50 transition-opacity duration-300 z-30"
+              style={{ top: '60px' }} // Account for header height
+              onClick={() => setIsSidebarOpen(false)}
+              aria-hidden="true"
+            />
+          )}
 
-                  {/* Editor */}
-                  <div className="flex-1 overflow-y-auto p-6">
-                    <div className="max-w-4xl mx-auto">
-                      <TemplateEditor
-                        key={selectedTemplate.id}
-                        templateId={selectedTemplate.id}
-                        initialState={selectedTemplate.content}
-                        availableVariables={allVariables}
-                        onStateChange={handleUpdateTemplateContent}
-                        onManageVariables={() => setShowVariableEditor(true)}
-                      />
+          {/* Main Content - Full width, no resizable panel for sidebar */}
+          <div className="flex-1 flex justify-center bg-background overflow-hidden">
+            <div className="w-full max-w-[2400px]">
+              <ResizablePanelGroup direction="horizontal" className="h-full">
+                {/* Main Content */}
+                <ResizablePanel defaultSize={100} minSize={45}>
+                  <div className="h-full flex flex-col overflow-hidden">
+                    {/* Content Area */}
+                    {selectedTemplate ? (
+                      <>
+                        {/* Editor Header */}
+                        <div className="bg-background border-b border-border px-6 py-3 flex-shrink-0">
+                          <div className="flex items-center justify-between">
+                            <TemplateMetadataEditor
+                              template={selectedTemplate}
+                              tags={tags}
+                              onUpdateName={handleUpdateTemplateName}
+                              onUpdateType={handleUpdateTemplateType}
+                              onUpdateTags={handleUpdateTemplateTags}
+                              onManageTags={() => setShowTagEditor(true)}
+                            />
 
-                      {/* Character Counter for SMS */}
-                      {selectedTemplate.type === 'sms' && (
-                        <div className="mt-4">
-                          <CharacterCounter
-                            editorState={selectedTemplate.content}
-                            type={selectedTemplate.type}
-                          />
+                            {/* Mobile Placeholders Button */}
+                            <button
+                              onClick={() => setIsDrawerOpen(true)}
+                              className="flex md:hidden items-center gap-2 px-3 py-1.5 text-sm bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                              </svg>
+                              {mode === 'create' ? 'Variables' : 'Fill Details'}
+                            </button>
+                          </div>
                         </div>
-                      )}
-                    </div>
+
+                        {/* Tab Bar */}
+                        {openTabs.length > 0 && (
+                          <TemplateCanvasTabsControl
+                            tabs={openTabs}
+                            activeTabId={activeTabId}
+                            templates={templates}
+                            modifiedTabs={dirtyTabs}
+                            onTabClick={setActiveTab}
+                            onTabClose={closeTab}
+                            onTabReorder={reorderTabs}
+                            onCloseOtherTabs={closeOtherTabs}
+                            onCloseTabsToRight={closeTabsToRight}
+                            onCloseAllTabs={closeAllTabs}
+                          />
+                        )}
+
+                        {/* Unified Split-Column Layout */}
+                        <div className="flex-1 flex overflow-hidden">
+                          {/* Left + Center Panels Wrapper */}
+                          <div className="flex-1 flex flex-col overflow-hidden">
+                            {/* GitHub-style Toolbar */}
+                            <div className="border-b border-border bg-background px-4 py-2 flex-shrink-0">
+                              <div className="flex items-center gap-2">
+                                {/* Checkpoint Version Control */}
+                                <CheckpointDropdown
+                                  checkpoints={checkpointManager.checkpoints}
+                                  onCreateCheckpoint={(label) => checkpointManager.createNewCheckpoint('manual', label)}
+                                  onRestoreCheckpoint={checkpointManager.restoreCheckpoint}
+                                  onDeleteCheckpoint={checkpointManager.removeCheckpoint}
+                                  disabled={!selectedTemplate}
+                                />
+
+                                {/* Discard Changes Button */}
+                                {activeTabId && dirtyTabs.has(activeTabId) && (
+                                  <button
+                                    onClick={() => {
+                                      if (window.confirm('Discard all unsaved changes? This cannot be undone.')) {
+                                        // Restore to most recent checkpoint or original state
+                                        if (checkpointManager.hasAnyCheckpoints) {
+                                          checkpointManager.restoreCheckpoint(checkpointManager.checkpoints[0].id);
+                                        } else if (selectedTemplate && activeTabId) {
+                                          // Reset to current saved state by triggering a re-render
+                                          updateTemplate({ ...selectedTemplate });
+                                          markTabDirty(activeTabId, false);
+                                        }
+                                      }
+                                    }}
+                                    style={{
+                                      padding: 'var(--spacing-sm) var(--spacing-md)',
+                                      fontSize: 'var(--fontSize-sm)',
+                                      fontWeight: 'var(--fontWeight-medium)',
+                                      backgroundColor: 'var(--bg-secondary)',
+                                      border: '1px solid var(--border-primary)',
+                                      borderRadius: '4px',
+                                      cursor: 'pointer',
+                                      color: 'var(--semantic-error)',
+                                    }}
+                                    title="Discard unsaved changes (Cmd/Ctrl+Shift+R)"
+                                  >
+                                    Discard Changes
+                                  </button>
+                                )}
+
+                                {/* Versions Badge Button (like "6 Branches") */}
+                                <button
+                                  onClick={() => {
+                                    // TODO: Navigate to versions page
+                                    console.log('Navigate to versions page');
+                                  }}
+                                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary hover:underline transition-colors"
+                                  title="View all versions"
+                                >
+                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+                                    <path fillRule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"></path>
+                                  </svg>
+                                  <span>Versions</span>
+                                </button>
+
+                                {/* Mode Toggle (Editor/Compose) - like "Go to file" */}
+                                <div className="flex items-center gap-1 px-1 py-1 bg-muted/50 border border-border rounded-md">
+                                  <button
+                                    onClick={() => setMode('create')}
+                                    className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
+                                      mode === 'create'
+                                        ? 'bg-[#1f6feb] text-white'
+                                        : 'text-muted-foreground hover:bg-muted/80'
+                                    }`}
+                                  >
+                                    Editor
+                                  </button>
+                                  <button
+                                    onClick={() => setMode('use')}
+                                    className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
+                                      mode === 'use'
+                                        ? 'bg-[#1f6feb] text-white'
+                                        : 'text-muted-foreground hover:bg-muted/80'
+                                    }`}
+                                  >
+                                    Compose
+                                  </button>
+                                </div>
+
+                                <div className="flex-1"></div>
+
+                                {/* Add Placeholder Button (like + button) */}
+                                <button
+                                  onClick={() => setShowVariableEditor(false)}
+                                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-muted-foreground bg-muted/50 border border-border rounded-md hover:bg-muted hover:border-muted-foreground transition-colors"
+                                  title="Add variable"
+                                >
+                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z"></path>
+                                  </svg>
+                                </button>
+
+                                {/* Copy to Clipboard Button (like Code button) */}
+                                <button
+                                  onClick={() => {
+                                    // TODO: Implement copy functionality
+                                    console.log('Copy template');
+                                  }}
+                                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white bg-[#238636] border border-[#2ea043] rounded-md hover:bg-[#2ea043] transition-colors"
+                                  title="Copy to clipboard"
+                                >
+                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path>
+                                    <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+                                  </svg>
+                                  <span>Copy</span>
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Left + Center Content Row */}
+                            <div className="left-canvas-aside flex-1 flex overflow-hidden">
+                              {/* Desktop: Left Panel - FormWrapper - REMOVED VARIABLE LIST FROM HERE */}
+                              {mode === 'use' && (
+                                <div className="hidden md:block w-[320px] overflow-hidden bg-background">
+                                  <FormWrapper
+                                    mode={mode}
+                                    template={selectedTemplate}
+                                    availableVariables={allVariables}
+                                    onInsertVariable={handleInsertVariable}
+                                    onCopyMessage={() => {
+                                      // TODO: Implement copy message functionality
+                                    }}
+                                  />
+                                </div>
+                              )}
+
+                              {/* Center Panel - Editor - LIGHTER to be focal point */}
+                              <div className="canvas-workspace flex-1 overflow-y-auto p-6
+                               bg-muted/50">
+                                <div className="lexEditor-container max-w-4xl mx-auto">
+                                  <TemplateEditor
+                                    key={selectedTemplate.id}
+                                    templateId={selectedTemplate.id}
+                                    initialState={selectedTemplate.content}
+                                    availableVariables={allVariables}
+                                    onStateChange={handleUpdateTemplateContent}
+                                    onManageVariables={() => setShowVariableEditor(true)}
+                                    mode={mode}
+                                    values={templateValues.values}
+                                    setValue={templateValues.updateValue}
+                                    variableToInsert={variableToInsert}
+                                    onVariableInserted={handleVariableInserted}
+                                    onDirtyChange={handleDirtyChange}
+                                  />
+
+                                  {/* Character Counter for SMS */}
+                                  {selectedTemplate.type === 'sms' && (
+                                    <div className="mt-4">
+                                      <CharacterCounter
+                                        editorState={selectedTemplate.content}
+                                        type={selectedTemplate.type}
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Right Panel - Template Details + Variable List - DARKEST background */}
+                          <div className="right-canvas-aside hidden lg:block w-[356px] bg-background overflow-y-auto">
+                            <div className="right-content-wrapper p-4 space-y-4">
+                              {/* About Section */}
+                              <div>
+                                <h3 className="content-title text-sm font-semibold text-foreground mb-3">About</h3>
+                                <div className="about-content-wrapper space-y-2">
+                                  {/* Type Badge */}
+                                  <div className="about-item-container flex items-center gap-2">
+                                    <span className={`message-type-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                      selectedTemplate.type === 'email'
+                                        ? 'bg-primary/20 text-primary'
+                                        : 'bg-accent/30 text-accent-foreground'
+                                    }`}>
+                                      {selectedTemplate.type === 'email' ? '✉️ Email' : '💬 SMS'}
+                                    </span>
+                                  </div>
+
+                                  {/* Template Stats */}
+                                  <div className="about-item-2 space-y-2 text-sm">
+                                    <div className="flex items-center gap-2 text-foreground/80">
+                                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                      </svg>
+                                      <span className="favorite-badge font-medium">{selectedTemplate.isFavorite ? 'Favorite' : 'Not Favorite'}</span>
+                                    </div>
+
+                                    {selectedTemplate.useCount !== undefined && selectedTemplate.useCount > 0 && (
+                                      <div className="flex items-center gap-2 text-foreground/80">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span>Used {selectedTemplate.useCount} {selectedTemplate.useCount === 1 ? 'time' : 'times'}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Tags Section */}
+                              <div>
+                                <div className="flex items-center justify-between mb-2">
+                                  <h3 className="text-sm font-semibold text-foreground">Tags</h3>
+                                  <button
+                                    onClick={() => setShowTagEditor(true)}
+                                    className="p-1 text-muted-foreground hover:text-foreground/80 hover:bg-muted rounded transition-colors"
+                                    title="Manage tags"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                    </svg>
+                                  </button>
+                                </div>
+                                {selectedTemplate.tags.length > 0 ? (
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {selectedTemplate.tags.map((tagId) => {
+                                      const tag = tags.find((t) => t.id === tagId);
+                                      return tag ? (
+                                        <span
+                                          key={tag.id}
+                                          className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
+                                          style={{
+                                            backgroundColor: `${tag.color}20`,
+                                            color: tag.color,
+                                          }}
+                                        >
+                                          {tag.name}
+                                        </span>
+                                      ) : null;
+                                    })}
+                                  </div>
+                                ) : (
+                                  <p className="text-xs text-muted-foreground italic">No tags assigned</p>
+                                )}
+                              </div>
+
+                              {/* Metadata Section */}
+                              <div className="metadata-section pt-3 border-t border-border">
+                                <h3 className="metadata-title text-sm font-semibold text-foreground mb-3">Details</h3>
+                                <div className="space-y-2 text-xs text-muted-foreground">
+                                  <div className="flex justify-between">
+                                    <span>Created</span>
+                                    <span className="text-foreground font-medium">
+                                      {new Date(selectedTemplate.createdAt).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>Updated</span>
+                                    <span className="text-foreground font-medium">
+                                      {new Date(selectedTemplate.updatedAt).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                  {selectedTemplate.lastUsedAt && (
+                                    <div className="flex justify-between">
+                                      <span>Last used</span>
+                                      <span className="text-foreground font-medium">
+                                        {new Date(selectedTemplate.lastUsedAt).toLocaleDateString()}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Variable Count */}
+                              <div className="pt-3 border-t border-border">
+                                <div className="flex items-center justify-between text-sm mb-3">
+                                  <span className="text-foreground/80">Variables</span>
+                                  <span className="font-semibold text-foreground">
+                                    {(() => {
+                                      const countVariables = (node: unknown): number => {
+                                        if (!node || typeof node !== 'object') return 0;
+                                        const obj = node as Record<string, unknown>;
+
+                                        let count = 0;
+                                        if (obj.type === 'template-variable') count = 1;
+
+                                        if (Array.isArray(obj.children)) {
+                                          count += obj.children.reduce((sum, child) => sum + countVariables(child), 0);
+                                        }
+
+                                        return count;
+                                      };
+
+                                      return countVariables(selectedTemplate.content.root);
+                                    })()}
+                                  </span>
+                                </div>
+
+                                {/* Variable List Display */}
+                                <div className="max-h-[400px] overflow-y-auto">
+                                  <TemplateVariableListDisplay
+                                    variables={allVariables}
+                                    mode={mode}
+                                    values={templateValues.values}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Mobile: Bottom Drawer for FormWrapper */}
+                        <ResponsiveDrawer
+                          isOpen={isDrawerOpen}
+                          onClose={() => setIsDrawerOpen(false)}
+                        >
+                          <FormWrapper
+                            mode={mode}
+                            template={selectedTemplate}
+                            availableVariables={allVariables}
+                            onInsertVariable={handleInsertVariable}
+                            onCopyMessage={() => {
+                              // TODO: Implement copy message functionality
+                            }}
+                          />
+                        </ResponsiveDrawer>
+                      </>
+                    ) : (
+                      /* Empty State */
+                      <div className="flex-1 flex items-center justify-center bg-muted/30">
+                        <div className="text-center max-w-md">
+                          <svg className="w-16 h-16 mx-auto text-muted-foreground/60 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <h2 className="text-xl font-semibold text-foreground mb-2">No template selected</h2>
+                          <p className="text-muted-foreground mb-6">
+                            Create a new template or select one from the sidebar to get started
+                          </p>
+                          <button
+                            onClick={handleNewTemplate}
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            Create New Template
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </>
-              ) : (
-                <>
-                  {/* Compose Mode */}
-                  <TemplatePreview
-                    template={selectedTemplate}
-                    availableVariables={allVariables}
-                  />
-                </>
-              )}
+                </ResizablePanel>
+              </ResizablePanelGroup>
             </div>
           </div>
-        ) : (
-          /* Empty State */
-          <div className="flex-1 flex items-center justify-center bg-gray-50">
-            <div className="text-center max-w-md">
-              <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">No template selected</h2>
-              <p className="text-gray-600 mb-6">
-                Create a new template or select one from the sidebar to get started
-              </p>
-              <button
-                onClick={handleNewTemplate}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Create New Template
-              </button>
-            </div>
-          </div>
-        )}
+        </div>
       </div>
 
       {/* Inline Tag Editor */}
@@ -632,7 +1001,7 @@ function App() {
 
       {/* Toast Notifications */}
       <Toaster />
-    </div>
+    </>
   );
 }
 

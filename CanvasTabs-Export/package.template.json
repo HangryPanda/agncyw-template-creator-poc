@@ -1,0 +1,46 @@
+{
+  "name": "your-app-name",
+  "version": "1.0.0",
+  "description": "Your app with CanvasTabs integration",
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "lucide-react": "^0.263.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "typescript": "^4.7.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "vite": "^4.0.0"
+  },
+  "peerDependencies": {
+    "lexical": "^0.12.0",
+    "@lexical/react": "^0.12.0"
+  },
+  "peerDependenciesMeta": {
+    "lexical": {
+      "optional": true
+    },
+    "@lexical/react": {
+      "optional": true
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "_comments": {
+    "lucide-react": "Required for tab icons (X button, email/SMS icons)",
+    "lexical": "Only required if using Lexical integration",
+    "@lexical/react": "Only required if using Lexical integration",
+    "tailwindcss": "Recommended but not required - tabs use Tailwind classes",
+    "typescript": "Required for type safety - this is a TypeScript-first system"
+  },
+  "_installation": {
+    "core_only": "npm install lucide-react",
+    "with_lexical": "npm install lucide-react lexical @lexical/react",
+    "with_tailwind": "npm install tailwindcss @tailwindcss/vite"
+  }
+}

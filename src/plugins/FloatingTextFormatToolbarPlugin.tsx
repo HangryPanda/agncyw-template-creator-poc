@@ -7,13 +7,16 @@
  */
 
 import type {JSX} from 'react';
+import { Bold, Italic, Underline, Strikethrough, Code, Link, Subscript, Superscript, CaseSensitive, MessageSquare, Heading1, Heading2, Heading3, Type, Quote } from 'lucide-react';
 
 import './FloatingTextFormatToolbarPlugin.css';
 
 import {$isCodeHighlightNode} from '@lexical/code';
 import {$isLinkNode, TOGGLE_LINK_COMMAND} from '@lexical/link';
 import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {mergeRegister} from '@lexical/utils';
+import {mergeRegister, $getNearestNodeOfType} from '@lexical/utils';
+import {$createHeadingNode, $isHeadingNode, $createQuoteNode, $isQuoteNode, HeadingTagType} from '@lexical/rich-text';
+import {$setBlocksType} from '@lexical/selection';
 import {
   $getSelection,
   $isParagraphNode,
@@ -24,6 +27,7 @@ import {
   getDOMSelection,
   LexicalEditor,
   SELECTION_CHANGE_COMMAND,
+  $createParagraphNode,
 } from 'lexical';
 import {Dispatch, useCallback, useEffect, useRef, useState} from 'react';
 import * as React from 'react';
@@ -33,6 +37,8 @@ import {getDOMRangeRect} from '@/utils/getDOMRangeRect';
 import {getSelectedNode} from '@/utils/getSelectedNode';
 import {setFloatingElemPosition} from '@/utils/setFloatingElemPosition';
 import {INSERT_INLINE_COMMAND} from '@/plugins/CommentPlugin';
+
+type BlockType = 'paragraph' | 'h1' | 'h2' | 'h3' | 'quote' | 'subtext';
 
 function TextFormatFloatingToolbar({
   editor,
@@ -48,6 +54,7 @@ function TextFormatFloatingToolbar({
   isStrikethrough,
   isSubscript,
   isSuperscript,
+  blockType,
   setIsLinkEditMode,
 }: {
   editor: LexicalEditor;
@@ -63,6 +70,7 @@ function TextFormatFloatingToolbar({
   isSubscript: boolean;
   isSuperscript: boolean;
   isUnderline: boolean;
+  blockType: BlockType;
   setIsLinkEditMode: Dispatch<boolean>;
 }): JSX.Element {
   const popupCharStylesEditorRef = useRef<HTMLDivElement | null>(null);
@@ -79,6 +87,39 @@ function TextFormatFloatingToolbar({
 
   const insertComment = () => {
     editor.dispatchCommand(INSERT_INLINE_COMMAND, undefined);
+  };
+
+  const formatHeading = (headingSize: HeadingTagType) => {
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        $setBlocksType(selection, () => $createHeadingNode(headingSize));
+      }
+    });
+  };
+
+  const formatSubtext = () => {
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        $setBlocksType(selection, () => {
+          const paragraph = $createParagraphNode();
+          paragraph.setFormat('');
+          return paragraph;
+        });
+      }
+    });
+    // Apply text format to make it look like subtext (smaller, muted)
+    editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'subscript');
+  };
+
+  const formatQuote = () => {
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        $setBlocksType(selection, () => $createQuoteNode());
+      }
+    });
   };
 
   function mouseMoveListener(e: MouseEvent) {
@@ -203,7 +244,7 @@ function TextFormatFloatingToolbar({
             className={'popup-item spaced ' + (isBold ? 'active' : '')}
             title="Bold"
             aria-label="Format text as bold">
-            <i className="format bold" />
+            <Bold size={16} />
           </button>
           <button
             type="button"
@@ -213,7 +254,7 @@ function TextFormatFloatingToolbar({
             className={'popup-item spaced ' + (isItalic ? 'active' : '')}
             title="Italic"
             aria-label="Format text as italics">
-            <i className="format italic" />
+            <Italic size={16} />
           </button>
           <button
             type="button"
@@ -223,7 +264,7 @@ function TextFormatFloatingToolbar({
             className={'popup-item spaced ' + (isUnderline ? 'active' : '')}
             title="Underline"
             aria-label="Format text to underlined">
-            <i className="format underline" />
+            <Underline size={16} />
           </button>
           <button
             type="button"
@@ -233,57 +274,7 @@ function TextFormatFloatingToolbar({
             className={'popup-item spaced ' + (isStrikethrough ? 'active' : '')}
             title="Strikethrough"
             aria-label="Format text with a strikethrough">
-            <i className="format strikethrough" />
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'subscript');
-            }}
-            className={'popup-item spaced ' + (isSubscript ? 'active' : '')}
-            title="Subscript"
-            aria-label="Format Subscript">
-            <i className="format subscript" />
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'superscript');
-            }}
-            className={'popup-item spaced ' + (isSuperscript ? 'active' : '')}
-            title="Superscript"
-            aria-label="Format Superscript">
-            <i className="format superscript" />
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'uppercase');
-            }}
-            className={'popup-item spaced ' + (isUppercase ? 'active' : '')}
-            title="Uppercase"
-            aria-label="Format text to uppercase">
-            <i className="format uppercase" />
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'lowercase');
-            }}
-            className={'popup-item spaced ' + (isLowercase ? 'active' : '')}
-            title="Lowercase"
-            aria-label="Format text to lowercase">
-            <i className="format lowercase" />
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'capitalize');
-            }}
-            className={'popup-item spaced ' + (isCapitalize ? 'active' : '')}
-            title="Capitalize"
-            aria-label="Format text to capitalize">
-            <i className="format capitalize" />
+            <Strikethrough size={16} />
           </button>
           <button
             type="button"
@@ -291,9 +282,9 @@ function TextFormatFloatingToolbar({
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'code');
             }}
             className={'popup-item spaced ' + (isCode ? 'active' : '')}
-            title="Insert code block"
-            aria-label="Insert code block">
-            <i className="format code" />
+            title="Code"
+            aria-label="Format as code">
+            <Code size={16} />
           </button>
           <button
             type="button"
@@ -301,7 +292,47 @@ function TextFormatFloatingToolbar({
             className={'popup-item spaced ' + (isLink ? 'active' : '')}
             title="Insert link"
             aria-label="Insert link">
-            <i className="format link" />
+            <Link size={16} />
+          </button>
+          <button
+            type="button"
+            onClick={() => formatHeading('h1')}
+            className={'popup-item spaced ' + (blockType === 'h1' ? 'active' : '')}
+            title="Heading 1"
+            aria-label="Format as Heading 1">
+            <Heading1 size={16} />
+          </button>
+          <button
+            type="button"
+            onClick={() => formatHeading('h2')}
+            className={'popup-item spaced ' + (blockType === 'h2' ? 'active' : '')}
+            title="Heading 2"
+            aria-label="Format as Heading 2">
+            <Heading2 size={16} />
+          </button>
+          <button
+            type="button"
+            onClick={() => formatHeading('h3')}
+            className={'popup-item spaced ' + (blockType === 'h3' ? 'active' : '')}
+            title="Heading 3"
+            aria-label="Format as Heading 3">
+            <Heading3 size={16} />
+          </button>
+          <button
+            type="button"
+            onClick={formatQuote}
+            className={'popup-item spaced ' + (blockType === 'quote' ? 'active' : '')}
+            title="Quote"
+            aria-label="Format as quote">
+            <Quote size={16} />
+          </button>
+          <button
+            type="button"
+            onClick={formatSubtext}
+            className={'popup-item spaced ' + (isSubscript ? 'active' : '')}
+            title="Subtext"
+            aria-label="Format as subtext">
+            <Type size={16} />
           </button>
         </>
       )}
@@ -311,7 +342,7 @@ function TextFormatFloatingToolbar({
         className={'popup-item spaced insert-comment'}
         title="Insert comment"
         aria-label="Insert comment">
-        <i className="format add-comment" />
+        <MessageSquare size={16} />
       </button>
     </div>
   );
@@ -334,6 +365,7 @@ function useFloatingTextFormatToolbar(
   const [isSubscript, setIsSubscript] = useState(false);
   const [isSuperscript, setIsSuperscript] = useState(false);
   const [isCode, setIsCode] = useState(false);
+  const [blockType, setBlockType] = useState<BlockType>('paragraph');
 
   const updatePopup = useCallback(() => {
     editor.getEditorState().read(() => {
@@ -372,6 +404,24 @@ function useFloatingTextFormatToolbar(
       setIsSubscript(selection.hasFormat('subscript'));
       setIsSuperscript(selection.hasFormat('superscript'));
       setIsCode(selection.hasFormat('code'));
+
+      // Update block type
+      const anchorNode = selection.anchor.getNode();
+      const element =
+        anchorNode.getKey() === 'root'
+          ? anchorNode
+          : anchorNode.getTopLevelElementOrThrow();
+
+      if ($isHeadingNode(element)) {
+        const tag = element.getTag();
+        setBlockType(tag as BlockType);
+      } else if ($isQuoteNode(element)) {
+        setBlockType('quote');
+      } else if (selection.hasFormat('subscript')) {
+        setBlockType('subtext');
+      } else {
+        setBlockType('paragraph');
+      }
 
       // Update links
       const parent = node.getParent();
@@ -437,6 +487,7 @@ function useFloatingTextFormatToolbar(
       isSuperscript={isSuperscript}
       isUnderline={isUnderline}
       isCode={isCode}
+      blockType={blockType}
       setIsLinkEditMode={setIsLinkEditMode}
     />,
     anchorElem,

@@ -31,16 +31,16 @@ A proof of concept for creating and using email and SMS templates with fill-in-t
 
 ```bash
 # Install dependencies
-npm install
+bun install
 
 # Run development server
-npm run dev
+bun run dev
 
 # Build for production
-npm run build
-
+bun run build   #  automatic type checking with vite plugin
+    
 # Preview production build
-npm run preview
+bun run preview
 ```
 
 ## How to Use
