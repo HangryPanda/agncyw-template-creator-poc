@@ -339,7 +339,6 @@ export default function TemplateEditor({
         allVariableNames={allVariableNames}
       >
         <div
-          ref={onRef}
           className={`relative rounded-lg overflow-visible ${
             mode === 'create'
               ? ''
@@ -364,20 +363,24 @@ export default function TemplateEditor({
             />
 
             {/* Clean, distraction-free editor */}
-            <div className="relative bg-background">
+            <div className="template-editor-container relative bg-background">
             <RichTextPlugin
               contentEditable={
-                <ContentEditable
-                  className={`min-h-[400px] px-8 py-6 outline-none focus:outline-none text-base
-                    transition-all duration-200 ${
-                      mode === 'create'
-                        ? 'selection:bg-brand-blue/20 selection:text-brand-blue'
-                        : 'selection:bg-brand-green/20 selection:text-brand-green'
-                    }`}
-                />
+                <div className="editor-scroller">
+                  <div className="editor" ref={onRef}>
+                    <ContentEditable
+                      className={`min-h-[400px] pl-24 pr-8 py-6 outline-none focus:outline-none text-base
+                        transition-all duration-200 ${
+                          mode === 'create'
+                            ? 'selection:bg-brand-blue/20 selection:text-brand-blue'
+                            : 'selection:bg-brand-green/20 selection:text-brand-green'
+                        }`}
+                    />
+                  </div>
+                </div>
               }
               placeholder={
-                <div className="absolute top-6 left-8 text-muted-foreground pointer-events-none select-none text-base">
+                <div className="absolute top-6 left-16 text-muted-foreground pointer-events-none select-none text-base">
                   Start typing or use <kbd className="px-2 py-1 text-xs font-mono bg-brand-purple/10 text-brand-purple border border-brand-purple/30 rounded shadow-sm">{'{{'}</kbd> for variables, <kbd className="px-2 py-1 text-xs font-mono bg-brand-orange/10 text-brand-orange border border-brand-orange/30 rounded shadow-sm">/</kbd> for blocks
                 </div>
               }
@@ -422,7 +425,7 @@ export default function TemplateEditor({
           </div>
 
           {/* Enhanced footer with color-coded shortcuts */}
-          <div className={`px-8 py-3 border-t-2 flex items-center justify-between transition-colors ${
+          <div className={`pl-16 pr-8 py-3 border-t-2 flex items-center justify-between transition-colors ${
             mode === 'create'
               ? 'bg-gradient-to-r from-brand-blue/5 via-brand-purple/5 to-brand-blue/5 border-brand-blue/20'
               : 'bg-gradient-to-r from-brand-green/5 via-brand-green/10 to-brand-green/5 border-brand-green/20'

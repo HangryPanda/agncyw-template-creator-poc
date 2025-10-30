@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import TemplateEditor from './apps/TemplateEditor/features/editor/components/TemplateEditor';
+import TemplateEditor from './apps/TemplateEditor/components/TemplateEditor';
 import ModernTemplateSidebar from './apps/TemplateEditor/features/sidebar/components/ModernTemplateSidebar';
 import TemplateMetadataEditor from './apps/TemplateEditor/features/metadata/components/TemplateMetadataEditor';
 import { CharacterCounter } from '@/components/indicators';
@@ -16,6 +16,8 @@ import { ResizablePanelGroup, ResizablePanel } from '@/components/ui/constructs/
 import { TemplateVariable, EditorState, Template, Tag } from '@/apps/_shared/template/types';
 import GitHubEditorPage from './pages/GitHubEditorPage';
 import ThemeToggle from '@/core/ui/primitives/ThemeToggle';
+import { useCheckpointManager } from '@/hooks/useCheckpointManager';
+import { CheckpointDropdown } from '@/components/CheckpointDropdown';
 // Removed App.css - using Tailwind and shadcn styles instead
 
 // Insurance-specific variables for Quote Not Written campaign
@@ -114,6 +116,20 @@ function App() {
   // Get active template (from active tab)
   const selectedTemplate = templates.find((t) => t.id === activeTabId) ?? null;
 
+  // Initialize checkpoint manager for the active template
+  const checkpointManager = useCheckpointManager({
+    template: selectedTemplate ?? undefined,
+    onTemplateUpdate: updateTemplate,
+    onRestore: (restoredTemplate) => {
+      // The editor will automatically refresh when the template updates
+      // Mark tab as clean since we're restoring to a saved checkpoint
+      if (activeTabId) {
+        markTabDirty(activeTabId, false);
+      }
+    },
+    maxCheckpoints: 50,
+  });
+
   // Combine built-in and custom variables
   const allVariables = [...INSURANCE_VARIABLES, ...customVariables];
 
@@ -131,6 +147,13 @@ function App() {
   const handleVariableInserted = useCallback((): void => {
     setVariableToInsert(null);
   }, []);
+
+  // Handle dirty state changes from editor
+  const handleDirtyChange = useCallback((isDirty: boolean) => {
+    if (activeTabId) {
+      markTabDirty(activeTabId, isDirty);
+    }
+  }, [activeTabId, markTabDirty]);
 
   // Variable handlers
   const handleAddVariable = (variable: TemplateVariable): void => {
@@ -235,12 +258,12 @@ function App() {
     });
   };
 
-  const handleToggleStar = (templateId: string): void => {
+  const handleToggleFavorite = (templateId: string): void => {
     const template = templates.find((t) => t.id === templateId);
     if (template) {
       updateTemplate({
         ...template,
-        isStarred: !template.isStarred,
+        isFavorite: !template.isFavorite,
       });
     }
   };
@@ -347,11 +370,39 @@ function App() {
       if (e.key === 'Escape' && isSidebarOpen) {
         setIsSidebarOpen(false);
       }
+
+      // Cmd/Ctrl + Shift + R to discard changes
+      if (isMod && e.shiftKey && e.key === 'r') {
+        e.preventDefault();
+        if (activeTabId && dirtyTabs.has(activeTabId)) {
+          if (window.confirm('Discard all unsaved changes? This cannot be undone.')) {
+            // Restore to most recent checkpoint or original state
+            if (checkpointManager.hasAnyCheckpoints) {
+              checkpointManager.restoreCheckpoint(checkpointManager.checkpoints[0].id);
+            } else if (selectedTemplate) {
+              // Reset to current saved state by triggering a re-render
+              updateTemplate({ ...selectedTemplate });
+              markTabDirty(activeTabId, false);
+            }
+          }
+        }
+      }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isSidebarOpen, openTabs, activeTabId, closeTab, setActiveTab]);
+  }, [
+    isSidebarOpen,
+    openTabs,
+    activeTabId,
+    closeTab,
+    setActiveTab,
+    dirtyTabs,
+    checkpointManager,
+    selectedTemplate,
+    updateTemplate,
+    markTabDirty,
+  ]);
 
   // If GitHub editor view is active, render that page
   if (currentView === 'github-editor') {
@@ -364,7 +415,7 @@ function App() {
           onSelectTemplate={handleSelectTemplate}
           onNewTemplate={handleNewTemplate}
           onDeleteTemplate={handleDeleteTemplate}
-          onToggleStar={handleToggleStar}
+          onToggleFavorite={handleToggleFavorite}
           onManageTags={() => setShowTagEditor(true)}
           allVariables={allVariables}
           onTemplateChange={handleTemplateChange}
@@ -498,7 +549,7 @@ function App() {
               onSelectTemplate={handleSidebarTemplateSelect}
               onNewTemplate={handleSidebarNewTemplate}
               onDeleteTemplate={handleDeleteTemplate}
-              onToggleStar={handleToggleStar}
+              onToggleFavorite={handleToggleFavorite}
               onManageTags={() => {
                 setShowTagEditor(true);
                 if (windowWidth < 1024) {
@@ -578,23 +629,45 @@ function App() {
                             {/* GitHub-style Toolbar */}
                             <div className="border-b border-border bg-background px-4 py-2 flex-shrink-0">
                               <div className="flex items-center gap-2">
-                                {/* Branch/Version Selector */}
-                                <button
-                                  onClick={() => {
-                                    // TODO: Open version selector dropdown
-                                    console.log('Open version selector');
-                                  }}
-                                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-muted-foreground bg-muted/50 border border-border rounded-md hover:bg-muted hover:border-muted-foreground transition-colors"
-                                  title="Switch version"
-                                >
-                                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
-                                    <path fillRule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"></path>
-                                  </svg>
-                                  <span>main</span>
-                                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M4.427 7.427l3.396 3.396a.25.25 0 00.354 0l3.396-3.396A.25.25 0 0011.396 7H4.604a.25.25 0 00-.177.427z"></path>
-                                  </svg>
-                                </button>
+                                {/* Checkpoint Version Control */}
+                                <CheckpointDropdown
+                                  checkpoints={checkpointManager.checkpoints}
+                                  onCreateCheckpoint={(label) => checkpointManager.createNewCheckpoint('manual', label)}
+                                  onRestoreCheckpoint={checkpointManager.restoreCheckpoint}
+                                  onDeleteCheckpoint={checkpointManager.removeCheckpoint}
+                                  disabled={!selectedTemplate}
+                                />
+
+                                {/* Discard Changes Button */}
+                                {activeTabId && dirtyTabs.has(activeTabId) && (
+                                  <button
+                                    onClick={() => {
+                                      if (window.confirm('Discard all unsaved changes? This cannot be undone.')) {
+                                        // Restore to most recent checkpoint or original state
+                                        if (checkpointManager.hasAnyCheckpoints) {
+                                          checkpointManager.restoreCheckpoint(checkpointManager.checkpoints[0].id);
+                                        } else if (selectedTemplate && activeTabId) {
+                                          // Reset to current saved state by triggering a re-render
+                                          updateTemplate({ ...selectedTemplate });
+                                          markTabDirty(activeTabId, false);
+                                        }
+                                      }
+                                    }}
+                                    style={{
+                                      padding: 'var(--spacing-sm) var(--spacing-md)',
+                                      fontSize: 'var(--fontSize-sm)',
+                                      fontWeight: 'var(--fontWeight-medium)',
+                                      backgroundColor: 'var(--bg-secondary)',
+                                      border: '1px solid var(--border-primary)',
+                                      borderRadius: '4px',
+                                      cursor: 'pointer',
+                                      color: 'var(--semantic-error)',
+                                    }}
+                                    title="Discard unsaved changes (Cmd/Ctrl+Shift+R)"
+                                  >
+                                    Discard Changes
+                                  </button>
+                                )}
 
                                 {/* Versions Badge Button (like "6 Branches") */}
                                 <button
@@ -667,7 +740,7 @@ function App() {
                             </div>
 
                             {/* Left + Center Content Row */}
-                            <div className="flex-1 flex overflow-hidden">
+                            <div className="left-canvas-aside flex-1 flex overflow-hidden">
                               {/* Desktop: Left Panel - FormWrapper - REMOVED VARIABLE LIST FROM HERE */}
                               {mode === 'use' && (
                                 <div className="hidden md:block w-[320px] overflow-hidden bg-background">
@@ -684,8 +757,9 @@ function App() {
                               )}
 
                               {/* Center Panel - Editor - LIGHTER to be focal point */}
-                              <div className="flex-1 overflow-y-auto p-6 bg-muted/50">
-                                <div className="max-w-4xl mx-auto">
+                              <div className="canvas-workspace flex-1 overflow-y-auto p-6
+                               bg-muted/50">
+                                <div className="lexEditor-container max-w-4xl mx-auto">
                                   <TemplateEditor
                                     key={selectedTemplate.id}
                                     templateId={selectedTemplate.id}
@@ -698,11 +772,7 @@ function App() {
                                     setValue={templateValues.updateValue}
                                     variableToInsert={variableToInsert}
                                     onVariableInserted={handleVariableInserted}
-                                    onDirtyChange={(isDirty) => {
-                                      if (activeTabId) {
-                                        markTabDirty(activeTabId, isDirty);
-                                      }
-                                    }}
+                                    onDirtyChange={handleDirtyChange}
                                   />
 
                                   {/* Character Counter for SMS */}
@@ -720,15 +790,15 @@ function App() {
                           </div>
 
                           {/* Right Panel - Template Details + Variable List - DARKEST background */}
-                          <div className="hidden lg:block w-[356px] bg-background overflow-y-auto">
-                            <div className="p-4 space-y-4">
+                          <div className="right-canvas-aside hidden lg:block w-[356px] bg-background overflow-y-auto">
+                            <div className="right-content-wrapper p-4 space-y-4">
                               {/* About Section */}
                               <div>
-                                <h3 className="text-sm font-semibold text-foreground mb-3">About</h3>
-                                <div className="space-y-2">
+                                <h3 className="content-title text-sm font-semibold text-foreground mb-3">About</h3>
+                                <div className="about-content-wrapper space-y-2">
                                   {/* Type Badge */}
-                                  <div className="flex items-center gap-2">
-                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                  <div className="about-item-container flex items-center gap-2">
+                                    <span className={`message-type-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                       selectedTemplate.type === 'email'
                                         ? 'bg-primary/20 text-primary'
                                         : 'bg-accent/30 text-accent-foreground'
@@ -737,13 +807,13 @@ function App() {
                                     </span>
                                   </div>
 
-                                  {/* Stats */}
-                                  <div className="space-y-2 text-sm">
+                                  {/* Template Stats */}
+                                  <div className="about-item-2 space-y-2 text-sm">
                                     <div className="flex items-center gap-2 text-foreground/80">
                                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                       </svg>
-                                      <span className="font-medium">{selectedTemplate.isStarred ? 'Favorited' : 'Not favorited'}</span>
+                                      <span className="favorite-badge font-medium">{selectedTemplate.isFavorite ? 'Favorite' : 'Not Favorite'}</span>
                                     </div>
 
                                     {selectedTemplate.useCount !== undefined && selectedTemplate.useCount > 0 && (
@@ -796,8 +866,8 @@ function App() {
                               </div>
 
                               {/* Metadata Section */}
-                              <div className="pt-3 border-t border-border">
-                                <h3 className="text-sm font-semibold text-foreground mb-3">Details</h3>
+                              <div className="metadata-section pt-3 border-t border-border">
+                                <h3 className="metadata-title text-sm font-semibold text-foreground mb-3">Details</h3>
                                 <div className="space-y-2 text-xs text-muted-foreground">
                                   <div className="flex justify-between">
                                     <span>Created</span>
