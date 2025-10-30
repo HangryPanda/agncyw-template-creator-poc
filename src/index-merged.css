@@ -1,0 +1,1158 @@
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-bg: var(--input-bg);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Semantic color mappings for Tailwind utilities */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-success-bg: var(--success-bg);
+  --color-warning-bg: var(--warning-bg);
+  --color-error-bg: var(--error-bg);
+  --color-info-bg: var(--info-bg);
+
+  /* Brand color mappings for Tailwind utilities */
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-purple: var(--brand-purple);
+  --color-brand-green: var(--brand-green);
+  --color-brand-pink: var(--brand-pink);
+  --color-brand-orange: var(--brand-orange);
+  --color-brand-red: var(--brand-red);
+
+  /* ==========================================================================
+     APP-SPECIFIC & BRAND COLORS
+     ==========================================================================
+
+     Usage: Add when existing brand colors or custom colors are needed (e.g.,
+     insurance red replacing default blue primary) or additional color
+     primitives (purple, teal, etc.) for use cases existing tokens don't fulfill.
+
+     CAUTION: Must also add theme-aware versions if tokens should respond to
+     theme. Do not add variations to keep colors consistent across all applications.
+
+     Examples:
+     --brand-insurance-red: oklch(0.6 0.25 15);
+     --brand-teal-accent: oklch(0.7 0.15 180);
+     --color-brand-insurance-red: var(--brand-insurance-red);
+     --color-brand-teal-accent: var(--brand-teal-accent);
+     ========================================================================== */
+
+  /* Animations */
+  --animate-border-beam: border-beam 15s linear infinite;
+  --animate-collapsible-down: collapsible-down 300ms ease-out;
+  --animate-collapsible-up: collapsible-up 300ms ease-out;
+}
+
+/* ==========================================================================
+   PROTHEME SYSTEM - 8 Theme Variants
+   ========================================================================== */
+
+:root {
+  --radius: 0.625rem;
+
+  /* ProTheme: Default Dark (baseline) */
+  --bg-app: oklch(0.15 0 0);           /* #242526 */
+  --bg-section: oklch(0.25 0 0);       /* #292A2B */
+  --fg-default: oklch(0.9 0 0);        /* #E6E6E6 */
+  --fg-muted: oklch(0.75 0 0);         /* #BBBBBB */
+  --border-color: oklch(0.25 0 0);     /* More visible border */
+
+  /* ProTheme brand colors */
+  --brand-blue: oklch(0.7 0.118 230);     /* #45A9F9 */
+  --brand-purple: oklch(0.65 0.15 290);   /* #B084EB */
+  --brand-green: oklch(0.85 0.15 180);    /* #19f9d8 */
+  --brand-pink: oklch(0.7 0.2 340);       /* #FF75B5 */
+  --brand-orange: oklch(0.75 0.12 60);    /* #FFB86C */
+  --brand-red: oklch(0.6 0.25 15);        /* #FF2C6D */
+
+  /* shadcn/ui mappings */
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-blue);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.26 0.04 290);        /* Clearer purple - better hierarchy */
+  --secondary-foreground: oklch(0.9 0 0);
+  --muted: oklch(0.24 0.02 230);            /* More visible blue tint */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.32 0.07 180);           /* Punchier cyan-green accent */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.25 0 0);                 /* Border color for inputs - lighter for contrast */
+  --input-bg: oklch(0.11 0 0);              /* Input background - darker than app bg for depth */
+  --ring: var(--brand-blue);
+  --chart-1: var(--brand-orange);
+  --chart-2: var(--brand-blue);
+  --chart-3: var(--brand-purple);
+  --chart-4: var(--brand-green);
+  --chart-5: var(--brand-pink);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.28 0.05 180);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-blue);
+
+  /* Semantic color tokens - Essential */
+  --success: var(--brand-green);
+  --success-foreground: oklch(0.985 0 0);
+  --warning: var(--brand-orange);
+  --warning-foreground: oklch(0.985 0 0);
+
+  /* Semantic color tokens - Optional */
+  --info: var(--brand-blue);
+  --info-foreground: oklch(0.985 0 0);
+  --text-tertiary: oklch(0.6 0 0);        /* Less prominent than muted */
+  --text-placeholder: oklch(0.5 0 0);     /* Placeholder text */
+
+  /* Semantic background variants (10% opacity overlays) */
+  --success-bg: color-mix(in oklch, var(--brand-green) 10%, transparent);
+  --warning-bg: color-mix(in oklch, var(--brand-orange) 10%, transparent);
+  --error-bg: color-mix(in oklch, var(--brand-red) 10%, transparent);
+  --info-bg: color-mix(in oklch, var(--brand-blue) 10%, transparent);
+
+  /* Window & animation tokens */
+  --window-titlebar-height: 1.75rem;
+  --taskbar-height: 3rem;
+  --window-content-height: calc(100% - var(--window-titlebar-height));
+  --window-transition-duration: 300ms;
+  --window-transition-timing: cubic-bezier(0.4, 0.0, 0.2, 1);
+
+  /* Z-index layers */
+  --z-panel-content: 1;
+  --z-panel-overlay: 10;
+  --z-window-chrome: 20;
+}
+
+/* Light Theme */
+.t-light {
+  --bg-app: oklch(1 0 0);                  /* #FFFFFF */
+  --bg-section: oklch(0.96 0 0);           /* #F3F4F5 */
+  --fg-default: oklch(0.18 0 0);           /* #2a2c2d */
+  --fg-muted: oklch(0.45 0 0);             /* #676B79 */
+  --border-color: oklch(0.82 0 0);         /* #CDCDCD */
+
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-blue);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.94 0.02 290);        /* soft purple tint */
+  --secondary-foreground: var(--fg-default);
+  --muted: oklch(0.97 0.01 230);            /* very light blue tint */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.92 0.03 180);           /* cyan accent */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.78 0 0);                 /* Darker border for light theme */
+  --input-bg: oklch(1 0 0);                 /* Pure white input background */
+  --ring: var(--brand-blue);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.92 0.03 180);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-blue);
+
+  /* Semantic color tokens - Essential */
+  --success: var(--brand-green);
+  --success-foreground: oklch(0.985 0 0);
+  --warning: var(--brand-orange);
+  --warning-foreground: oklch(0.985 0 0);
+
+  /* Semantic color tokens - Optional */
+  --info: var(--brand-blue);
+  --info-foreground: oklch(0.985 0 0);
+  --text-tertiary: oklch(0.55 0 0);       /* Lighter than muted for light theme */
+  --text-placeholder: oklch(0.65 0 0);    /* Placeholder text */
+
+  /* Semantic background variants (10% opacity overlays) */
+  --success-bg: color-mix(in oklch, var(--brand-green) 10%, transparent);
+  --warning-bg: color-mix(in oklch, var(--brand-orange) 10%, transparent);
+  --error-bg: color-mix(in oklch, var(--brand-red) 10%, transparent);
+  --info-bg: color-mix(in oklch, var(--brand-blue) 10%, transparent);
+}
+
+/* Dark Theme */
+.dark,
+.t-dark {
+  --bg-app: oklch(0.15 0 0);              /* #242526 */
+  --bg-section: oklch(0.17 0 0);          /* #292A2B */
+  --fg-default: oklch(0.9 0 0);           /* #E6E6E6 */
+  --fg-muted: oklch(0.75 0 0);            /* #BBBBBB */
+  --border-color: oklch(0.25 0 0);        /* More visible border */
+
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-blue);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.26 0.04 290);        /* Clearer purple - better hierarchy */
+  --secondary-foreground: oklch(0.9 0 0);
+  --muted: oklch(0.24 0.02 230);            /* More visible blue tint */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.32 0.07 180);           /* Punchier cyan-green accent */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.25 0 0);                 /* Border color for inputs */
+  --input-bg: oklch(0.11 0 0);              /* Input background - darker than app bg */
+  --ring: var(--brand-blue);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.28 0.05 180);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-blue);
+
+  /* Semantic color tokens - Essential */
+  --success: var(--brand-green);
+  --success-foreground: oklch(0.985 0 0);
+  --warning: var(--brand-orange);
+  --warning-foreground: oklch(0.985 0 0);
+
+  /* Semantic color tokens - Optional */
+  --info: var(--brand-blue);
+  --info-foreground: oklch(0.985 0 0);
+  --text-tertiary: oklch(0.6 0 0);        /* Less prominent than muted */
+  --text-placeholder: oklch(0.5 0 0);     /* Placeholder text */
+
+  /* Semantic background variants (10% opacity overlays) */
+  --success-bg: color-mix(in oklch, var(--brand-green) 10%, transparent);
+  --warning-bg: color-mix(in oklch, var(--brand-orange) 10%, transparent);
+  --error-bg: color-mix(in oklch, var(--brand-red) 10%, transparent);
+  --info-bg: color-mix(in oklch, var(--brand-blue) 10%, transparent);
+}
+
+/* Calm Theme - softer blues & greens for reduced cognitive load */
+.t-calm {
+  --bg-app: oklch(0.12 0.02 250);         /* #1a1d23 deep blue-gray */
+  --bg-section: oklch(0.14 0.02 250);     /* #20242b */
+  --fg-default: oklch(0.85 0.015 250);    /* #d4dae3 soft blue-tinted white */
+  --fg-muted: oklch(0.6 0.02 250);        /* #8b95a8 muted blue-gray */
+  --border-color: oklch(0.24 0.02 250);   /* Better visible soft navy */
+
+  --brand-blue: oklch(0.7 0.08 230);      /* #7eb3d9 softer blue */
+  --brand-purple: oklch(0.65 0.1 280);    /* #9b8fc9 lavender */
+  --brand-green: oklch(0.75 0.1 180);     /* #7fc8b8 soft teal */
+  --brand-pink: oklch(0.7 0.12 340);      /* #d89ab8 dusty rose */
+  --brand-orange: oklch(0.72 0.08 60);    /* #d4a574 warm sand */
+  --brand-red: oklch(0.65 0.15 15);       /* #d47b8f muted rose */
+
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-blue);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.25 0.05 280);        /* More visible soft lavender */
+  --secondary-foreground: var(--fg-default);
+  --muted: oklch(0.21 0.03 230);            /* Calming, visible blue */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.30 0.08 180);           /* Calm yet visible teal accent */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.24 0.02 250);            /* Visible calm border */
+  --input-bg: oklch(0.08 0.02 250);         /* Darker input bg for contrast */
+  --ring: var(--brand-blue);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.23 0.06 180);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-blue);
+}
+
+/* Zen Theme - ultra-minimal with greens & earth tones */
+.t-zen {
+  --bg-app: oklch(0.12 0.015 130);        /* #1c1f1a deep moss */
+  --bg-section: oklch(0.14 0.015 130);    /* #232620 soft charcoal-green */
+  --fg-default: oklch(0.87 0.01 130);     /* #dce5d8 soft sage white */
+  --fg-muted: oklch(0.6 0.02 130);        /* #8a9685 muted sage */
+  --border-color: oklch(0.24 0.02 130);   /* More visible earth border */
+
+  --brand-blue: oklch(0.65 0.08 220);     /* #6b9fb5 ocean blue */
+  --brand-purple: oklch(0.62 0.08 280);   /* #9d8fae soft violet */
+  --brand-green: oklch(0.7 0.08 140);     /* #7fad7a calm green */
+  --brand-pink: oklch(0.68 0.08 340);     /* #c99ba8 mauve */
+  --brand-orange: oklch(0.7 0.08 60);     /* #c9a876 clay */
+  --brand-red: oklch(0.65 0.12 15);       /* #c57a7a terracotta */
+
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-green);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.25 0.04 60);         /* Visible warm clay secondary */
+  --secondary-foreground: var(--fg-default);
+  --muted: oklch(0.21 0.03 130);            /* Tranquil, visible moss */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.30 0.06 220);           /* Peaceful yet visible ocean accent */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.24 0.02 130);            /* Earth-toned border */
+  --input-bg: oklch(0.08 0.015 130);        /* Deep moss input bg */
+  --ring: var(--brand-green);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-green);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.22 0.04 220);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-green);
+}
+
+/* Focus Theme - deep contrast with one accent for concentration */
+.t-focus {
+  --bg-app: oklch(0.08 0 0);              /* #0f1114 almost black */
+  --bg-section: oklch(0.1 0 0);           /* #16181c very dark gray */
+  --fg-default: oklch(0.8 0 0);           /* #c5cad3 cool light gray */
+  --fg-muted: oklch(0.46 0 0);            /* #6b727e muted gray */
+  --border-color: oklch(0.20 0 0);        /* Better visible border */
+
+  --brand-blue: oklch(0.68 0.1 240);      /* #6b9ce8 primary accent */
+  --brand-purple: oklch(0.55 0.05 270);   /* #7a7fa8 desaturated */
+  --brand-green: oklch(0.65 0.05 180);    /* #6b9c8e desaturated teal */
+  --brand-pink: oklch(0.6 0.05 330);      /* #9c7a8e desaturated pink */
+  --brand-orange: oklch(0.6 0.05 60);     /* #9c8e6b desaturated orange */
+  --brand-red: oklch(0.58 0.1 15);        /* #9c6b7a desaturated red */
+
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-blue);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.18 0.02 270);        /* More visible purple */
+  --secondary-foreground: var(--fg-default);
+  --muted: oklch(0.16 0.005 0);             /* More visible muted */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.25 0.08 240);           /* More visible blue accent */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.20 0 0);                 /* Lighter border for deep bg */
+  --input-bg: oklch(0.05 0 0);              /* Nearly black input bg */
+  --ring: var(--brand-blue);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.25 0.08 240);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-blue);
+}
+
+/* Warm Theme - cozy amber tones for evening work */
+.t-warm {
+  --bg-app: oklch(0.11 0.02 40);          /* #1f1a16 warm dark brown */
+  --bg-section: oklch(0.13 0.02 40);      /* #252018 chocolate brown */
+  --fg-default: oklch(0.88 0.02 50);      /* #e8dfd4 warm cream */
+  --fg-muted: oklch(0.62 0.02 40);        /* #a89886 warm gray */
+  --border-color: oklch(0.24 0.03 40);    /* Much better coffee border */
+
+  --brand-blue: oklch(0.68 0.08 230);     /* #7a9fc9 warm blue */
+  --brand-purple: oklch(0.7 0.1 290);     /* #b89fc9 warm lavender */
+  --brand-green: oklch(0.7 0.08 150);     /* #8fb89a warm mint */
+  --brand-pink: oklch(0.72 0.12 350);     /* #d99fae warm pink */
+  --brand-orange: oklch(0.72 0.1 55);     /* #d9a96b amber */
+  --brand-red: oklch(0.68 0.15 20);       /* #d97a7a warm coral */
+
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-orange);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.25 0.06 350);        /* Cozy, visible warm pink */
+  --secondary-foreground: var(--fg-default);
+  --muted: oklch(0.21 0.04 40);             /* Warm, inviting chocolate */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.30 0.07 230);           /* Warm, visible blue accent */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.24 0.03 40);             /* Warm border */
+  --input-bg: oklch(0.07 0.02 40);          /* Deep warm brown input bg */
+  --ring: var(--brand-orange);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-orange);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.21 0.05 230);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-orange);
+}
+
+/* Nord Theme - cool, professional, low-fatigue */
+.t-nord {
+  --bg-app: oklch(0.24 0.02 230);         /* #2e3440 nord polar night */
+  --bg-section: oklch(0.28 0.02 230);     /* #3b4252 nord dark */
+  --fg-default: oklch(0.94 0.01 230);     /* #eceff4 nord snow */
+  --fg-muted: oklch(0.86 0.015 230);      /* #d8dee9 nord frost */
+  --border-color: oklch(0.32 0.02 230);   /* #434c5e nord border */
+
+  --brand-blue: oklch(0.75 0.08 210);     /* #88c0d0 nord frost */
+  --brand-purple: oklch(0.68 0.1 310);    /* #b48ead nord aurora purple */
+  --brand-green: oklch(0.72 0.1 130);     /* #a3be8c nord aurora green */
+  --brand-pink: oklch(0.7 0.12 350);      /* #d08ca3 custom nord pink */
+  --brand-orange: oklch(0.7 0.12 40);     /* #d08770 nord aurora orange */
+  --brand-red: oklch(0.62 0.15 15);       /* #bf616a nord aurora red */
+
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-blue);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.36 0.05 310);        /* Distinct nord aurora purple */
+  --secondary-foreground: var(--fg-default);
+  --muted: oklch(0.30 0.03 230);            /* cool frost muted */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.42 0.08 130);           /* Brighter nord aurora green */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.32 0.02 230);            /* Nord border */
+  --input-bg: oklch(0.20 0.02 230);         /* Darker nord input bg */
+  --ring: var(--brand-blue);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.42 0.08 130);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-blue);
+}
+
+/* ==========================================================================
+   DARK THEME VARIATIONS - Stimulating
+   ========================================================================== */
+
+/* Vibrant Dark - high saturation colors for energetic dark mode */
+.t-vibrant-dark {
+  --bg-app: oklch(0.14 0.02 250);         /* #1f2330 deep blue-black */
+  --bg-section: oklch(0.16 0.02 250);     /* #262a3b slightly lighter */
+  --fg-default: oklch(0.95 0.01 250);     /* #f2f4ff crisp white */
+  --fg-muted: oklch(0.7 0.02 250);        /* #a8b0d0 bright muted */
+  --border-color: oklch(0.25 0.03 250);   /* More vibrant border */
+
+  --brand-blue: oklch(0.7 0.18 230);      /* #00a8ff vibrant blue */
+  --brand-purple: oklch(0.68 0.2 290);    /* #a855ff electric purple */
+  --brand-green: oklch(0.78 0.2 165);     /* #00ff9d neon green */
+  --brand-pink: oklch(0.7 0.25 340);      /* #ff3d9a hot pink */
+  --brand-orange: oklch(0.75 0.18 50);    /* #ffaa00 bright orange */
+  --brand-red: oklch(0.62 0.28 15);       /* #ff2d5f vivid red */
+
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-blue);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.28 0.14 290);        /* Truly vivid purple secondary */
+  --secondary-foreground: var(--fg-default);
+  --muted: oklch(0.24 0.05 250);            /* Visible electric blue muted */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.35 0.18 340);           /* Eye-catching hot pink accent */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.25 0.03 250);            /* Vibrant border */
+  --input-bg: oklch(0.10 0.02 250);         /* Deep vibrant input bg */
+  --ring: var(--brand-blue);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.26 0.15 340);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-blue);
+}
+
+/* Energetic Dark - neon accents on deep background */
+.t-energetic-dark {
+  --bg-app: oklch(0.12 0.015 30);         /* #1f1812 warm dark brown-black */
+  --bg-section: oklch(0.14 0.015 30);     /* #251e18 chocolate dark */
+  --fg-default: oklch(0.95 0.01 60);      /* #fffaf0 warm white */
+  --fg-muted: oklch(0.68 0.02 50);        /* #c4a880 warm muted */
+  --border-color: oklch(0.24 0.03 30);    /* Energetic warm border */
+
+  --brand-blue: oklch(0.68 0.15 230);     /* #2a90ff bright blue */
+  --brand-purple: oklch(0.7 0.18 290);    /* #b855ff electric purple */
+  --brand-green: oklch(0.75 0.2 150);     /* #00e676 energetic green */
+  --brand-pink: oklch(0.72 0.22 350);     /* #ff3d75 vibrant pink */
+  --brand-orange: oklch(0.78 0.2 55);     /* #ffa726 bright orange */
+  --brand-red: oklch(0.68 0.25 25);       /* #ff5252 energetic red */
+
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-orange);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.26 0.14 350);        /* Truly energetic pink secondary */
+  --secondary-foreground: var(--fg-default);
+  --muted: oklch(0.22 0.05 30);             /* Visible warm brown muted */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.32 0.15 150);           /* Powerful neon green accent */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.24 0.03 30);             /* Energetic border */
+  --input-bg: oklch(0.08 0.015 30);         /* Deep energetic input bg */
+  --ring: var(--brand-orange);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-orange);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.23 0.12 150);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-orange);
+}
+
+/* Bold Dark - maximum contrast with punchy colors */
+.t-bold-dark {
+  --bg-app: oklch(0.08 0.01 270);         /* #0f0f18 deep purple-black */
+  --bg-section: oklch(0.1 0.01 270);      /* #16161f dark purple-gray */
+  --fg-default: oklch(0.98 0.005 0);      /* #fafafa bright white */
+  --fg-muted: oklch(0.65 0.015 270);      /* #9090b0 cool gray */
+  --border-color: oklch(0.25 0.02 270);   /* Much more visible border */
+
+  --brand-blue: oklch(0.65 0.2 230);      /* #0080ff bold blue */
+  --brand-purple: oklch(0.62 0.22 290);   /* #9d00ff bold purple */
+  --brand-green: oklch(0.7 0.22 165);     /* #00d890 bold teal */
+  --brand-pink: oklch(0.68 0.28 340);     /* #ff0080 bold pink */
+  --brand-orange: oklch(0.7 0.2 50);      /* #ff8800 bold orange */
+  --brand-red: oklch(0.6 0.3 15);         /* #ff0048 bold red */
+
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-blue);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.24 0.16 290);        /* Bold purple - highly visible */
+  --secondary-foreground: var(--fg-default);
+  --muted: oklch(0.20 0.04 270);            /* Visible muted purple */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.35 0.20 165);           /* Punchy teal accent - maximum impact */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.25 0.02 270);            /* Bold border */
+  --input-bg: oklch(0.06 0.01 270);         /* Nearly black bold input bg */
+  --ring: var(--brand-blue);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.35 0.20 165);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-blue);
+}
+
+/* ==========================================================================
+   LIGHT THEME VARIATIONS - Calming & Stimulating
+   ========================================================================== */
+
+/* Calm Light - soft blues & greens, low saturation for relaxation */
+.t-calm-light {
+  --bg-app: oklch(0.99 0.01 220);          /* #f8fbff soft sky white */
+  --bg-section: oklch(0.96 0.015 220);     /* #eff5fa pale blue */
+  --fg-default: oklch(0.22 0.02 220);      /* #333a44 soft navy text */
+  --fg-muted: oklch(0.48 0.02 220);        /* #6e7a8f muted blue-gray */
+  --border-color: oklch(0.88 0.01 220);    /* #d8e4f0 soft border */
+
+  --brand-blue: oklch(0.6 0.09 230);       /* #4893d5 gentle blue */
+  --brand-purple: oklch(0.58 0.08 280);    /* #8c78b8 soft lavender */
+  --brand-green: oklch(0.68 0.1 170);      /* #5cb59a calm teal */
+  --brand-pink: oklch(0.65 0.1 340);       /* #c97ea3 dusty rose */
+  --brand-orange: oklch(0.68 0.08 50);     /* #c49664 warm sand */
+  --brand-red: oklch(0.6 0.12 15);         /* #c06876 muted coral */
+
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-blue);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.94 0.04 280);        /* soft lavender secondary */
+  --secondary-foreground: var(--fg-default);
+  --muted: oklch(0.97 0.02 220);            /* gentle sky muted */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.90 0.05 170);           /* calm teal accent */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.84 0.01 220);            /* Soft border */
+  --input-bg: oklch(1 0 0);                 /* Pure white input */
+  --ring: var(--brand-blue);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.90 0.05 170);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-blue);
+}
+
+/* Zen Light - warm earth tones, beiges & sage for tranquility */
+.t-zen-light {
+  --bg-app: oklch(0.98 0.01 90);           /* #fbfaf7 warm ivory */
+  --bg-section: oklch(0.95 0.015 90);      /* #f1ede6 beige */
+  --fg-default: oklch(0.25 0.015 90);      /* #3d3d38 earth text */
+  --fg-muted: oklch(0.5 0.02 90);          /* #7b7c72 sage gray */
+  --border-color: oklch(0.87 0.015 90);    /* #dbd8cf sand border */
+
+  --brand-blue: oklch(0.58 0.08 220);      /* #5d89a8 ocean blue */
+  --brand-purple: oklch(0.6 0.07 280);     /* #8d7da3 soft violet */
+  --brand-green: oklch(0.65 0.09 140);     /* #6ea76a sage green */
+  --brand-pink: oklch(0.65 0.08 350);      /* #ba8597 mauve */
+  --brand-orange: oklch(0.68 0.09 50);     /* #c49561 clay */
+  --brand-red: oklch(0.62 0.11 15);        /* #b66f6f terracotta */
+
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-green);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.93 0.04 50);         /* warm clay secondary */
+  --secondary-foreground: var(--fg-default);
+  --muted: oklch(0.96 0.03 90);             /* warm beige muted */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.90 0.05 220);           /* ocean blue accent */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.83 0.015 90);            /* Earth border */
+  --input-bg: oklch(1 0 0);                 /* Pure white input */
+  --ring: var(--brand-green);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-green);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.90 0.05 220);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-green);
+}
+
+/* Serene - soft lavenders & muted blues for peaceful focus */
+.t-serene {
+  --bg-app: oklch(0.99 0.01 280);          /* #fafafd soft lavender white */
+  --bg-section: oklch(0.96 0.02 280);      /* #f2f0f9 pale lilac */
+  --fg-default: oklch(0.24 0.02 280);      /* #38364a soft purple-gray text */
+  --fg-muted: oklch(0.5 0.02 280);         /* #77758f muted purple-gray */
+  --border-color: oklch(0.89 0.015 280);   /* #e0dcea soft purple border */
+
+  --brand-blue: oklch(0.62 0.09 240);      /* #6891d8 serene blue */
+  --brand-purple: oklch(0.6 0.1 290);      /* #9278c0 soft purple */
+  --brand-green: oklch(0.68 0.08 170);     /* #6fb09a calm aqua */
+  --brand-pink: oklch(0.68 0.1 340);       /* #cd85ad soft pink */
+  --brand-orange: oklch(0.7 0.08 50);      /* #c9a06b warm beige */
+  --brand-red: oklch(0.62 0.11 15);        /* #b87076 muted rose */
+
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-purple);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.94 0.05 240);        /* serene blue secondary */
+  --secondary-foreground: var(--fg-default);
+  --muted: oklch(0.97 0.03 280);            /* soft lavender muted */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.91 0.05 170);           /* peaceful aqua accent */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.85 0.015 280);           /* Serene border */
+  --input-bg: oklch(1 0 0);                 /* Pure white input */
+  --ring: var(--brand-purple);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-purple);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.91 0.05 170);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-purple);
+}
+
+/* Energetic (CSS class: t-vibrant) - high energy cool colors for motivation */
+.t-vibrant {
+  --bg-app: oklch(0.98 0.01 200);          /* #f7fbfd crisp white */
+  --bg-section: oklch(0.94 0.015 200);     /* #e8f3f8 bright blue tint */
+  --fg-default: oklch(0.18 0.02 240);      /* #1f2d3d deep navy */
+  --fg-muted: oklch(0.45 0.02 240);        /* #5f6f8f medium blue-gray */
+  --border-color: oklch(0.85 0.015 200);   /* #c8dde8 bright border */
+
+  --brand-blue: oklch(0.65 0.15 230);      /* #2a93e8 vibrant blue */
+  --brand-purple: oklch(0.6 0.18 290);     /* #9548e8 electric purple */
+  --brand-green: oklch(0.75 0.18 165);     /* #08d9a6 bright teal */
+  --brand-pink: oklch(0.68 0.22 340);      /* #f855a8 hot pink */
+  --brand-orange: oklch(0.72 0.15 50);     /* #f59e42 bright orange */
+  --brand-red: oklch(0.58 0.25 15);        /* #e83b5c vivid red */
+
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-blue);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.90 0.10 290);        /* vibrant purple secondary */
+  --secondary-foreground: var(--fg-default);
+  --muted: oklch(0.95 0.04 200);            /* electric blue muted */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.88 0.12 340);           /* hot pink accent */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.80 0.015 200);           /* Vibrant border */
+  --input-bg: oklch(1 0 0);                 /* Pure white input */
+  --ring: var(--brand-blue);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.88 0.12 340);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-blue);
+}
+
+/* Vibrant (CSS class: t-energetic) - bright warm colors for high energy */
+.t-energetic {
+  --bg-app: oklch(0.99 0.01 70);           /* #fffbf5 warm white */
+  --bg-section: oklch(0.95 0.02 60);       /* #fcf2e0 light peach */
+  --fg-default: oklch(0.2 0.02 40);        /* #3d3025 warm brown text */
+  --fg-muted: oklch(0.48 0.02 50);         /* #7a6d54 warm gray */
+  --border-color: oklch(0.86 0.02 60);     /* #e5d5ba warm border */
+
+  --brand-blue: oklch(0.62 0.12 230);      /* #4287d8 bright sky */
+  --brand-purple: oklch(0.65 0.15 290);    /* #a560e0 energetic purple */
+  --brand-green: oklch(0.72 0.15 150);     /* #48c882 fresh green */
+  --brand-pink: oklch(0.7 0.18 350);       /* #f26ba0 vibrant pink */
+  --brand-orange: oklch(0.75 0.16 55);     /* #ff9f3a bright orange */
+  --brand-red: oklch(0.65 0.2 25);         /* #f0563f energetic red */
+
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-orange);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.91 0.10 350);        /* energetic pink secondary */
+  --secondary-foreground: var(--fg-default);
+  --muted: oklch(0.96 0.04 60);             /* warm peach muted */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.88 0.10 150);           /* fresh green accent */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.82 0.02 60);             /* Energetic border */
+  --input-bg: oklch(1 0 0);                 /* Pure white input */
+  --ring: var(--brand-orange);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-orange);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.88 0.10 150);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-orange);
+}
+
+/* Bold - strong contrasts & punchy colors for maximum impact */
+.t-bold {
+  --bg-app: oklch(0.97 0.005 0);           /* #f7f7f7 neutral white */
+  --bg-section: oklch(0.92 0.008 0);       /* #e5e5e8 cool gray */
+  --fg-default: oklch(0.12 0.01 270);      /* #16161f almost black */
+  --fg-muted: oklch(0.42 0.015 270);       /* #5a5a70 strong gray */
+  --border-color: oklch(0.78 0.01 0);      /* #b8b8c0 bold border */
+
+  --brand-blue: oklch(0.58 0.18 230);      /* #0070e0 bold blue */
+  --brand-purple: oklch(0.55 0.2 290);     /* #8800e8 bold purple */
+  --brand-green: oklch(0.68 0.2 165);      /* #00c896 bold teal */
+  --brand-pink: oklch(0.65 0.25 340);      /* #f0288f bold pink */
+  --brand-orange: oklch(0.68 0.18 50);     /* #e87800 bold orange */
+  --brand-red: oklch(0.55 0.28 15);        /* #d81248 bold red */
+
+  --background: var(--bg-app);
+  --foreground: var(--fg-default);
+  --card: var(--bg-section);
+  --card-foreground: var(--fg-default);
+  --popover: var(--bg-section);
+  --popover-foreground: var(--fg-default);
+  --primary: var(--brand-blue);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.88 0.12 290);        /* bold purple secondary */
+  --secondary-foreground: var(--fg-default);
+  --muted: oklch(0.94 0.02 0);              /* subtle gray muted */
+  --muted-foreground: var(--fg-muted);
+  --accent: oklch(0.85 0.14 165);           /* bold teal accent */
+  --accent-foreground: var(--fg-default);
+  --destructive: var(--brand-red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: var(--border-color);
+  --input: oklch(0.74 0.01 0);              /* Bold border */
+  --input-bg: oklch(1 0 0);                 /* Pure white input */
+  --ring: var(--brand-blue);
+  --sidebar: var(--bg-section);
+  --sidebar-foreground: var(--fg-default);
+  --sidebar-primary: var(--brand-blue);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.85 0.14 165);
+  --sidebar-accent-foreground: var(--fg-default);
+  --sidebar-border: var(--border-color);
+  --sidebar-ring: var(--brand-blue);
+}
+
+/* ==========================================================================
+   DESIGN TOKENS - Side Panel-First System
+   ========================================================================== */
+
+:root {
+  /* ============================================
+     SPACING SCALE (4px base unit)
+     ============================================ */
+  --spacing-2xs: 2px;   /* Hairline spacing, ultra-tight table cells */
+  --spacing-xs: 4px;    /* Tight spacing for compact data, badges */
+  --spacing-sm: 6px;    /* Compact button padding, tight form elements */
+  --spacing-md: 8px;    /* Default spacing between related elements */
+  --spacing-lg: 12px;   /* Comfortable spacing, form field gaps */
+  --spacing-xl: 16px;   /* Card padding, section spacing */
+  --spacing-2xl: 24px;  /* Major section breaks */
+  --spacing-3xl: 32px;  /* Page-level spacing */
+  --spacing-4xl: 48px;  /* Marketing sections (rarely used) */
+
+  /* ============================================
+     TYPOGRAPHY - FONT SIZE (13px base)
+     ============================================ */
+  --fontSize-2xs: 10px;   /* Ultra-compact metadata, timestamps */
+  --fontSize-xs: 11px;    /* Secondary labels, table headers, badges */
+  --fontSize-sm: 12px;    /* Tertiary text, helper text */
+  --fontSize-base: 13px;  /* Primary UI text, form inputs, buttons */
+  --fontSize-md: 14px;    /* Emphasized body text, card descriptions */
+  --fontSize-lg: 16px;    /* Card titles, section labels */
+  --fontSize-xl: 18px;    /* Panel headers, modal titles */
+  --fontSize-2xl: 20px;   /* Page titles */
+  --fontSize-3xl: 24px;   /* Primary headings */
+  --fontSize-4xl: 30px;   /* Dashboard headers (rarely used) */
+
+  /* ============================================
+     TYPOGRAPHY - LINE HEIGHT
+     ============================================ */
+  --lineHeight-tight: 1.25;     /* Headings, titles, compact displays */
+  --lineHeight-normal: 1.5;     /* Body text, forms, general UI */
+  --lineHeight-relaxed: 1.75;   /* Long-form content, documentation */
+
+  /* ============================================
+     TYPOGRAPHY - FONT WEIGHT
+     ============================================ */
+  --fontWeight-regular: 400;   /* Body text, descriptions */
+  --fontWeight-medium: 500;    /* Labels, emphasized text, button text */
+  --fontWeight-semibold: 600;  /* Headings, active states, key metrics */
+  --fontWeight-bold: 700;      /* Major headings, critical alerts */
+
+  /* ============================================
+     TYPOGRAPHY - FONT FAMILY
+     ============================================ */
+  --fontFamily-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  --fontFamily-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Consolas', 'Monaco', monospace;
+
+  /* ============================================
+     PANEL BREAKPOINTS (for reference in JS)
+     Side panel-first: 360px - 800px optimized
+     Primary target: 480px
+     ============================================ */
+  --breakpoint-panel-xs: 360px;
+  --breakpoint-panel-sm: 420px;
+  --breakpoint-panel-md: 480px;  /* PRIMARY TARGET */
+  --breakpoint-panel-lg: 600px;
+  --breakpoint-panel-xl: 720px;
+  --breakpoint-panel-full: 1024px;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    font-size: 13px; /* Side panel-first base size */
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--fontFamily-base);
+    font-size: var(--fontSize-base);
+    line-height: var(--lineHeight-normal);
+    font-weight: var(--fontWeight-regular);
+  }
+}
+
+@layer components {
+  /*
+   * Template Variable Styles
+   * ========================
+   * Styles have been moved to a CSS Module for better organization.
+   * See: src/nodes/TemplateVariable/TemplateVariable.module.css
+   */
+
+  /*
+   * Lexical Editor Container Styles
+   * ===============================
+   * Matches official Lexical playground structure for DraggableBlockPlugin compatibility
+   */
+  .editor-scroller {
+    min-height: 150px;
+    max-width: 100%;
+    border: 0;
+    display: flex;
+    position: relative;
+    outline: 0;
+    z-index: 0;
+  }
+
+  .editor {
+    flex: auto;
+    max-width: 100%;
+    position: relative;
+    z-index: -1;
+  }
+}
+
+/* Collapsible animations using Radix CSS variables */
+@keyframes collapsible-down {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+}
+
+@keyframes collapsible-up {
+  from {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+.animate-collapsible-down {
+  animation: collapsible-down var(--collapsible-duration, 300ms) ease-out;
+}
+
+.animate-collapsible-up {
+  animation: collapsible-up var(--collapsible-duration, 300ms) ease-out;
+}
+
+/* Border Beam animation */
+@keyframes border-beam {
+  0% {
+    offset-distance: 0%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+.animate-border-beam {
+  animation: border-beam var(--duration, 15s) linear infinite;
+}
+
+/* Shimmer animation for ThemeToggle */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Print Styles */
+@media print {
+  /* Hide window chrome, desktop, taskbar */
+  .window-title-bar,
+  .window-menu-bar,
+  .taskbar,
+  .desktop-icon,
+  .environment-watermark {
+    display: none !important;
+  }
+
+  /* Make window fill page */
+  .window {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* Remove page margins */
+  @page {
+    margin: 0.5in;
+  }
+
+body {
+    background: white !important;
+  }
+}
+
+/* ============================================================================
+   Panel slide-in animations with opacity fade
+   ========================================================================== */
+
+.panel-container {
+  transition: opacity var(--window-transition-duration) var(--window-transition-timing),
+              transform var(--window-transition-duration) var(--window-transition-timing);
+  will-change: opacity, transform;
+}
+
+/* Hidden state - panel rendered but invisible, positioned off-screen */
+.panel-hidden-right {
+  opacity: 0;
+  transform: translate3d(100%, 0, 0);
+}
+
+.panel-hidden-left {
+  opacity: 0;
+  transform: translate3d(-100%, 0, 0);
+}
+
+/* Visible state - panel fully shown */
+.panel-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-container {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
