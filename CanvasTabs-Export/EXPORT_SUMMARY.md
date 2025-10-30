@@ -205,9 +205,11 @@ When integrating into a new project, you'll need to provide:
    }
    ```
 
-4. **Styling** (if using Tailwind)
-   - Add tabs directory to Tailwind content
-   - Define custom colors in theme
+4. **Styling** (if using Tailwind v4)
+   - Install `tailwindcss` and `@tailwindcss/vite`
+   - Add `@tailwindcss/vite` plugin to `vite.config.ts`
+   - Import `@import "tailwindcss"` in main CSS file
+   - Define custom colors in `@theme inline` block (if needed)
 
 ## Maintenance Notes
 

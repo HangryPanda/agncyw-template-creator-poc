@@ -41,6 +41,6 @@
   "_installation": {
     "core_only": "npm install lucide-react",
     "with_lexical": "npm install lucide-react lexical @lexical/react",
-    "with_tailwind": "npm install -D tailwindcss postcss autoprefixer && npx tailwindcss init -p"
+    "with_tailwind": "npm install tailwindcss @tailwindcss/vite"
   }
 }

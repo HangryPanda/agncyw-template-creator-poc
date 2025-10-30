@@ -61,9 +61,10 @@ Only complete if using Lexical editor:
 
 ## Styling
 
-- [ ] **Tailwind CSS configured** (if using Tailwind)
-  - `tailwind.config.js` includes `src/lib/tabs/**/*.{tsx,ts}` in content
-  - Custom colors defined (background, foreground, muted, etc.)
+- [ ] **Tailwind CSS configured** (if using Tailwind v4)
+  - `@tailwindcss/vite` plugin added to `vite.config.ts`
+  - `@import "tailwindcss"` added to main CSS file
+  - Custom colors defined in `@theme inline` block (if needed)
 
 - [ ] **Alternative styling setup** (if not using Tailwind)
   - Converted Tailwind classes to CSS modules, or

@@ -270,30 +270,48 @@ import { useTemplateEditorTabs, DirtyStatePlugin } from '@/lib/tabs/integrations
 
 ### Tailwind CSS Configuration (Recommended)
 
-The `TabBar` component uses Tailwind CSS utility classes. If your project uses Tailwind, ensure it's configured:
+The `TabBar` component uses Tailwind CSS utility classes. If your project uses Tailwind v4 with Vite:
 
-```javascript
-// tailwind.config.js
-module.exports = {
-  content: [
-    './src/**/*.{js,jsx,ts,tsx}',
-    './src/lib/tabs/**/*.{js,jsx,ts,tsx}', // Include tabs directory
+**Step 1: Install Tailwind CSS**
+```bash
+npm install tailwindcss @tailwindcss/vite
+```
+
+**Step 2: Add the Vite plugin**
+```typescript
+// vite.config.ts
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [
+    react(),
+    tailwindcss(),
   ],
-  theme: {
-    extend: {
-      colors: {
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
-        muted: 'hsl(var(--muted))',
-        'muted-foreground': 'hsl(var(--muted-foreground))',
-        border: 'hsl(var(--border))',
-        primary: 'hsl(var(--primary))',
-        destructive: 'hsl(var(--destructive))',
-        popover: 'hsl(var(--popover))',
-      },
-    },
-  },
-};
+})
+```
+
+**Step 3: Import Tailwind in your CSS**
+```css
+/* src/index.css */
+@import "tailwindcss";
+```
+
+**Step 4: Configure theme colors** (if needed)
+```css
+/* src/index.css */
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: oklch(0.98 0 0);
+  --color-foreground: oklch(0.15 0 0);
+  --color-muted: oklch(0.96 0 0);
+  --color-muted-foreground: oklch(0.45 0 0);
+  --color-border: oklch(0.90 0 0);
+  --color-primary: oklch(0.50 0.20 250);
+  /* Add other custom colors as needed */
+}
 ```
 
 **AI Note**: If the project doesn't use Tailwind, you'll need to convert the styling to CSS modules or inline styles.
@@ -1024,17 +1042,27 @@ Then add the `Template` type definition (see [Type Definitions](#type-definition
 
 ### Issue: "Tailwind classes not working"
 
-**Solution**: Ensure Tailwind is configured to scan the tabs directory:
+**Solution**: Ensure Tailwind v4 with Vite plugin is properly configured:
 
-```javascript
-// tailwind.config.js
-module.exports = {
-  content: [
-    './src/**/*.{js,jsx,ts,tsx}',
-    './src/lib/tabs/**/*.{js,jsx,ts,tsx}', // Add this line
+1. Verify `@tailwindcss/vite` plugin is added to `vite.config.ts`:
+```typescript
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [
+    react(),
+    tailwindcss(), // Add this
   ],
-};
+})
 ```
+
+2. Verify CSS import in your main CSS file:
+```css
+/* src/index.css */
+@import "tailwindcss";
+```
+
+3. Restart your dev server after configuration changes
 
 ### Issue: "Drag-and-drop not working"
 
