@@ -1,77 +1,188 @@
+/* DraggableBlockPlugin - Tertiary utility control styling */
+/* Balanced between discoverability and non-distraction */
+
+/* Component-specific semantic tokens - theme-aware for all 16 theme variants */
+:root {
+  /* ========================================
+     MENU CONTAINER
+     ======================================== */
+
+  /* Background: Use muted background - adapts to all themes */
+  --drag-menu-bg: var(--muted);
+  /* Dark themes: oklch(0.24 0.02 230) - subtle blue-gray
+     Light themes: oklch(0.97 0.01 230) - soft white-blue */
+
+  /* Border: Softer than standard borders to maintain tertiary hierarchy */
+  --drag-menu-border: color-mix(in oklch, var(--border) 70%, transparent);
+
+  /* Shadow: Minimal depth without distraction */
+  --drag-menu-shadow: color-mix(in oklch, var(--foreground) 4%, transparent);
+
+  /* ========================================
+     ICONS - DEFAULT STATE
+     ======================================== */
+
+  --drag-icon-bg: transparent;
+  /* No background at rest keeps focus on content */
+
+  --drag-icon-color: var(--muted-foreground);
+  /* Theme-aware muted color - adapts to all light/dark variants */
+
+  --drag-icon-opacity: 0.35;
+  /* Very subtle at rest - "I'm here if you need me" */
+
+  /* ========================================
+     ICONS - HOVER STATE
+     ======================================== */
+
+  --drag-icon-hover-bg: var(--accent);
+  /* Theme-aware accent - clear "this is interactive" signal */
+
+  --drag-icon-hover-color: var(--accent-foreground);
+  /* Ensures proper contrast against accent background */
+
+  --drag-icon-hover-opacity: 0.65;
+  /* More visible on hover - "I'm ready to use" */
+
+  /* ========================================
+     ICONS - ACTIVE STATE
+     ======================================== */
+
+  --drag-icon-active-bg: var(--accent);
+
+  --drag-icon-active-color: var(--accent-foreground);
+  /* Maintains contrast during active state */
+
+  --drag-icon-active-opacity: 0.85;
+  /* Nearly full opacity - confident "action in progress" feedback */
+
+  /* ========================================
+     DROP TARGET LINE
+     ======================================== */
+
+  --drag-target-line-bg: var(--primary);
+  /* Primary color for important action feedback */
+
+  --drag-target-line-glow: color-mix(in oklch, var(--primary) 40%, transparent);
+  /* Subtle glow enhances visibility during drag */
+}
+
 .draggable-block-menu {
-  border-radius: 6px;
-  padding: 3px 2px;
+  /* Layout - CRITICAL: Lexical controls positioning via JavaScript transform */
+  position: absolute;
+  left: 0;  /* DO NOT change to negative - Lexical positions this internally */
+  top: 0;
+  display: flex;
+  gap: var(--spacing-xs); /* 4px */
+
+  /* Styling - Using theme-aware semantic tokens */
+  background-color: var(--drag-menu-bg);
+  border: 1px solid var(--drag-menu-border);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-xs) var(--spacing-2xs); /* 4px 2px */
+  box-shadow: 0 1px 3px var(--drag-menu-shadow);
+
+  /* Behavior - DO NOT add :hover selector, Lexical controls opacity */
   cursor: grab;
   opacity: 0;
-  position: absolute;
-  /* Position in the gutter area - adjusted for px-8 (32px) padding */
-  left: -28px; /* Places it 4px from the left border (32px padding - 28px) */
-  top: 0;
-  will-change: transform;
-  display: flex;
-  gap: 3px;
-  /* Enhanced visibility */
-  background-color: rgba(255, 255, 255, 0.95);
-  border: 1px solid hsl(var(--border));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  /* Smooth fade-in transition */
-  transition: opacity 0.2s ease-in-out, transform 0.15s ease;
   z-index: 10;
-}
-
-/* Show menu on hover - critical for UX */
-.draggable-block-menu:hover,
-.draggable-block-menu.show {
-  opacity: 1;
-}
-
-.draggable-block-menu .icon {
-  width: 18px;
-  height: 18px;
-  opacity: 0.4;
-  background-image: url(../../images/icons/draggable-block-menu.svg);
-  background-size: 14px 14px;
-  background-repeat: no-repeat;
-  background-position: center;
-  border-radius: 3px;
-  transition: opacity 0.2s ease-in-out, background-color 0.15s ease;
-}
-
-.draggable-block-menu .icon-plus {
-  display: inline-block;
-  border: none;
-  cursor: pointer;
-  background-color: transparent;
-  background-image: url(../../images/icons/plus.svg);
-  background-size: 14px 14px;
-  background-repeat: no-repeat;
-  background-position: center;
-  padding: 0;
+  will-change: transform;
+  transform: translate(-10000px, -10000px); /* Initial off-screen position prevents flash */
+  transition: opacity 0.2s ease-in-out; /* Only animate opacity, not position */
 }
 
 .draggable-block-menu:active {
   cursor: grabbing;
 }
 
+/* Icon base styles - Tertiary utility control with mask-image for theme-awareness */
+.draggable-block-menu .icon {
+  /* Positioning for stacked background + icon */
+  position: relative;
+  width: var(--fontSize-xl); /* 18px */
+  height: var(--fontSize-xl); /* 18px */
+  border-radius: var(--spacing-xs); /* 4px */
+
+  /* Container background (for hover/active accent) */
+  background-color: var(--drag-icon-bg);
+
+  /* Smooth transitions */
+  transition: opacity 0.2s ease-in-out, background-color 0.15s ease;
+
+  /* Opacity control for tertiary hierarchy */
+  opacity: var(--drag-icon-opacity);
+}
+
+/* Icon visual (SVG as mask) - Applied via ::after pseudo-element */
+.draggable-block-menu .icon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: var(--fontSize-md); /* 14px - icon size */
+  height: var(--fontSize-md);
+
+  /* Use mask-image for theme-aware coloring */
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+
+  /* Theme-aware icon color */
+  background-color: var(--drag-icon-color);
+  transition: background-color 0.15s ease;
+}
+
+/* Drag handle icon - Apply mask to ::after */
+.draggable-block-menu .icon::after {
+  -webkit-mask-image: url(../../images/icons/draggable-block-menu.svg);
+  mask-image: url(../../images/icons/draggable-block-menu.svg);
+}
+
+/* Plus icon button - Apply mask to ::after */
+.draggable-block-menu .icon-plus {
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.draggable-block-menu .icon-plus::after {
+  -webkit-mask-image: url(../../images/icons/plus.svg);
+  mask-image: url(../../images/icons/plus.svg);
+}
+
+/* Interactive states - Clear affordance without stealing focus */
 .draggable-block-menu .icon:hover {
-  background-color: hsl(var(--accent));
-  opacity: 0.7;
+  background-color: var(--drag-icon-hover-bg);
+  opacity: var(--drag-icon-hover-opacity);
+}
+
+.draggable-block-menu .icon:hover::after {
+  background-color: var(--drag-icon-hover-color);
 }
 
 .draggable-block-menu .icon:active {
-  opacity: 1;
-  background-color: hsl(var(--accent) / 0.8);
+  background-color: var(--drag-icon-active-bg);
+  opacity: var(--drag-icon-active-opacity);
 }
 
+.draggable-block-menu .icon:active::after {
+  background-color: var(--drag-icon-active-color);
+}
+
+/* Target line for drop indicator - Clear visual guide */
 .draggable-block-target-line {
   pointer-events: none;
-  background: hsl(var(--primary));
-  height: 4px;
+  background: var(--drag-target-line-bg);
+  height: var(--spacing-xs); /* 4px */
   position: absolute;
   left: 0;
   top: 0;
-  opacity: 0;
+  opacity: 0;  /* Lexical controls visibility */
   will-change: transform;
-  border-radius: 2px;
-  box-shadow: 0 0 8px hsla(var(--primary) / 0.5);
+  border-radius: var(--spacing-2xs); /* 2px */
+  box-shadow: 0 0 6px var(--drag-target-line-glow);
 }
