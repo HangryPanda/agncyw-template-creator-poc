@@ -48,6 +48,44 @@ export interface Template {
   schemaVersion: number; // For migration tracking
 }
 
+/**
+ * Represents a single checkpoint in template version history
+ */
+export interface TemplateCheckpoint {
+  /** Unique checkpoint identifier (format: abc123d-2025-10-28-14-30) */
+  id: string;
+
+  /** Full template state at this checkpoint */
+  content: EditorState;
+
+  /** ISO timestamp when checkpoint was created */
+  timestamp: string;
+
+  /** Optional user-provided label (defaults to auto-generated name) */
+  label?: string;
+
+  /** Type of checkpoint creation */
+  checkpointType: 'auto' | 'manual';
+
+  /** Template metadata at checkpoint time */
+  metadata: {
+    name: string;
+    type: 'email' | 'sms';
+    tags: string[];
+  };
+}
+
+/**
+ * Extended Template interface with version history
+ */
+export interface TemplateWithHistory extends Template {
+  /** Array of historical checkpoints (newest first) */
+  checkpoints: TemplateCheckpoint[];
+
+  /** Maximum number of checkpoints to retain (default: 50) */
+  maxCheckpoints?: number;
+}
+
 // Template Registry Configuration
 export interface RegistryConfig {
   storageKeys: {

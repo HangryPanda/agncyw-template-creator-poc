@@ -104,6 +104,7 @@ const ThemeToggle = () => {
       >
         <label className="relative inline-flex cursor-pointer">
           <input
+            id="theme-toggle"
             type="checkbox"
             className="sr-only peer"
             checked={isDark}

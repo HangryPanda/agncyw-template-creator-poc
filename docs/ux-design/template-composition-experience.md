@@ -19,6 +19,396 @@
    - In "Template Insights" panel (repurposed outline)
    - Dedicated "History" tab when template is open
 
+   *Decision* Phased Rollout Strategy
+     Phased Rollout Strategy: Template Versioning System
+
+  Let me think through this as a PM shipping an MVP, focused on
+  delivering the core "aha moment" with minimal complexity.
+
+  The Core User Problem
+
+  Users need: Confidence that they won't lose template changes and
+  ability to undo mistakes.
+
+  Not needed immediately: Full version history UI, branching,
+  comparisons, collaboration conflict resolution.
+
+  ---
+  Phase 1: MVP - "Undo Protection" (Week 1-2)
+
+  What Ships
+
+  Single capability: Automatic version snapshots + one-click
+  "Revert to Last Saved"
+
+  // Minimal data model addition
+  ``` typescript
+  interface Template {
+    // ... existing fields
+    lastSavedVersion?: EditorState;  // Single backup snapshot
+    lastSavedAt?: string;
+  }
+   ```
+  UI Changes:
+  1. In Editor Header:
+    - Show "Unsaved changes" indicator (already exists via dirty
+  state)
+    - Add "Revert" button (only visible when dirty)
+  2. On Save:
+    - Copy current content to lastSavedVersion before saving new
+  content
+    - Show subtle "Saved" confirmation
+  3. On Revert:
+    - Replace editor content with lastSavedVersion
+    - Show confirmation: "Reverted to version saved at [timestamp]"
+
+  Why This Order?
+
+  Delivers core value:
+  - Users can confidently experiment, knowing they can undo
+  - Zero new UI complexity (uses existing save flow)
+  - Solves 80% of "I broke my template" panic scenarios
+
+  Minimal technical lift:
+  - No version history UI to build
+  - No storage key changes (same templates_user structure)
+  - ~50 lines of code (add field, update save handler, add revert
+  button)
+
+  Sets foundation:
+  - Template schema already supports extra fields
+  - Save flow is isolated and easy to extend
+  - Dirty state tracking already exists
+
+  User Value Unlocked
+
+  Aha moment: "I accidentally deleted a paragraph, clicked Revert,
+  and it came back instantly."
+
+  ---
+  Phase 2: "Safety Net" - Recent History (Week 3-4)
+
+  What Ships
+
+  Expanded capability: Keep last 5 auto-saved versions in memory
+  (not storage)
+``` typescript
+  interface Template {
+    // ... existing fields
+    recentVersions?: Array<{
+      content: EditorState;
+      savedAt: string;
+      autoSave: boolean;  // vs manual save
+    }>;
+  }
+   ```
+  UI Changes:
+  1. Version History Popover:
+    - Dropdown next to "Revert" button
+    - Shows last 5 saves with timestamps
+    - Click any version to preview (read-only modal)
+    - "Restore This Version" button in preview
+  2. Auto-save Enhancement:
+    - Every 30 seconds if dirty
+    - Append to recentVersions array (max 5 items)
+    - Show "Auto-saved at [time]" in footer
+
+  Why This Order?
+
+  Incremental improvement:
+  - Users can now undo multiple mistakes (not just the last one)
+  - Introduces version history UI in simplest form (list + preview)
+  - Tests user behavior: do they use it? How far back?
+
+  Still MVP-scoped:
+  - No persistent version storage (avoids localStorage bloat)
+  - No comparison/diff view
+  - No version naming or branching
+
+  Technical foundation:
+  - Version list UI becomes reusable for Phase 3
+  - Preview modal pattern extends to full history
+  - Auto-save behavior tested without backend dependency
+
+  User Value Unlocked
+
+  Aha moment: "I realized I deleted the wrong paragraph 10 minutes
+  ago. I opened recent history, found the version before I deleted
+  it, and restored it."
+
+  ---
+  Phase 3: "Full Audit Trail" - Persistent History (Month 2-3)
+
+  What Ships
+
+  Complete feature: Persistent version storage with metadata and
+  comparisons
+   ``` typescript
+  interface TemplateVersion {
+    id: string;
+    templateId: string;
+    content: EditorState;
+    version: number;
+    createdAt: string;
+    createdBy: string;  // For future collaboration
+    changeDescription?: string;  // Optional user note
+    autoSave: boolean;
+  }
+
+  // New storage key
+  const VERSIONS_KEY = 'template_versions';
+   ```
+  UI Changes:
+  1. Full Version History Panel:
+    - Sidebar or modal showing all versions
+    - Timeline view (grouped by day/week)
+    - Search/filter by date or description
+  2. Version Comparison:
+    - Side-by-side diff view
+    - Highlight added/removed content
+    - "Restore" or "Copy Changes" actions
+  3. Save Dialog Enhancement:
+    - Optional: "Add version note" field
+    - Show version number incrementing
+    - "Save as Major Version" vs "Auto-save"
+  4. Settings:
+    - Toggle auto-save on/off
+    - Set retention policy (keep last N versions or X days)
+
+  Why This Order?
+
+  Power user features:
+  - Now have proven demand from Phase 2 usage data
+  - Users understand version history mental model
+  - Can justify engineering effort for diff algorithm
+
+  Production-ready:
+  - Persistent storage strategy validated
+  - Backup/restore integration tested
+  - Ready for collaboration features (Phase 4)
+
+  Technical maturity:
+  - Separate storage key prevents template bloat
+  - Version pruning/archival strategy defined
+  - Diff algorithm researched and implemented
+
+  User Value Unlocked
+
+  Aha moment: "I can see exactly what changed between the version
+  from last week and today. I can copy just the subject line change
+   without restoring the entire old version."
+
+  ---
+  Technical Design Principles for Phased Approach
+
+  1. Storage Strategy Evolution
+
+  Phase 1: Single backup field in template object
+  { id, name, content, lastSavedVersion }
+
+  Phase 2: Array field with max size (in-memory feel)
+  { id, name, content, recentVersions: [v1, v2, v3, v4, v5] }
+
+  Phase 3: Separate storage key with relational structure
+  // templates_user: { id, name, content }
+  // template_versions: [{ templateId, version, content }, ...]
+
+  Why this works:
+  - Each phase is additive (no breaking changes)
+  - Phase 1→2 migration: copy lastSavedVersion to recentVersions[0]
+  - Phase 2→3 migration: move recentVersions to new key
+  - Backward compatible (missing fields = feature disabled)
+
+  2. UI Component Evolution
+
+  Phase 1: Simple button in editor header
+  {isDirty && <Button onClick={revertToLastSaved}>Revert</Button>}
+
+  Phase 2: Dropdown with version list
+  <Popover>
+    <PopoverTrigger>Revert ▾</PopoverTrigger>
+    <PopoverContent>
+      {recentVersions.map(v => <VersionListItem />)}
+    </PopoverContent>
+  </Popover>
+
+  Phase 3: Full panel component
+  <VersionHistoryPanel
+    templateId={template.id}
+    onRestore={handleRestore}
+    showComparison={true}
+  />
+
+  Why this works:
+  - Each component wraps the previous (progressive enhancement)
+  - Phase 1 button becomes Phase 2 trigger
+  - Phase 2 list becomes Phase 3 panel preview
+  - No throw-away code
+
+  3. Save Flow Hook Points
+
+  Design save handler to support future enhancements:
+
+  // Phase 1
+  ``` typescript
+  function saveTemplate(template: Template) {
+    const backup = { ...template, lastSavedVersion:
+  template.content };
+    templateRegistry.update(backup);
+  }
+
+  // Phase 2 (extends Phase 1)
+  function saveTemplate(template: Template, isAutoSave = false) {
+    const newVersion = {
+      content: template.content,
+      savedAt: new Date().toISOString(),
+      autoSave: isAutoSave,
+    };
+
+    const backup = {
+      ...template,
+      recentVersions: [newVersion, ...(template.recentVersions ||
+  [])].slice(0, 5),
+    };
+
+    templateRegistry.update(backup);
+  }
+
+  // Phase 3 (separate concerns)
+  function saveTemplate(template: Template, metadata: 
+  VersionMetadata) {
+    // Save template to templates_user
+    templateRegistry.update(template);
+
+    // Save version to template_versions
+    versionRegistry.create({
+      templateId: template.id,
+      content: template.content,
+      ...metadata,
+    });
+  }
+```
+  ---
+  Decision Gates Between Phases
+
+  Move to Phase 2 if:
+  - 70%+ of users use Revert at least once
+  - User feedback requests "I wish I could go back further"
+  - No critical bugs in Phase 1
+
+  Move to Phase 3 if:
+  - 40%+ of active users open version history in Phase 2
+  - Average template has 10+ versions (indicates long-lived
+  templates)
+  - Users request comparison or audit trail features
+  - Business case supports storage infrastructure
+
+  Don't build Phase 3 if:
+  - Phase 2 usage is low (<20% of users)
+  - Users prefer manual backups (export/import)
+  - Technical complexity outweighs user demand
+
+  ---
+  Metrics to Track
+
+  Phase 1 (Validate Core Problem)
+
+  - % of users who use Revert
+  - Time between save and revert (mistake discovery time)
+  - % of reverts that prevent template deletion
+
+  Phase 2 (Validate History Depth)
+
+  - Average versions accessed per restore
+  - % of restores from auto-save vs manual save
+  - Drop-off point in version list (do users need >5 versions?)
+
+  Phase 3 (Validate Advanced Features)
+
+  - % of users who add version notes
+  - Comparison view usage vs direct restore
+  - Storage growth rate (for infrastructure planning)
+
+  ---
+  Recommendation: Start with Phase 1
+
+  Ship this week:
+  1. Add lastSavedVersion field to Template interface
+  2. Update saveTemplate handler to backup before save
+  3. Add "Revert" button next to Save (only show when dirty)
+  4. Show "Reverted to [timestamp]" toast on revert
+
+  Total engineering effort: 2-3 hours
+
+  User value: Immediate confidence boost for template editing
+
+  No premature optimization:
+  - No version history UI to maintain
+  - No storage key proliferation
+  - No diff algorithm complexity
+  - No retention policy decisions
+
+  Future-proof:
+  - Schema supports adding recentVersions array later
+  - Save flow is isolated hook point
+  - Dirty state tracking already exists
+
+  ---
+  Example Phase 1 Implementation
+``` typescript
+  // In useTemplateRegistry.ts
+  const saveTemplate = useCallback((template: Template) => {
+    // Backup current version before saving
+    const withBackup = {
+      ...template,
+      lastSavedVersion: template.content,
+      lastSavedAt: new Date().toISOString(),
+    };
+
+    templateRegistry.update(withBackup);
+
+    toast.success('Template saved');
+  }, []);
+
+  const revertTemplate = useCallback((template: Template) => {
+    if (!template.lastSavedVersion) {
+      toast.error('No saved version to revert to');
+      return;
+    }
+
+    const reverted = {
+      ...template,
+      content: template.lastSavedVersion,
+    };
+
+    templateRegistry.update(reverted);
+
+    toast.success(`Reverted to version saved at 
+  ${formatTimestamp(template.lastSavedAt)}`);
+  }, []);
+
+  // In TemplateEditorPage.tsx
+  <div className="editor-header">
+    <Button onClick={handleSave} disabled={!isDirty}>
+      Save
+    </Button>
+
+    {isDirty && template.lastSavedVersion && (
+      <Button 
+        variant="ghost" 
+        onClick={() => revertTemplate(template)}
+      >
+        Revert to Last Saved
+      </Button>
+    )}
+  </div>
+```
+  ---
+  Bottom line: Phase 1 ships the core "undo" value in hours, not
+  days. Phase 2 validates demand for history. Phase 3 builds the
+  full feature only after proving users need it. Classic MVP
+  playbook.
+
 2. **Version comparison**: How should users compare versions?
    - Side-by-side diff view (like GitHub)
    - Inline diff with additions/deletions highlighted
